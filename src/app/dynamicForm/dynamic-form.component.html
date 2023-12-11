@@ -1,0 +1,82 @@
+ <div class="row p-1">
+  <div class="col-12 p-1">
+
+     <ng-container  >
+     
+              <ng-template #ConfigForm let-configForm   [ngIf]="questions">
+                <ul>
+                   
+
+                    <ng-container *ngFor="let data  of configForm ;let formGroupIndex=index"
+                                  [ngTemplateOutlet]="  TypeForm "
+                                  [ngTemplateOutletContext]="{  $implicit: data.formGroup ,formGroupIndex:formGroupIndex, group:data }">
+
+                                  <div class="row title" > {{data.title }}</div>   
+                    </ng-container>
+
+                   
+                </ul>
+              </ng-template>
+
+
+              <ng-template #TypeForm let-typeForm let-formGroupIndex="formGroupIndex"    let-group="group">
+                  <ng-container *ngFor="let data  of   typeForm ;let formActionIndex=index"
+                                [ngTemplateOutlet]="  FormAction "
+                                [ngTemplateOutletContext]="{  $implicit: data.formAction  ,formGroupIndex:formGroupIndex ,formActionIndex:formActionIndex, group:group.formGroup}">
+                  </ng-container>
+              </ng-template>
+
+
+              <ng-template #FormAction let-formAction   let-formGroupIndex="formGroupIndex"   let-formActionIndex="formActionIndex"    let-group="group">
+                  <ng-container  [ngTemplateOutlet]="ConfigForm"
+                                 [ngTemplateOutletContext]="{  $implicit: formAction.formGroup }">
+                 
+                                <ng-container [ngSwitch]="formAction.type" >
+                                  <ng-container>
+                                    <div class="row title" *ngSwitchCase="TYPE_CONTROL_FORM.GROUP" > {{formAction.title }}</div> 
+                                    <app-combo *ngSwitchCase="TYPE_CONTROL_FORM.COMBO"     [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"></app-combo>
+                                    <!-- <app-checkbox *ngSwitchCase="TYPE_CONTROL_FORM.CHECKBOX" [question]="formAction"></app-checkbox>
+                                    <app-currency *ngSwitchCase="TYPE_CONTROL_FORM.CURRENCY"     [question]="formAction"></app-currency>
+                                    <app-date *ngSwitchCase="TYPE_CONTROL_FORM.DATA"    [question]="formAction"></app-date>
+                                    <app-date-range *ngSwitchCase="TYPE_CONTROL_FORM.DATARANGE"    [question]="formAction"></app-date-range>
+                                    <app-date-time *ngSwitchCase="TYPE_CONTROL_FORM.DATETIME"    [question]="formAction"></app-date-time>
+                                    <app-file *ngSwitchCase="TYPE_CONTROL_FORM.FILE"    [question]="formAction"></app-file> -->
+                                    <app-input-text *ngSwitchCase="TYPE_CONTROL_FORM.TEXT"    [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"></app-input-text>
+                                    <!-- <app-input-time *ngSwitchCase="TYPE_CONTROL_FORM.TIME"    [question]="formAction"></app-input-time>
+                                    <app-label *ngSwitchCase="TYPE_CONTROL_FORM.LABEL"    [question]="formAction"></app-label>
+                                    <app-link *ngSwitchCase="TYPE_CONTROL_FORM.LINK"    [question]="formAction"></app-link>
+                                    <app-number *ngSwitchCase="TYPE_CONTROL_FORM.NUMBER"    [question]="formAction"></app-number>
+                                    <app-radiobutton *ngSwitchCase="TYPE_CONTROL_FORM.RADIOGROUP"    [question]="formAction"></app-radiobutton>
+                                    <app-textarea *ngSwitchCase="TYPE_CONTROL_FORM.TEXTAREA"    [question]="formAction"></app-textarea> -->
+                                             
+                                  
+                                  </ng-container>
+                                </ng-container>
+      
+                  </ng-container>
+              </ng-template>
+  
+   
+     </ng-container>
+
+    </div>
+  </div>
+
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

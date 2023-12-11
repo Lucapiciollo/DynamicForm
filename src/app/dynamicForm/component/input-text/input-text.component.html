@@ -1,0 +1,25 @@
+ 
+
+
+<ng-container >
+      
+                 <mat-form-field  class="w-100">
+                       <mat-label [class.disabled]="control.formAction.formControl.disabled">  {{control.formAction.title}}    </mat-label>
+                
+                        <input  [type]="control.formAction?.inputText?.password ? 'password':'text'"  
+                                [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" type="text"
+                                matInput 
+                                [formControl]="control.formAction?.formControl" 
+                                [class.disabled]="control.formAction.formControl.disabled"
+                                [placeholder]="control.formAction.placeholder||''"
+                                [maxlength]="control.formAction?.inputText?.maxlength"
+                          >
+                          
+ 
+                        <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+                 </mat-form-field>    
+ 
+                  
+        
+</ng-container>
+
