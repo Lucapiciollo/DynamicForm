@@ -1,7 +1,7 @@
  
 
 
-<ng-container >
+<ng-container *ngIf="  !control.formAction?.css?.hide ">
       
                  <mat-form-field  class="w-100">
                        <mat-label [class.disabled]="control.formAction.formControl.disabled">  {{control.formAction.title}}    </mat-label>

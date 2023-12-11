@@ -35,7 +35,8 @@
                                   <ng-container>
                                     <div class="row title" *ngSwitchCase="TYPE_CONTROL_FORM.GROUP" > {{formAction.title }}</div> 
                                     <app-combo *ngSwitchCase="TYPE_CONTROL_FORM.COMBO"     [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"></app-combo>
-                                    <!-- <app-checkbox *ngSwitchCase="TYPE_CONTROL_FORM.CHECKBOX" [question]="formAction"></app-checkbox>
+                                    <app-checkbox *ngSwitchCase="TYPE_CONTROL_FORM.CHECKBOX" [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"></app-checkbox>
+                                    <!-- 
                                     <app-currency *ngSwitchCase="TYPE_CONTROL_FORM.CURRENCY"     [question]="formAction"></app-currency>
                                     <app-date *ngSwitchCase="TYPE_CONTROL_FORM.DATA"    [question]="formAction"></app-date>
                                     <app-date-range *ngSwitchCase="TYPE_CONTROL_FORM.DATARANGE"    [question]="formAction"></app-date-range>

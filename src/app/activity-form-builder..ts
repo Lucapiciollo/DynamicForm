@@ -33,34 +33,48 @@ function createform(context: any): TypeForm {
                 required: true,
                 formGroup: [
                     {
-                        title: "Identità",
+                        title: "Attivitàccccc",
                         formGroup: [
                             {
                                 formAction: {
-                                    title: "Nome",
-                                    type: TYPE_CONTROL_FORM.TEXT,
+                                    title: "I",
+                                    type: TYPE_CONTROL_FORM.COMBO,
                                     css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
-                                    formControl: new FormControl("Luca", [Validators.required]),
-                                    options: [],
-                                    formName: "Nome",
-                                    onChange(idGroup, idForm, formCOntrol, formName, fg, setOption, update, formGroupMain, typeControl, prevValue) {
-                                        console.log(formCOntrol.value)
+                                    formControl: new FormControl(null, [Validators.required]),
+                                    options: [{id:1,description:"UNO"},{id:2,description:"DUE"},{id:3,description:"TRE"}],
+                                    formName: "c",
+                                    onChange(idGroup, idForm, formCOntrol, formName, fg:Array<any>, setOption, update, formGroupMain, typeControl, prevValue) {
+                                        fg[1].formAction.options= [{id:1,description:"UNO"}]
                                     },
-                                    required: true
+                                    required: true,
+                                    autocomplete:true
 
                                 },
 
                             }, {
                                 formAction: {
-                                    title: "Cognome",
-                                    type: TYPE_CONTROL_FORM.TEXT,
+                                    title: "L",
+                                    type: TYPE_CONTROL_FORM.COMBO,
                                     css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
-                                    formControl: new FormControl("Piciollo"),
+                                    formControl: new FormControl(null),
                                     options: [],
-                                    formName: "Cognome",
+                                    formName: "d",
                                     onChange(idGroup, idForm, formCOntrol, formName, fg, setOption, update, formGroupMain, typeControl, prevValue) {
                                         console.log(formCOntrol.value)
-                                    }, formGroup: [
+                                    }
+                                }
+                            }, {
+                                formAction: {
+                                    title: "L",
+                                    type: TYPE_CONTROL_FORM.CHECKBOX,
+                                    css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
+                                    formControl: new FormControl(),
+                                    options: [],
+                                    formName: "e",
+                                    onChange(idGroup, idForm, formCOntrol, formName, fg, setOption, update, formGroupMain, typeControl, prevValue) {
+                                        console.log(formCOntrol.value)
+                                    },
+                                    formGroup: [
                                         {
                                             title: "Attivitàccccc",
                                             formGroup: [
@@ -77,9 +91,9 @@ function createform(context: any): TypeForm {
                                                         },
                                                         required: true,
                                                         autocomplete:true
-
+                    
                                                     },
-
+                    
                                                 }, {
                                                     formAction: {
                                                         title: "L",
@@ -95,56 +109,23 @@ function createform(context: any): TypeForm {
                                                 }, {
                                                     formAction: {
                                                         title: "L",
-                                                        type: TYPE_CONTROL_FORM.TEXT,
+                                                        type: TYPE_CONTROL_FORM.CHECKBOX,
                                                         css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
-                                                        formControl: new FormControl("llllllllll"),
+                                                        formControl: new FormControl(),
                                                         options: [],
-                                                        formName: "d",
+                                                        formName: "e",
                                                         onChange(idGroup, idForm, formCOntrol, formName, fg, setOption, update, formGroupMain, typeControl, prevValue) {
                                                             console.log(formCOntrol.value)
-                                                        }
+                                                        } 
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            title: "Attivitàccccc",
-                                            formGroup: [
-                                                {
-                                                    formAction: {
-                                                        title: "I",
-                                                        type: TYPE_CONTROL_FORM.TEXT,
-                                                        css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
-                                                        formControl: new FormControl("iiiiiiiiiiiii", [Validators.required]),
-                                                        options: [],
-                                                        formName: "c",
-                                                        onChange(idGroup, idForm, formCOntrol, formName, fg, setOption, update, formGroupMain, typeControl, prevValue) {
-                                                            console.log(formCOntrol.value)
-                                                        },
-                                                        required: true
-
-                                                    },
-
-                                                }, {
-                                                    formAction: {
-                                                        title: "L",
-                                                        type: TYPE_CONTROL_FORM.TEXT,
-                                                        css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
-                                                        formControl: new FormControl("llllllllll"),
-                                                        options: [],
-                                                        formName: "d",
-                                                        onChange(idGroup, idForm, formCOntrol, formName, fg, setOption, update, formGroupMain, typeControl, prevValue) {
-                                                            console.log(formCOntrol.value)
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
+                                        } 
                                     ]
                                 }
                             }
                         ]
-                    }
+                    } 
                 ]
             }
         } 

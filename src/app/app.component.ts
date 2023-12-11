@@ -17,6 +17,9 @@ export class AppComponent {
   }
 
   onFormCreate(formGroup:FormGroup){
-    formGroup.valueChanges.subscribe(value=>console.log(JSON.stringify(value)))
+    formGroup.valueChanges.subscribe(
+       value=>
+          console.log(JSON.stringify(value)
+    ))
   }
 }

@@ -5,6 +5,7 @@ import { InputTextComponent } from "./component/base.module";
 import { DynamicFormComponent } from "./dynamic-form.component";
 import { MaterialModule } from "./material.module";
 import { ComboComponent } from "./component/combo/combo.component";
+import { CheckboxComponent } from "./component/checkbox/checkbox.component";
 
 /**
  * @author luca.piciollo
@@ -21,7 +22,8 @@ import { ComboComponent } from "./component/combo/combo.component";
   declarations: [
     InputTextComponent,
     ComboComponent,
-    DynamicFormComponent 
+    DynamicFormComponent ,
+    CheckboxComponent
   ],
   imports: [
     CommonModule,
@@ -36,7 +38,8 @@ import { ComboComponent } from "./component/combo/combo.component";
     ComboComponent,
     CommonModule,
     DynamicFormComponent ,
-    InputTextComponent
+    InputTextComponent,
+    CheckboxComponent
   ]
 
 })
