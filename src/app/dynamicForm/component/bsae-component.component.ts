@@ -13,6 +13,7 @@ import { IBaseComponent } from './base-component-interface';
 import { GetErrorForm, GetErrorFormControl } from './error-message-utils';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TYPE_CONTROL_FORM } from '../interface';
+
 @Component({
   selector: '',
   template: ``,
@@ -36,6 +37,8 @@ export class BaseComponent implements IBaseComponent {
   @Input() formActionIndex: number = 0;
   @Input() formGroupIndex: number = 0;
   @Input() group: any = null;
+  @Input() allGroup: any = null;
+
 
 
   @Input() set question(config: Form) {
@@ -49,7 +52,7 @@ export class BaseComponent implements IBaseComponent {
         pairwise(),
       ).subscribe(([prevValue, next]: [any, any]) => {
         if (this.control.formAction && this.control.formAction.onChange)
-          this.control.formAction.onChange(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this.control.formAction.type, prevValue);
+          this.control.formAction.onChange(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this.control.formAction.type, prevValue,this.allGroup);
       })
     }
 
@@ -68,7 +71,7 @@ export class BaseComponent implements IBaseComponent {
   constructor(protected injector: Injector, protected element: ElementRef) { }
 
 
-  private _filter(value: string=""): any {
+  private _filter(value: string = ""): any {
     const filterValue = value.toString()?.toLowerCase();
     if (this.control?.formAction?.options)
       return this.control?.formAction?.options.filter((option: any) =>
@@ -78,7 +81,7 @@ export class BaseComponent implements IBaseComponent {
 
 
 
-  callOnhange( ) {
+  callOnhange() {
     if (this.control.formAction && this.control.formAction.onChange)
       this.control.formAction.onChange(
         this.formGroupIndex,
@@ -86,7 +89,7 @@ export class BaseComponent implements IBaseComponent {
         this.control.formAction?.formControl,
         this.control.formAction.formName,
         this.group,
-        this.control.formAction.type, null);
+        this.control.formAction.type, null,this.allGroup);
 
   }
 

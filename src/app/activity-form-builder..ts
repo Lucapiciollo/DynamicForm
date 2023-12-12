@@ -1,4 +1,4 @@
-import { FormControl, Validators } from "@angular/forms";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { ConfigForm, TypeForm, TYPE_CONTROL_FORM } from "./dynamicForm/interface";
 
 
@@ -41,16 +41,16 @@ function createform(context: any): TypeForm {
                                     type: TYPE_CONTROL_FORM.COMBO,
                                     css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
                                     formControl: new FormControl(null, [Validators.required]),
-                                    options: [{id:1,description:"UNO"},{id:2,description:"DUE"},{id:3,description:"TRE"}],
+                                    options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
                                     formName: "c",
-                                    onChange(idGroup, idForm, formCOntrol, formName, fg:Array<any>, setOption, update, formGroupMain, typeControl, prevValue) {
-                                        fg[1].formAction.options= [{id:1,description:"UNO"}]
+                                    onChange(idGroup, idForm, formCOntrol, formName, fg: Array<any>, setOption, update, formGroupMain, typeControl, prevValue) {
+                                        (formGroupMain as any)[0].formGroup[0].formAction.formGroup[0].formGroup[1].formAction.options = [{ id: 1, description: "UNO" }]
                                     },
                                     required: true,
-                                    autocomplete:true
+                                    autocomplete: true
 
                                 },
-
+                                
                             }, {
                                 formAction: {
                                     title: "L",
@@ -84,16 +84,16 @@ function createform(context: any): TypeForm {
                                                         type: TYPE_CONTROL_FORM.COMBO,
                                                         css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
                                                         formControl: new FormControl(null, [Validators.required]),
-                                                        options: [{id:1,description:"UNO"},{id:2,description:"DUE"},{id:3,description:"TRE"}],
+                                                        options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
                                                         formName: "c",
-                                                        onChange(idGroup, idForm, formCOntrol, formName, fg:Array<any>, setOption, update, formGroupMain, typeControl, prevValue) {
-                                                            fg[1].formAction.options= [{id:1,description:"UNO"}]
+                                                        onChange(idGroup, idForm, formCOntrol, formName, fg: Array<any>, setOption, update, formGroupMain, typeControl, prevValue) {
+                                                            fg[1].formAction.options = [{ id: 1, description: "UNO" }]
                                                         },
                                                         required: true,
-                                                        autocomplete:true
-                    
+                                                        autocomplete: true
+
                                                     },
-                    
+
                                                 }, {
                                                     formAction: {
                                                         title: "L",
@@ -109,25 +109,25 @@ function createform(context: any): TypeForm {
                                                 }, {
                                                     formAction: {
                                                         title: "L",
-                                                        type: TYPE_CONTROL_FORM.CHECKBOX,
+                                                        type: TYPE_CONTROL_FORM.RADIOGROUP,
                                                         css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
-                                                        formControl: new FormControl(),
-                                                        options: [],
+                                                        formControl: new FormControl(null),
+                                                        options: [{id:"1" , description :"Uno"},{id:"2" , description :"Due"}],
                                                         formName: "e",
                                                         onChange(idGroup, idForm, formCOntrol, formName, fg, setOption, update, formGroupMain, typeControl, prevValue) {
                                                             console.log(formCOntrol.value)
-                                                        } 
+                                                        }
                                                     }
                                                 }
                                             ]
-                                        } 
+                                        }
                                     ]
                                 }
                             }
                         ]
-                    } 
+                    }
                 ]
             }
-        } 
+        }
     ]
 }

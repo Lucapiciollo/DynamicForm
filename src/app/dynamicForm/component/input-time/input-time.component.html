@@ -1,0 +1,22 @@
+ 
+
+
+<ng-container *ngIf="   !control.formAction?.css?.hide"  >
+        
+                 <mat-form-field  class="w-100">
+                        <!-- <span *ngIf="control.formAction.required"  class="required">*</span> -->
+                        <mat-label [class.disabled]="control.formAction.formControl.disabled">  {{control.formAction.title}}    </mat-label>
+                        <input  type ="time" 
+                                [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"  
+                                matInput 
+                                [formControl]="control.formAction?.formControl"
+                                [class.disabled]="control.formAction.formControl.disabled"
+                                [placeholder]="control.formAction.placeholder||''"
+                                [maxlength]="control.formAction?.inputText?.maxlength">
+                        
+                                <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+                 </mat-form-field>
+ 
+</ng-container>
+
+ 

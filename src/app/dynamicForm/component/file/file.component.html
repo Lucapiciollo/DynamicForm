@@ -1,0 +1,24 @@
+<ng-container *ngIf=" !control.formAction?.css?.hide"  >
+         
+ 
+                <mat-form-field class="w-100" >
+                        <mat-label [class.disabled]="control.formAction.formControl.disabled">  {{control.formAction.title}}    </mat-label>
+                        <div camscan (onCaptureCam)="handleFileInputChange($any($event))"></div>
+                        <button mat-icon-button matPrefix (click)="f_input.click()" >
+                                 <mat-icon>attach_file</mat-icon>
+                        </button>
+                        <input type="text" 
+                                [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
+                                readonly 
+                                matInput 
+                                [formControl]="display" 
+                                [class.disabled]="control.formAction.formControl.disabled"
+                        />
+                        <input type="file" multiple hidden #f_input (change)="handleFileInputChange($any(f_input).files )" />
+                       
+                        <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+                 </mat-form-field>
+                <div  class="p-2 m-2 w-100"></div>
+</ng-container>
+
+ 

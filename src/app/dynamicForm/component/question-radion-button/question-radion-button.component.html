@@ -1,0 +1,19 @@
+<ng-container >
+    <ng-container *ngIf="  !control.formAction.css?.hide"  >
+        <div class="row m-auto w-100">
+
+
+            <mat-label>
+                <label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}} {{control.formAction.simbol}} </label>
+            </mat-label>
+
+            <mat-radio-group [formControl]="control.formAction?.formControl" class="row">
+                <mat-radio-button  *ngFor="let secondElement of control.formAction.options" [value]=" secondElement.id " [class]="control?.formAction?.css?.classRadio">
+                     <img [src]="secondElement.img" *ngIf="secondElement.img"> {{secondElement.description}}
+                </mat-radio-button>
+            </mat-radio-group>
+
+
+        </div>
+    </ng-container>
+</ng-container>

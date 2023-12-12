@@ -1,0 +1,26 @@
+<ng-container *ngIf="   !control.formAction?.css?.hide"  >
+  
+ 
+  
+            <mat-form-field class="w-100" >
+                <!-- <span *ngIf="control.formAction.required"  class="required">*</span> -->
+                <mat-label [class.disabled]="control.formAction.formControl.disabled"> {{control.formAction.title}} {{control.formAction.simbol}}</mat-label>
+                <textarea   [formControl]="control.formAction?.formControl"
+                         matInput
+                        [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" type="text"
+                        [class.disabled]="control.formAction.formControl.disabled"
+                        [placeholder]="control.formAction.placeholder||''"
+                        cdkAutosizeMinRows="1"
+                        [cdkAutosizeMaxRows]="control.formAction?.css?.rows || '5'"  
+                        #autosize="cdkTextareaAutosize"
+                        cdkTextareaAutosize
+                        >
+                    </textarea>
+                      <img   speech [formControl]="control.formAction?.formControl" matSuffix src="assets/img/mic.svg" class="text-center " *ngIf="!control.formAction.formControl.disabled  && !control?.formAction?.disableSpeech">  
+                    
+                     <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+             </mat-form-field>
+
+
+    
+</ng-container>

@@ -1,0 +1,27 @@
+ 
+
+<ng-container *ngIf=" !control.formAction?.css?.hide" >
+    
+ 
+                    <mat-form-field  class="w-100" >
+                        <mat-label>                    
+                             <label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}} {{control.formAction.simbol}}   </label>  
+                        </mat-label>
+                        <input matInput [matDatepicker]="datepicker"  
+                              [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
+                              [min]="control.formAction?.date?.min" [max]="control.formAction?.date?.max"
+                              [formControl]="control.formAction?.formControl"
+                              [class.disabled]="control.formAction.formControl.disabled">
+                       
+                       <mat-datepicker-toggle matIconSuffix [for]="datepicker" style="position: absolute;     right: 0px;   top: -15px;"></mat-datepicker-toggle>
+                        <mat-datepicker #datepicker>
+                          <mat-datepicker-actions>
+                            <button mat-button matDatepickerCancel>Cancel</button>
+                            <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
+                          </mat-datepicker-actions>
+                        </mat-datepicker>
+                        <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+                      </mat-form-field>
+  
+</ng-container>
+ 

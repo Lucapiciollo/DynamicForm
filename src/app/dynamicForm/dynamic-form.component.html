@@ -34,24 +34,21 @@
                                 <ng-container [ngSwitch]="formAction.type" >
                                   <ng-container>
                                     <div class="row title" *ngSwitchCase="TYPE_CONTROL_FORM.GROUP" > {{formAction.title }}</div> 
-                                    <app-combo *ngSwitchCase="TYPE_CONTROL_FORM.COMBO"     [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"></app-combo>
-                                    <app-checkbox *ngSwitchCase="TYPE_CONTROL_FORM.CHECKBOX" [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"></app-checkbox>
-                                    <!-- 
-                                    <app-currency *ngSwitchCase="TYPE_CONTROL_FORM.CURRENCY"     [question]="formAction"></app-currency>
-                                    <app-date *ngSwitchCase="TYPE_CONTROL_FORM.DATA"    [question]="formAction"></app-date>
-                                    <app-date-range *ngSwitchCase="TYPE_CONTROL_FORM.DATARANGE"    [question]="formAction"></app-date-range>
-                                    <app-date-time *ngSwitchCase="TYPE_CONTROL_FORM.DATETIME"    [question]="formAction"></app-date-time>
-                                    <app-file *ngSwitchCase="TYPE_CONTROL_FORM.FILE"    [question]="formAction"></app-file> -->
-                                    <app-input-text *ngSwitchCase="TYPE_CONTROL_FORM.TEXT"    [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"></app-input-text>
-                                    <!-- <app-input-time *ngSwitchCase="TYPE_CONTROL_FORM.TIME"    [question]="formAction"></app-input-time>
-                                    <app-label *ngSwitchCase="TYPE_CONTROL_FORM.LABEL"    [question]="formAction"></app-label>
-                                    <app-link *ngSwitchCase="TYPE_CONTROL_FORM.LINK"    [question]="formAction"></app-link>
-                                    <app-number *ngSwitchCase="TYPE_CONTROL_FORM.NUMBER"    [question]="formAction"></app-number>
-                                    <app-radiobutton *ngSwitchCase="TYPE_CONTROL_FORM.RADIOGROUP"    [question]="formAction"></app-radiobutton>
-                                    <app-textarea *ngSwitchCase="TYPE_CONTROL_FORM.TEXTAREA"    [question]="formAction"></app-textarea> -->
-                                             
-                                  
-                                  </ng-container>
+                                    <app-combo *ngSwitchCase="TYPE_CONTROL_FORM.COMBO"     [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-combo>
+                                    <app-checkbox *ngSwitchCase="TYPE_CONTROL_FORM.CHECKBOX" [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-checkbox>
+                                    <app-currency *ngSwitchCase="TYPE_CONTROL_FORM.CURRENCY"     [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-currency>
+                                    <app-date *ngSwitchCase="TYPE_CONTROL_FORM.DATA"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-date>
+                                    <app-date-range *ngSwitchCase="TYPE_CONTROL_FORM.DATARANGE"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-date-range>
+                                    <app-input-text *ngSwitchCase="TYPE_CONTROL_FORM.TEXT"    [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-input-text>
+                                    <app-date-time *ngSwitchCase="TYPE_CONTROL_FORM.DATETIME"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-date-time>
+                                    <app-file *ngSwitchCase="TYPE_CONTROL_FORM.FILE"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-file>                              
+                                    <app-input-time *ngSwitchCase="TYPE_CONTROL_FORM.TIME"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-input-time>
+                                    <app-label *ngSwitchCase="TYPE_CONTROL_FORM.LABEL"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-label>
+                                    <app-link *ngSwitchCase="TYPE_CONTROL_FORM.LINK"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-link>
+                                    <app-number *ngSwitchCase="TYPE_CONTROL_FORM.NUMBER"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-number>
+                                    <app-radiobutton *ngSwitchCase="TYPE_CONTROL_FORM.RADIOGROUP"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-radiobutton>
+                                    <app-textarea *ngSwitchCase="TYPE_CONTROL_FORM.TEXTAREA"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-textarea>  
+                                    </ng-container>
                                 </ng-container>
       
                   </ng-container>

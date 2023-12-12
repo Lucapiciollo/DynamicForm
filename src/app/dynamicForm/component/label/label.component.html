@@ -1,0 +1,11 @@
+ 
+
+
+<ng-container *ngIf=" !control.formAction?.css?.hide" >
+        <div class="w-100">
+                <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+                <div class="col-12 form-group shadow-textarea text-break">
+                        {{getValue()}}
+                </div>
+         </div>
+</ng-container>

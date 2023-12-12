@@ -6,6 +6,18 @@ import { DynamicFormComponent } from "./dynamic-form.component";
 import { MaterialModule } from "./material.module";
 import { ComboComponent } from "./component/combo/combo.component";
 import { CheckboxComponent } from "./component/checkbox/checkbox.component";
+import { CurrencyComponent } from "./component/currency/currency.component";
+import { DateComponent } from "./component/date/date.component";
+import { DateRangeComponent } from "./component/date-range/date-range.component";
+import { DateTimeComponent } from "./component/date-time/date-time.component";
+import { FileComponent } from "./component/file/file.component";
+import { InputTimeComponent } from "./component/input-time/input-time.component";
+import { LabelComponent } from "./component/label/label.component";
+import { NumberComponent } from "./component/number/number.component";
+import { QuestionRadioButtonComponent } from "./component/question-radion-button/question-radion-button.component";
+import { TextareaComponent } from "./component/textarea/textarea.component";
+import { LinkComponent } from "./component/link/link.component";
+import { SpeechDirective } from "./directive/speech-recognition";
 
 /**
  * @author luca.piciollo
@@ -14,32 +26,56 @@ import { CheckboxComponent } from "./component/checkbox/checkbox.component";
  * @modify date 2022-03-29 19:47:50
  * @desc [description]
  */
- 
+
 
 
 @NgModule({
- 
+
   declarations: [
     InputTextComponent,
     ComboComponent,
-    DynamicFormComponent ,
-    CheckboxComponent
+    DynamicFormComponent,
+    CheckboxComponent,
+    CurrencyComponent,
+    DateComponent,
+    DateRangeComponent,
+    DateTimeComponent,
+    FileComponent,
+    InputTimeComponent,
+    LabelComponent,
+    NumberComponent,
+    QuestionRadioButtonComponent,
+    TextareaComponent,
+    LinkComponent,
+    SpeechDirective
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-     MaterialModule,
+    MaterialModule,
     CommonModule
-  ], exports: [
+  ],
+  exports: [
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
     ComboComponent,
     CommonModule,
-    DynamicFormComponent ,
+    DynamicFormComponent,
     InputTextComponent,
-    CheckboxComponent
+    CheckboxComponent,
+    CurrencyComponent,
+    DateComponent,
+    DateRangeComponent,
+    DateTimeComponent,
+    FileComponent,
+    InputTimeComponent,
+    LabelComponent,
+    NumberComponent,
+    QuestionRadioButtonComponent,
+    TextareaComponent,
+    LinkComponent
   ]
 
 })
