@@ -52,7 +52,7 @@ export class BaseComponent implements IBaseComponent {
         pairwise(),
       ).subscribe(([prevValue, next]: [any, any]) => {
         if (this.control.formAction && this.control.formAction.onChange)
-          this.control.formAction.onChange(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this.control.formAction.type, prevValue,this.allGroup);
+          this.control.formAction.onChange(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this.control.formAction.type, prevValue, this.allGroup);
       })
     }
 
@@ -61,7 +61,16 @@ export class BaseComponent implements IBaseComponent {
         startWith(null),
         map(value => this._filter(value as any || ''))
       )
+    }
 
+
+    (this.control.formAction.readOnly || this.control.formAction.formControl.disabled) ? this.control.formAction.formControl.disable() : this.control.formAction.formControl.enable();
+    if (this.control?.formAction?.css?.col)
+      this.element?.nativeElement?.classList?.add(this.control?.formAction?.css?.col);
+    if (this.control?.formAction?.css?.class) {
+      this.control?.formAction?.css?.class.map((c:any) => {
+        this.element?.nativeElement?.classList?.add(c);
+      })
     }
 
   };
@@ -89,7 +98,7 @@ export class BaseComponent implements IBaseComponent {
         this.control.formAction?.formControl,
         this.control.formAction.formName,
         this.group,
-        this.control.formAction.type, null,this.allGroup);
+        this.control.formAction.type, null, this.allGroup);
 
   }
 

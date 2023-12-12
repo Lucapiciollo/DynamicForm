@@ -4,7 +4,7 @@ import { ConfigForm, TYPE_CONTROL_FORM } from './interface';
 import { StepperService } from './dynamic-form.service';
 
 @Component({
-  styleUrls: ['./dynamic-form.component.css'],
+  styleUrls: ['./dynamic-form.component.scss'],
   selector: 'app-dynamic-form',
   templateUrl: './dynamic-form.component.html',
   providers: [StepperService]
@@ -25,15 +25,7 @@ export class DynamicFormComponent implements OnInit {
   }
 
 
-
-  public containerForms(containerForm: HTMLElement,template:TemplateRef<any>) {
-    let embedded=this.viewContainerRef.createEmbeddedView(template);
-    embedded.detectChanges();
-
-    embedded.rootNodes.map(e=> containerForm.appendChild(e) )
-    console.log(containerForm,template)
-  }
-  
+ 
 
 
 }  

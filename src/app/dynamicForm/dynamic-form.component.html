@@ -1,19 +1,21 @@
- 
+ <div class=" ">
 
      <ng-container  >
      
               <ng-template #ConfigForm let-configForm   [ngIf]="questions">
               
                    
-                <div class="p-3 border" #containerForm *ngIf=" configForm!=null"> 
-                    <ng-container *ngFor="let data  of configForm ;let formGroupIndex=index"
-                                  [ngTemplateOutlet]="  TypeForm "
-                                  [ngTemplateOutletContext]="{  $implicit: data.formGroup ,formGroupIndex:formGroupIndex, group:data ,containerForm:containerForm}">
-                               
-                                      <div class="row title text-center" > <div class="col-12">{{data.title }}</div></div>   
-                                 
-                    </ng-container>
-                  </div>    
+                <div class=" row" #containerForm *ngIf=" configForm!=null"> 
+                     
+                        <ng-container *ngFor="let data  of configForm ;let formGroupIndex=index"
+                                    [ngTemplateOutlet]="  TypeForm "
+                                    [ngTemplateOutletContext]="{  $implicit: data.formGroup ,formGroupIndex:formGroupIndex, group:data ,containerForm:containerForm}">
+                                
+                                        <div class="  title text-center" > <div  >{{data.title }}</div></div>   
+                                    
+                        </ng-container>
+                     
+                 </div>    
                    
                
               </ng-template>
@@ -23,7 +25,7 @@
                   <ng-container *ngFor="let data  of   typeForm ;let formActionIndex=index"
                                 [ngTemplateOutlet]="  FormAction "
                                 [ngTemplateOutletContext]="{  $implicit: data.formAction  ,formGroupIndex:formGroupIndex ,formActionIndex:formActionIndex, group:group.formGroup,containerForm:containerForm}">
-                                <div class="row subTitle"  *ngIf="data?.formAction?.title" > <div class="col-12">{{data.formAction.title }}</div></div>
+                                <div class="  subTitle"  *ngIf="data?.formAction?.title" > <div  >{{data.formAction.title }}</div></div>
                                  
                   </ng-container>
               </ng-template>
@@ -61,7 +63,7 @@
 
  
 
-
+    </div>
 
 
 
