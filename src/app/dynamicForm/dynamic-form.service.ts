@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { FormArray, FormGroup } from "@angular/forms";
 import { ConfigForm, TYPE_CONTROL_FORM } from "./interface";
- 
- 
+
+
 
 @Injectable()
 export class StepperService {
@@ -13,7 +13,7 @@ export class StepperService {
         formArray.push(new FormGroup({}))
         question.formGroup?.forEach(fg => {
           if (fg.formAction.formGroup) {
-            fg.formAction.type=TYPE_CONTROL_FORM.GROUP;
+            fg.formAction.type = TYPE_CONTROL_FORM.GROUP;
             (formArray.controls[formArray.controls.length - 1] as FormGroup).addControl(fg.formAction.formName as string, new FormArray<any>([]))
             this.toFormGroup(fg.formAction.formGroup, (formArray.controls[formArray.controls.length - 1] as FormGroup).get(fg.formAction.formName as string) as FormArray)
           } else
@@ -23,5 +23,7 @@ export class StepperService {
     });
     return formArray;
   }
+
+ 
 
 }

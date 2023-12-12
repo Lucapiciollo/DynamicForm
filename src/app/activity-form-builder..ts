@@ -25,7 +25,7 @@ function createform(context: any): TypeForm {
                 title: "Anagrafica",
                 type: TYPE_CONTROL_FORM.TEXT,
                 autocomplete: true,
-                css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
+                css: { class: [] },
                 formControl: new FormControl("Name", [Validators.required]),
                 options: [],
                 formName: "Anagrafica",
@@ -39,7 +39,7 @@ function createform(context: any): TypeForm {
                                 formAction: {
                                     title: "I",
                                     type: TYPE_CONTROL_FORM.COMBO,
-                                    css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
+                                    css: { class: [] },
                                     formControl: new FormControl(null, [Validators.required]),
                                     options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
                                     formName: "c",
@@ -55,7 +55,7 @@ function createform(context: any): TypeForm {
                                 formAction: {
                                     title: "L",
                                     type: TYPE_CONTROL_FORM.COMBO,
-                                    css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
+                                    css: { class: [] },
                                     formControl: new FormControl(null),
                                     options: [],
                                     formName: "d",
@@ -67,7 +67,7 @@ function createform(context: any): TypeForm {
                                 formAction: {
                                     title: "L",
                                     type: TYPE_CONTROL_FORM.CHECKBOX,
-                                    css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
+                                    css: { class: [] },
                                     formControl: new FormControl(),
                                     options: [],
                                     formName: "e",
@@ -82,7 +82,7 @@ function createform(context: any): TypeForm {
                                                     formAction: {
                                                         title: "I",
                                                         type: TYPE_CONTROL_FORM.COMBO,
-                                                        css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
+                                                        css: { class: [] },
                                                         formControl: new FormControl(null, [Validators.required]),
                                                         options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
                                                         formName: "c",
@@ -98,7 +98,7 @@ function createform(context: any): TypeForm {
                                                     formAction: {
                                                         title: "L",
                                                         type: TYPE_CONTROL_FORM.COMBO,
-                                                        css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
+                                                        css: { class: [] },
                                                         formControl: new FormControl(null),
                                                         options: [],
                                                         formName: "d",
@@ -110,7 +110,7 @@ function createform(context: any): TypeForm {
                                                     formAction: {
                                                         title: "L",
                                                         type: TYPE_CONTROL_FORM.RADIOGROUP,
-                                                        css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-12", "col-xl-12", "col-xxl-12"] },
+                                                        css: { class: [] },
                                                         formControl: new FormControl(null),
                                                         options: [{id:"1" , description :"Uno"},{id:"2" , description :"Due"}],
                                                         formName: "e",

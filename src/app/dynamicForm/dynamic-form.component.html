@@ -1,39 +1,41 @@
- <div class="row p-1">
-  <div class="col-12 p-1">
+ 
 
      <ng-container  >
      
               <ng-template #ConfigForm let-configForm   [ngIf]="questions">
-                <ul>
+              
                    
-
+                <div class="p-3 border" #containerForm *ngIf=" configForm!=null"> 
                     <ng-container *ngFor="let data  of configForm ;let formGroupIndex=index"
                                   [ngTemplateOutlet]="  TypeForm "
-                                  [ngTemplateOutletContext]="{  $implicit: data.formGroup ,formGroupIndex:formGroupIndex, group:data }">
-
-                                  <div class="row title" > {{data.title }}</div>   
+                                  [ngTemplateOutletContext]="{  $implicit: data.formGroup ,formGroupIndex:formGroupIndex, group:data ,containerForm:containerForm}">
+                               
+                                      <div class="row title text-center" > <div class="col-12">{{data.title }}</div></div>   
+                                 
                     </ng-container>
-
+                  </div>    
                    
-                </ul>
+               
               </ng-template>
 
 
-              <ng-template #TypeForm let-typeForm let-formGroupIndex="formGroupIndex"    let-group="group">
+              <ng-template #TypeForm let-typeForm let-formGroupIndex="formGroupIndex"    let-group="group" let-containerForm="containerForm">
                   <ng-container *ngFor="let data  of   typeForm ;let formActionIndex=index"
                                 [ngTemplateOutlet]="  FormAction "
-                                [ngTemplateOutletContext]="{  $implicit: data.formAction  ,formGroupIndex:formGroupIndex ,formActionIndex:formActionIndex, group:group.formGroup}">
+                                [ngTemplateOutletContext]="{  $implicit: data.formAction  ,formGroupIndex:formGroupIndex ,formActionIndex:formActionIndex, group:group.formGroup,containerForm:containerForm}">
+                                <div class="row subTitle"  *ngIf="data?.formAction?.title" > <div class="col-12">{{data.formAction.title }}</div></div>
+                                 
                   </ng-container>
               </ng-template>
 
 
-              <ng-template #FormAction let-formAction   let-formGroupIndex="formGroupIndex"   let-formActionIndex="formActionIndex"    let-group="group">
+              <ng-template #FormAction let-formAction   let-formGroupIndex="formGroupIndex"   let-formActionIndex="formActionIndex"    let-group="group" let-containerForm="containerForm">
                   <ng-container  [ngTemplateOutlet]="ConfigForm"
                                  [ngTemplateOutletContext]="{  $implicit: formAction.formGroup }">
-                 
+               
+                                
                                 <ng-container [ngSwitch]="formAction.type" >
-                                  <ng-container>
-                                    <div class="row title" *ngSwitchCase="TYPE_CONTROL_FORM.GROUP" > {{formAction.title }}</div> 
+                                 
                                     <app-combo *ngSwitchCase="TYPE_CONTROL_FORM.COMBO"     [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-combo>
                                     <app-checkbox *ngSwitchCase="TYPE_CONTROL_FORM.CHECKBOX" [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-checkbox>
                                     <app-currency *ngSwitchCase="TYPE_CONTROL_FORM.CURRENCY"     [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-currency>
@@ -48,21 +50,16 @@
                                     <app-number *ngSwitchCase="TYPE_CONTROL_FORM.NUMBER"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-number>
                                     <app-radiobutton *ngSwitchCase="TYPE_CONTROL_FORM.RADIOGROUP"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-radiobutton>
                                     <app-textarea *ngSwitchCase="TYPE_CONTROL_FORM.TEXTAREA"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-textarea>  
-                                    </ng-container>
+                         
                                 </ng-container>
-      
+            
                   </ng-container>
               </ng-template>
   
    
      </ng-container>
 
-    </div>
-  </div>
-
  
- 
-
 
 
 

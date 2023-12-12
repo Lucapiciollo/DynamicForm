@@ -1,5 +1,5 @@
-import { Directive, ElementRef, HostListener, Input, Renderer2, TemplateRef, ViewContainerRef } from "@angular/core";
-import { FormControl, FormGroup } from "@angular/forms";
+import { Directive, ElementRef, HostListener, Input, Renderer2 } from "@angular/core";
+import { FormControl } from "@angular/forms";
 
 
 @Directive({
