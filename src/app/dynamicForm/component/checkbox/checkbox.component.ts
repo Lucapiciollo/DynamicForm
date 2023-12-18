@@ -12,7 +12,7 @@ import { BaseComponent } from '../bsae-component.component';
 @Component({
   selector: 'app-checkbox',
   templateUrl: './checkbox.component.html',
-  styleUrls: ['../../dynamic-form.component.css']
+  styleUrls: ['../../dynamic-form.component.scss']
 })
 export class CheckboxComponent extends BaseComponent   {
 
@@ -20,7 +20,7 @@ export class CheckboxComponent extends BaseComponent   {
    /************************************************************************************************************************************************************************ */
 
    constructor(protected override injector: Injector, protected override element: ElementRef) {
-    super(injector,element);
+    super(injector,element); 
  
   }
   /************************************************************************************************************************************************************************ */

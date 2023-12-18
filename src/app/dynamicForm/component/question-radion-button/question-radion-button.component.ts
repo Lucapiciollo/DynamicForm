@@ -12,7 +12,7 @@ import { BaseComponent } from '../bsae-component.component';
 @Component({
   selector: 'app-radiobutton',
   templateUrl: './question-radion-button.component.html',
-  styleUrls: ['../../dynamic-form.component.css']
+  styleUrls: ['../../dynamic-form.component.scss']
 })
 export class QuestionRadioButtonComponent extends BaseComponent {
 

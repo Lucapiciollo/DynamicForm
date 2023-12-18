@@ -29,8 +29,8 @@ export type FormAction = {
   placeholderEnd?: string,
   required?: boolean
   disableSpeech?: boolean,
-  onChange?: (idGroup: number, idForm: number, formCOntrol: FormControl | FormArray | FormGroup, formName: string, fg: Array<Form>, setOption: (idGroup: number, formName: string, options: TypeComboOption) => void, update: (idGroup: number, formName: string, obj: TypeOption) => void, formGroupMain: FormArray, typeControl: TYPE_CONTROL_FORM, prevValue: any) => void,
-  onInitialize?: (idGroup: number, idForm: number, formCOntrol: FormControl | FormArray | FormGroup, formName: string, fg: FormControl | FormArray | FormGroup, setOption: (idGroup: number, formName: string, options: TypeComboOption) => void, update: (idGroup: number, formName: string, obj: TypeOption) => void, formGroupMain: FormArray, typeControl: TYPE_CONTROL_FORM) => void,
+  onChange?:     (idGroup: number, idForm: number, formCOntrol: FormControl | FormArray | FormGroup, formName: string, fg: Array<Form>, typeControl: TYPE_CONTROL_FORM, prevValue: any, allGroup: Array<ConfigForm>) => void,
+  onInitialize?: (idGroup: number, idForm: number, formCOntrol: FormControl | FormArray | FormGroup, formName: string, fg: Array<Form>, typeControl: TYPE_CONTROL_FORM, allGroup: Array<ConfigForm>) => void,
   optionSelected?: (name: string, fg: FormGroup, value: any) => void,
   formGroup?: ConfigForm,
 }

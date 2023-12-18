@@ -11,7 +11,7 @@ import { BaseComponent } from '../bsae-component.component';
 @Component({
   selector: 'app-currency',
   templateUrl: './currency.component.html',
-  styleUrls: ['../../dynamic-form.component.css']
+  styleUrls: ['../../dynamic-form.component.scss']
 })
 export class CurrencyComponent extends BaseComponent  {
 

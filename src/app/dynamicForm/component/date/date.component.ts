@@ -12,7 +12,7 @@ import { BaseComponent } from '../bsae-component.component';
 @Component({
   selector: 'app-date',
   templateUrl: './date.component.html',
-  styleUrls: ['../../dynamic-form.component.css']
+  styleUrls: ['../../dynamic-form.component.scss']
 })
  
 export class DateComponent extends BaseComponent  {

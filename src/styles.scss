@@ -8,6 +8,10 @@
 
 // @import "./theme.scss";
 
+:root{
+    --background-color :rgba(0,0, 0, 0);
+}
+
 
 .mat-ripple {
     overflow: hidden;
@@ -235,7 +239,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 }
 
 .mat-mdc-option:hover:not(.mdc-list-item--disabled), .mat-mdc-option:focus.mdc-list-item, .mat-mdc-option.mat-mdc-option-active.mdc-list-item, .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
-    background: rgba(0, 0, 0, .04)
+    background: rgba(0, 0, 0, .01)
 }
 
 .mat-primary .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
@@ -320,7 +324,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 
 .mat-app-background {
     background-color: #fafafa;
-    color: rgba(0, 0, 0, .87)
+    color: var(--background-color)
 }
 
 .mat-elevation-z0, .mat-mdc-elevation-specific.mat-elevation-z0 {
@@ -824,7 +828,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 }
 
 .mat-mdc-form-field-focus-overlay {
-    background-color: rgba(0, 0, 0, .87)
+    background-color:  (var(--background-color))
 }
 
 .mat-mdc-form-field:hover .mat-mdc-form-field-focus-overlay {
@@ -1155,7 +1159,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 }
 
 .mat-mdc-select-value {
-    color: rgba(0, 0, 0, .87)
+    color: var(--background-color)
 }
 
 .mat-mdc-select-placeholder {
@@ -1693,7 +1697,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 }
 
 .mat-mdc-menu-item:hover:not([disabled]), .mat-mdc-menu-item.cdk-program-focused:not([disabled]), .mat-mdc-menu-item.cdk-keyboard-focused:not([disabled]), .mat-mdc-menu-item-highlighted:not([disabled]) {
-    background: rgba(0, 0, 0, .04)
+    background: rgba(0, 0, 0, .01)
 }
 
 .mat-mdc-menu-content {
@@ -1736,7 +1740,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
     --mdc-list-list-item-hover-trailing-icon-color: rgba(0, 0, 0, 0.38);
     --mdc-list-list-item-focus-label-text-color: rgba(0, 0, 0, 0.87);
     --mdc-list-list-item-hover-state-layer-color: black;
-    --mdc-list-list-item-hover-state-layer-opacity: 0.04;
+    --mdc-list-list-item-hover-state-layer-opacity: 0.01;
     --mdc-list-list-item-focus-state-layer-color: black;
     --mdc-list-list-item-focus-state-layer-opacity: 0.12
 }
@@ -1891,7 +1895,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 
 .mat-mdc-paginator {
     background: #fff;
-    color: rgba(0, 0, 0, .87)
+    color: var(--background-color)
 }
 
 .mat-mdc-paginator-icon {
@@ -2791,7 +2795,7 @@ html {
 .mat-bottom-sheet-container {
     box-shadow: 0px 8px 10px -5px rgba(0, 0, 0, 0.2), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12);
     background: #fff;
-    color: rgba(0, 0, 0, .87)
+    color: var(--background-color)
 }
 
 .mat-bottom-sheet-container {
@@ -2819,7 +2823,7 @@ html {
 }
 
 .mat-button-toggle-appearance-standard {
-    color: rgba(0, 0, 0, .87);
+    color: var(--background-color);
     background: #fff
 }
 
@@ -2848,7 +2852,7 @@ html {
 }
 
 .mat-button-toggle-checked.mat-button-toggle-appearance-standard {
-    color: rgba(0, 0, 0, .87)
+    color: var(--background-color)
 }
 
 .mat-button-toggle-disabled {
@@ -2893,7 +2897,7 @@ html {
 }
 
 .mat-calendar-body-cell-content, .mat-date-range-input-separator {
-    color: rgba(0, 0, 0, .87);
+    color: var(--background-color);
     border-color: rgba(0, 0, 0, 0)
 }
 
@@ -2967,7 +2971,7 @@ html {
 .mat-datepicker-content {
     box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
     background-color: #fff;
-    color: rgba(0, 0, 0, .87)
+    color: var(--background-color)
 }
 
 .mat-datepicker-content.mat-accent .mat-calendar-body-in-range::before {
@@ -3123,7 +3127,7 @@ html {
 
 .mat-expansion-panel {
     background: #fff;
-    color: rgba(0, 0, 0, .87)
+    color: var(--background-color)
 }
 
 .mat-expansion-panel:not([class*=mat-elevation-z]) {
@@ -3135,7 +3139,7 @@ html {
 }
 
 .mat-expansion-panel .mat-expansion-panel-header.cdk-keyboard-focused:not([aria-disabled=true]), .mat-expansion-panel .mat-expansion-panel-header.cdk-program-focused:not([aria-disabled=true]), .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:hover:not([aria-disabled=true]) {
-    background: rgba(0, 0, 0, .04)
+    background: rgba(0, 0, 0, .01)
 }
 
 @media(hover: none) {
@@ -3145,7 +3149,7 @@ html {
 }
 
 .mat-expansion-panel-header-title {
-    color: rgba(0, 0, 0, .87)
+    color: var(--background-color)
 }
 
 .mat-expansion-panel-header-description, .mat-expansion-indicator::after {
@@ -3212,12 +3216,12 @@ html {
 
 .mat-drawer-container {
     background-color: #fafafa;
-    color: rgba(0, 0, 0, .87)
+    color: var(--background-color)
 }
 
 .mat-drawer {
     background-color: #fff;
-    color: rgba(0, 0, 0, .87)
+    color: var(--background-color)
 }
 
 .mat-drawer.mat-drawer-push {
@@ -3252,7 +3256,7 @@ html {
 }
 
 .mat-step-header.cdk-keyboard-focused, .mat-step-header.cdk-program-focused, .mat-step-header:hover:not([aria-disabled]), .mat-step-header:hover[aria-disabled=false] {
-    background-color: rgba(0, 0, 0, .04)
+    background-color: rgba(0, 0, 0, .01)
 }
 
 .mat-step-header:hover[aria-disabled=true] {
@@ -3303,7 +3307,7 @@ html {
 }
 
 .mat-step-header .mat-step-label.mat-step-label-active {
-    color: rgba(0, 0, 0, .87)
+    color: var(--background-color)
 }
 
 .mat-step-header .mat-step-label.mat-step-label-error {
@@ -3371,7 +3375,7 @@ html {
 
 .mat-toolbar {
     background: #f5f5f5;
-    color: rgba(0, 0, 0, .87)
+    color: var(--background-color)
 }
 
 .mat-toolbar.mat-primary {
@@ -3433,7 +3437,7 @@ html {
 }
 
 .mat-tree-node, .mat-nested-tree-node {
-    color: rgba(0, 0, 0, .87)
+    color: var(--background-color)
 }
 
 .mat-tree-node {

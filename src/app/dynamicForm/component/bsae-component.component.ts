@@ -6,13 +6,13 @@
  * @desc [description]
  */
 import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, ElementRef, EventEmitter, Injector, Input, Output, inject } from '@angular/core';
-import { Form, FormControl, FormGroup } from '@angular/forms';
-import { Observable, ReplaySubject, Subject, distinctUntilChanged, map, pairwise, skip, startWith, takeUntil } from 'rxjs';
+import { Component, DestroyRef, ElementRef, EventEmitter, Injector, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl, FormGroup } from '@angular/forms';
+import { Observable, ReplaySubject, Subject, combineLatest, distinctUntilChanged, map, pairwise, startWith } from 'rxjs';
 import { IBaseComponent } from './base-component-interface';
 import { GetErrorForm, GetErrorFormControl } from './error-message-utils';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TYPE_CONTROL_FORM } from '../interface';
+import { ConfigForm, Form, TYPE_CONTROL_FORM } from '../interface';
 
 @Component({
   selector: '',
@@ -29,7 +29,8 @@ export class BaseComponent implements IBaseComponent {
   public getErrorForm: (formGroup: FormGroup, formName: string) => Array<string> = GetErrorForm;
   public getErrorFormControl: (formControl: FormControl) => Array<string> = GetErrorFormControl;
   private destroyRef: DestroyRef = inject(DestroyRef);
-
+  private obsQuestions: ReplaySubject<  Form  > = new ReplaySubject(1);
+  private obsAllGroup: ReplaySubject<any> = new ReplaySubject(1);
 
   public control: any = { formAction: {} };
   /************************************************************************************************************************************************************************ */
@@ -37,47 +38,66 @@ export class BaseComponent implements IBaseComponent {
   @Input() formActionIndex: number = 0;
   @Input() formGroupIndex: number = 0;
   @Input() group: any = null;
-  @Input() allGroup: any = null;
-
-
-
+  private _allGroup: any;
+  @Input() set allGroup(allGroup: any) {
+    this._allGroup = allGroup;
+    this.obsAllGroup.next(this._allGroup)
+  }
+ 
   @Input() set question(config: Form) {
-    this.control = { formAction: config }
-
-    if (!this.control.formAction.autocomplete) {
-      this.control.formAction?.formControl.valueChanges.pipe(
-        takeUntilDestroyed(this.destroyRef),
-        startWith(null),
-        distinctUntilChanged((prev, curr) => prev === curr),
-        pairwise(),
-      ).subscribe(([prevValue, next]: [any, any]) => {
-        if (this.control.formAction && this.control.formAction.onChange)
-          this.control.formAction.onChange(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this.control.formAction.type, prevValue, this.allGroup);
-      })
-    }
-
-    if (this.control.formAction.autocomplete == true) {
-      this.filteredOptions = this.control?.formAction?.formControl?.valueChanges.pipe(
-        startWith(null),
-        map(value => this._filter(value as any || ''))
-      )
-    }
-
-
-    (this.control.formAction.readOnly || this.control.formAction.formControl.disabled) ? this.control.formAction.formControl.disable() : this.control.formAction.formControl.enable();
-    if (this.control?.formAction?.css?.col)
-      this.element?.nativeElement?.classList?.add(this.control?.formAction?.css?.col);
-    if (this.control?.formAction?.css?.class) {
-      this.control?.formAction?.css?.class.map((c:any) => {
-        this.element?.nativeElement?.classList?.add(c);
-      })
-    }
-
+    this.control = { formAction: config };
+    this.obsQuestions.next(this.control);
   };
+
+
+
+  ngOnInit() {
+    combineLatest({
+      control: this.obsQuestions,
+      allGroup: this.obsAllGroup
+    }).subscribe({
+      next: ({ allGroup, control }) => {
+
+        if (!control.formAction.autocomplete) {
+          control.formAction?.formControl.valueChanges.pipe(
+            takeUntilDestroyed(this.destroyRef),
+            startWith(null),
+            distinctUntilChanged((prev, curr) => prev === curr),
+            pairwise(),
+          ).subscribe(([prevValue, next]: [any, any]) => {
+            if (control.formAction && control.formAction.onChange)
+              control.formAction.onChange(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, prevValue, this._allGroup);
+          })
+        }
+    
+        if (control.formAction.autocomplete == true) {
+          this.filteredOptions = control?.formAction?.formControl?.valueChanges.pipe(
+            startWith(null),
+            map(value => this._filter(value as any || ''))
+          )
+        }
+    
+        (control.formAction.readOnly || control.formAction.formControl.disabled) ? control.formAction.formControl.disable() : control.formAction.formControl.enable();
+        if (control?.formAction?.css?.col)
+          this.element?.nativeElement?.classList?.add(control?.formAction?.css?.col);
+        if (control?.formAction?.css?.class) {
+          control?.formAction?.css?.class.map((c: any) => {
+            this.element?.nativeElement?.classList?.add(c);
+          })
+        }
+
+
+        if (control.formAction && control.formAction.onInitialize)
+          control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, this.allGroup);
+
+      }
+    })
+  }
 
   ngOnDestroy(): void { }
 
   constructor(protected injector: Injector, protected element: ElementRef) { }
+
 
 
   private _filter(value: string = ""): any {
@@ -98,27 +118,17 @@ export class BaseComponent implements IBaseComponent {
         this.control.formAction?.formControl,
         this.control.formAction.formName,
         this.group,
-        this.control.formAction.type, null, this.allGroup);
+        this.control.formAction.type, null, this._allGroup);
+
+
 
   }
 
-  // private setOption = (idGroup: number, formName: string, opt: TypeComboOption) => {
-  //   if (this.groups)
-  //     this.groups[idGroup]?.map((element: any) => {
-  //       if (element.name == formName) {
-  //         element.instance.config = { options: opt };
-  //       }
-  //     })
-  // }
-  // /************************************************************************************************************************************************************************ */
 
-  // private update = (idGroup: number, formName: string, obj: TypeOption) => {
-  //   this.groups[idGroup].forEach((element: any) => {
-  //     if (element.name == formName) {
-  //       element.instance.config = { ...obj };
-  //     }
-  //   })
-  // }
+  ngOnChane() {
+
+  }
+
 }
 
 

@@ -1,4 +1,4 @@
- <div class=" ">
+ <form class=" ">
 
      <ng-container  >
      
@@ -12,11 +12,12 @@
                                     [ngTemplateOutletContext]="{  $implicit: data.formGroup ,formGroupIndex:formGroupIndex, group:data ,containerForm:containerForm}">
                                 
                                         <div class="  title text-center" > <div  >{{data.title }}</div></div>   
-                                    
-                        </ng-container>
-                     
+                                        
+                         </ng-container>
+         
                  </div>    
-                   
+            
+
                
               </ng-template>
 
@@ -26,13 +27,18 @@
                                 [ngTemplateOutlet]="  FormAction "
                                 [ngTemplateOutletContext]="{  $implicit: data.formAction  ,formGroupIndex:formGroupIndex ,formActionIndex:formActionIndex, group:group.formGroup,containerForm:containerForm}">
                                 <div class="  subTitle"  *ngIf="data?.formAction?.title" > <div  >{{data.formAction.title }}</div></div>
-                                 
+    
                   </ng-container>
+ 
               </ng-template>
 
 
               <ng-template #FormAction let-formAction   let-formGroupIndex="formGroupIndex"   let-formActionIndex="formActionIndex"    let-group="group" let-containerForm="containerForm">
-                  <ng-container  [ngTemplateOutlet]="ConfigForm"
+                  
+                
+                                                
+  
+                <ng-container  [ngTemplateOutlet]="ConfigForm"
                                  [ngTemplateOutletContext]="{  $implicit: formAction.formGroup }">
                
                                 
@@ -54,6 +60,8 @@
                                     <app-textarea *ngSwitchCase="TYPE_CONTROL_FORM.TEXTAREA"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-textarea>  
                          
                                 </ng-container>
+
+
             
                   </ng-container>
               </ng-template>
@@ -63,7 +71,7 @@
 
  
 
-    </div>
+    </form>
 
 
 

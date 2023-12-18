@@ -12,7 +12,7 @@ import { FormControl } from '@angular/forms';
 @Component({
   selector: 'app-combo',
   templateUrl: './combo.component.html',
-  styleUrls: ['../../dynamic-form.component.css']
+  styleUrls: ['../../dynamic-form.component.scss']
 })
 export class ComboComponent extends BaseComponent {
 

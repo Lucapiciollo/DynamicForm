@@ -11,7 +11,7 @@ import { BaseComponent } from '../bsae-component.component';
 @Component({
   selector: 'app-label',
   templateUrl: './label.component.html',
-  styleUrls: ['../../dynamic-form.component.css']
+  styleUrls: ['../../dynamic-form.component.scss']
 })
 export class LabelComponent extends BaseComponent {
   /************************************************************************************************************************************************************************ */

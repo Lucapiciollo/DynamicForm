@@ -12,7 +12,7 @@ import { BaseComponent } from '../bsae-component.component';
 @Component({
   selector: 'app-date-time',
   templateUrl: './date-time.component.html',
-  styleUrls: ['../../dynamic-form.component.css'],
+  styleUrls: ['../../dynamic-form.component.scss'],
   providers:[DatePipe]
 })
  
