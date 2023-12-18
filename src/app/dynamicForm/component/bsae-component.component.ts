@@ -29,7 +29,7 @@ export class BaseComponent implements IBaseComponent {
   public getErrorForm: (formGroup: FormGroup, formName: string) => Array<string> = GetErrorForm;
   public getErrorFormControl: (formControl: FormControl) => Array<string> = GetErrorFormControl;
   private destroyRef: DestroyRef = inject(DestroyRef);
-  private obsQuestions: ReplaySubject<  Form  > = new ReplaySubject(1);
+  private obsQuestions: ReplaySubject<Form> = new ReplaySubject(1);
   private obsAllGroup: ReplaySubject<any> = new ReplaySubject(1);
 
   public control: any = { formAction: {} };
@@ -43,13 +43,14 @@ export class BaseComponent implements IBaseComponent {
     this._allGroup = allGroup;
     this.obsAllGroup.next(this._allGroup)
   }
- 
+
   @Input() set question(config: Form) {
     this.control = { formAction: config };
     this.obsQuestions.next(this.control);
   };
 
 
+  /************************************************************************************************************************************************************************ */
 
   ngOnInit() {
     combineLatest({
@@ -69,14 +70,14 @@ export class BaseComponent implements IBaseComponent {
               control.formAction.onChange(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, prevValue, this._allGroup);
           })
         }
-    
+
         if (control.formAction.autocomplete == true) {
           this.filteredOptions = control?.formAction?.formControl?.valueChanges.pipe(
             startWith(null),
             map(value => this._filter(value as any || ''))
           )
         }
-    
+
         (control.formAction.readOnly || control.formAction.formControl.disabled) ? control.formAction.formControl.disable() : control.formAction.formControl.enable();
         if (control?.formAction?.css?.col)
           this.element?.nativeElement?.classList?.add(control?.formAction?.css?.col);
@@ -93,12 +94,13 @@ export class BaseComponent implements IBaseComponent {
       }
     })
   }
+  /************************************************************************************************************************************************************************ */
 
   ngOnDestroy(): void { }
+  /************************************************************************************************************************************************************************ */
 
   constructor(protected injector: Injector, protected element: ElementRef) { }
-
-
+  /************************************************************************************************************************************************************************ */
 
   private _filter(value: string = ""): any {
     const filterValue = value.toString()?.toLowerCase();
@@ -107,8 +109,7 @@ export class BaseComponent implements IBaseComponent {
         (filterValue && filterValue.length > 0) ? (option?.description as string)?.toLowerCase().includes(filterValue) : option
       );
   }
-
-
+  /************************************************************************************************************************************************************************ */
 
   callOnhange() {
     if (this.control.formAction && this.control.formAction.onChange)
@@ -119,15 +120,12 @@ export class BaseComponent implements IBaseComponent {
         this.control.formAction.formName,
         this.group,
         this.control.formAction.type, null, this._allGroup);
-
-
-
   }
 
+  /************************************************************************************************************************************************************************ */
 
-  ngOnChane() {
-
-  }
+  ngOnChane() { }
+  /************************************************************************************************************************************************************************ */
 
 }
 
