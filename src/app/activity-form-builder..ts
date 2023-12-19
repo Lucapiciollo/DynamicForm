@@ -34,7 +34,7 @@ function createform(context: any): TypeForm {
                 css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
                 formControl: new FormControl("Name", [Validators.required]),
                 options: [],
-                formName: "Anagrafica",
+                formName: "anagrafica",
                 onChange(idGroup, idForm, formCOntrol, formName, fg,  formGroupMain, typeControl, prevValue) { },
                 required: true,
                 formGroup: [
@@ -43,35 +43,36 @@ function createform(context: any): TypeForm {
                         formGroup: [
                             {
                                 formAction: {
-                                    title: "I",
+                                    title: "Nome",
                                     type: TYPE_CONTROL_FORM.COMBO,
                                     css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
                                     formControl: new FormControl(null, [Validators.required]),
                                     options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
-                                    formName: "c",
+                                    formName: "nome",
                                     onChange(idGroup, idForm, formCOntrol, formName, fg: Array<any>,  formGroupMain, typeControl, prevValue) {
-                                        (formGroupMain as any)[0].formGroup[0].formAction.formGroup[0].formGroup[1].formAction.options = [{ id: 1, description: "UNO" }]
+
+                                        fg[2].formAction.formGroup[0].formGroup[1].formAction.options= [{ id: 1, description: "DUE" }];
                                     },
                                     required: true,
-                                    autocomplete: true
+                                    autocomplete: true 
 
                                 },
                                 
                             }, {
                                 formAction: {
-                                    title: "L",
+                                    title: "Cognome",
                                     type: TYPE_CONTROL_FORM.COMBO,
                                     css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
                                     formControl: new FormControl(null),
                                     options: [],
-                                    formName: "d",
+                                    formName: "cognome",
                                     onChange(idGroup, idForm, formCOntrol, formName, fg,  formGroupMain, typeControl, prevValue) {
                                         console.log(formCOntrol.value)
                                     }
                                 }
                             }, {
                                 formAction: {
-                                    title: "ssssssssss",
+                                    // title: "ssssssssss",
                                     type: TYPE_CONTROL_FORM.GROUP,
                                     css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3" ] },
                                     formControl: new FormControl(),
@@ -82,16 +83,16 @@ function createform(context: any): TypeForm {
                                     },
                                     formGroup: [
                                         {
-                                            title: "Attivitàccccc",
+                                            title: "Residenza",
                                             formGroup: [
                                                 {
                                                     formAction: {
-                                                        title: "I",
+                                                        title: "Via",
                                                         type: TYPE_CONTROL_FORM.COMBO,
                                                         css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
                                                         formControl: new FormControl(null, [Validators.required]),
                                                         options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
-                                                        formName: "c",
+                                                        formName: "via",
                                                         onChange(idGroup, idForm, formCOntrol, formName, fg: Array<any>, formGroupMain, typeControl, prevValue) {
                                                             fg[1].formAction.options = [{ id: 1, description: "UNO" }]
                                                         },
@@ -105,24 +106,24 @@ function createform(context: any): TypeForm {
 
                                                 }, {
                                                     formAction: {
-                                                        title: "L",
+                                                        title: "CAP",
                                                         type: TYPE_CONTROL_FORM.COMBO,
                                                         css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
                                                         formControl: new FormControl(null),
                                                         options: [],
-                                                        formName: "d",
+                                                        formName: "cap",
                                                         onChange(idGroup, idForm, formCOntrol, formName, fg,  formGroupMain, typeControl, prevValue) {
                                                             console.log(formCOntrol.value)
                                                         }
                                                     }
                                                 }, {
                                                     formAction: {
-                                                        title: "L",
+                                                        title: "Comune",
                                                         type: TYPE_CONTROL_FORM.RADIOGROUP,
                                                         css: {classRadio:["col-3"], class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
                                                         formControl: new FormControl(null),
                                                         options: [{id:"1" , description :"Uno"},{id:"2" , description :"Due"}],
-                                                        formName: "e",
+                                                        formName: "comune",
                                                         onChange(idGroup, idForm, formCOntrol, formName, fg,  formGroupMain, typeControl, prevValue) {
                                                             console.log(formCOntrol.value)
                                                         }
