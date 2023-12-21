@@ -11,21 +11,28 @@ import { StepperService } from './dynamic-form.service';
 })
 export class DynamicFormComponent implements OnInit {
   @Input() questions!: ConfigForm | null;
-  @Output() onFormCreate: EventEmitter<FormGroup> = new EventEmitter<FormGroup>();
-
+  @Output() onFormCreate: EventEmitter<FormGroup | FormArray> = new EventEmitter<FormGroup | FormArray>();
+  private stepperService: StepperService = inject(StepperService);
   public TYPE_CONTROL_FORM = TYPE_CONTROL_FORM;
-  public formGroup!: FormGroup;
-  private qcs: StepperService = inject(StepperService);
+  public formGroup!: FormGroup | FormArray;
+
 
   constructor(private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit() {
-    this.formGroup = ((this.qcs.toFormGroup(this.questions as any) as FormArray).controls[0] as FormGroup);
-    this.onFormCreate.emit(this.formGroup)
+    let fg = ((this.stepperService.toFormGroup(this.questions as any) as FormArray).controls as any);
+    if (fg && fg.length == 1) {
+      this.formGroup = fg[0];
+    }
+    if (fg && fg.length > 1) {
+      this.formGroup = new FormArray([...fg]);
+    }
+    this.onFormCreate.emit(this.formGroup);
+
   }
 
 
- 
+
 
 
 }  

@@ -1,12 +1,14 @@
 import { Injectable } from "@angular/core";
 import { FormArray, FormGroup } from "@angular/forms";
 import { ConfigForm, TYPE_CONTROL_FORM } from "./interface";
+import { ReplaySubject } from "rxjs";
 
 
 
 @Injectable()
 export class StepperService {
 
+ 
   toFormGroup(questions: ConfigForm, formArray: FormArray<any> = new FormArray<any>([])): FormArray {
     questions.forEach(question => {
       if (question.formGroup) {
@@ -23,6 +25,7 @@ export class StepperService {
     });
     return formArray;
   }
+
 
  
 

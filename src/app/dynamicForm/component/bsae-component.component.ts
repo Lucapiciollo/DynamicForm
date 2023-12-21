@@ -13,6 +13,7 @@ import { Observable, ReplaySubject, Subject, combineLatest, distinctUntilChanged
 import { IBaseComponent } from './base-component-interface';
 import { GetErrorForm, GetErrorFormControl } from './error-message-utils';
 import { ConfigForm, Form, TYPE_CONTROL_FORM } from '../interface';
+import { StepperService } from '../dynamic-form.service';
 
 @Component({
   selector: '',
@@ -29,6 +30,7 @@ export class BaseComponent implements IBaseComponent {
   public getErrorForm: (formGroup: FormGroup, formName: string) => Array<string> = GetErrorForm;
   public getErrorFormControl: (formControl: FormControl) => Array<string> = GetErrorFormControl;
   private destroyRef: DestroyRef = inject(DestroyRef);
+  private stepperService:StepperService=inject(StepperService);
   private obsQuestions: ReplaySubject<Form> = new ReplaySubject(1);
   private obsAllGroup: ReplaySubject<any> = new ReplaySubject(1);
 
@@ -88,9 +90,9 @@ export class BaseComponent implements IBaseComponent {
         }
 
 
-        if (control.formAction && control.formAction.onInitialize)
-          control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, this.allGroup);
-
+        if (control.formAction && control.formAction.onInitialize){
+           control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup);
+}
       }
     })
   }
