@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, debounce, exhaustMap, merge, mergeAll, of, timer, toArray } from 'rxjs';
 import { ConfigForm } from './dynamicForm/interface';
 import { activityForm } from './activity-form-builder.';
 import { FormArray, FormGroup } from '@angular/forms';
@@ -58,7 +58,7 @@ export class AppComponent {
   }
 
   onFormCreate(formGroup:FormGroup | FormArray ){
-    formGroup.valueChanges.subscribe(
+    formGroup.valueChanges.pipe(debounce(()=>timer(0,1000))).subscribe(
        value=>
           console.log(value)
     )

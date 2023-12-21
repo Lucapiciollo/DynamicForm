@@ -43,7 +43,7 @@ function createform(context: any): TypeForm {
             options: [],
             formName: "cognome",
             onChange(idGroup, idForm, formCOntrol, formName, fg, formGroupMain, typeControl, prevValue) {
-                console.log(formCOntrol.value)
+                
             }
         }
     }
@@ -91,7 +91,7 @@ function createform(context: any): TypeForm {
                                 options: [],
                                 formName: "cognome",
                                 onChange(idGroup, idForm, formCOntrol, formName, fg, formGroupMain, typeControl, prevValue) {
-                                    console.log(formCOntrol.value)
+                                    
                                 }
                             }
                         }, {
@@ -103,7 +103,7 @@ function createform(context: any): TypeForm {
                                 options: [],
                                 formName: "cap",
                                 onChange(idGroup, idForm, formCOntrol, formName, fg, formGroupMain, typeControl, prevValue) {
-                                    console.log(formCOntrol.value)
+                                    
                                 }
                             }
                         }, {
@@ -115,7 +115,7 @@ function createform(context: any): TypeForm {
                                 options: [],
                                 formName: "residenza",
                                 onChange(idGroup, idForm, formCOntrol, formName, fg, formGroupMain, typeControl, prevValue) {
-                                    console.log(formCOntrol.value)
+                                    
                                 },
                                 formGroup: [
                                     {
@@ -150,7 +150,7 @@ function createform(context: any): TypeForm {
                                                     options: [],
                                                     formName: "cap",
                                                     onChange(idGroup, idForm, formCOntrol, formName, fg, formGroupMain, typeControl, prevValue) {
-                                                        console.log(formCOntrol.value)
+                                                        
                                                     }
                                                 }
                                             }, {
@@ -162,7 +162,7 @@ function createform(context: any): TypeForm {
                                                     options: [{ id: "1", description: "Uno" }, { id: "2", description: "Due" }],
                                                     formName: "comune",
                                                     onChange(idGroup, idForm, formCOntrol, formName, fg, formGroupMain, typeControl, prevValue) {
-                                                        console.log(formCOntrol.value)
+                                                        
                                                     }
                                                 }
                                             }
