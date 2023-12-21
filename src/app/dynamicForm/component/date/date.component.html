@@ -12,8 +12,7 @@
                               [min]="control.formAction?.date?.min" [max]="control.formAction?.date?.max"
                               [formControl]="control.formAction?.formControl"
                               [class.disabled]="control.formAction.formControl.disabled">
-                       
-                       <mat-datepicker-toggle matIconSuffix [for]="datepicker" style="position: absolute;     right: 0px;   top: -15px;"></mat-datepicker-toggle>
+                        <mat-datepicker-toggle matIconSuffix [for]="datepicker"  ></mat-datepicker-toggle>
                         <mat-datepicker #datepicker>
                           <mat-datepicker-actions>
                             <button mat-button matDatepickerCancel>Cancel</button>

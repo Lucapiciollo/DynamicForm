@@ -17,15 +17,6 @@ export function activityForm(context: any): ConfigForm {
                     console.log(fg, id, formArray, button)
                 },
             }]
-        }, {
-            title: "Attivitàaaaaaaaa",
-            formGroup: createform(context),
-            actions: [{
-                label: "test",
-                action(fg, id, formArray, button) {
-                    console.log(fg, id, formArray, button)
-                },
-            }]
         }
     ];
 }
@@ -36,145 +27,140 @@ function createform(context: any): TypeForm {
 
     return [{
         formAction: {
-            title: "Cognome",
-            type: TYPE_CONTROL_FORM.TEXT,
-            css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
+            title: "CHECKBOX",
+            type: TYPE_CONTROL_FORM.CHECKBOX,
+            css: { class: ["col-3"] },
             formControl: new FormControl(null),
             options: [],
-            formName: "cognome",
-            onChange(idGroup, idForm, formCOntrol, formName, fg, formGroupMain, typeControl, prevValue) {
-                
-            }
+            formName: "CHECKBOX",
+            onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
         }
-    }
-        ,
-
-    {
-
+    }, {
         formAction: {
-            title: "Anagrafica",
-            type: TYPE_CONTROL_FORM.TEXT,
-            autocomplete: true,
-            css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
-            formControl: new FormControl("Name", [Validators.required]),
-            options: [],
-            formName: "anagrafica",
-            onChange(idGroup, idForm, formCOntrol, formName, fg, formGroupMain, typeControl, prevValue) { },
+            title: "COMBO",
+            type: TYPE_CONTROL_FORM.COMBO,
+            css: { class: ["col-3"] },
+            formControl: new FormControl(null, [Validators.required]),
+            options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
+            formName: "COMBO",
+            onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+                //    JSON.changeValuesByKey(JSON.findByKeyAndValue(fg, "formName", "cap", ["formControl"]), "options", [{ id: 1, description: "QUATTRO" }], ["formControl"]);
+            },
+            onInitialize(idGroup, idForm, formCOntrol, formName, fg, typeControl, allGroup) {
+                // JSON.changeValuesByKey(JSON.findByKeyAndValue(allGroup, "formName", "cap", ["formControl"]), "options", [{ id: 1, description: "UNO" }], ["formControl"]);
+            },
             required: true,
-            formGroup: [
-                {
-                    // title: "Attivitàccccc",
-                    formGroup: [
-                        {
-                            formAction: {
-                                title: "Nome",
-                                type: TYPE_CONTROL_FORM.COMBO,
-                                css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
-                                formControl: new FormControl(null, [Validators.required]),
-                                options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
-                                formName: "nome",
-                                onChange(idGroup, idForm, formCOntrol, formName, fg: Array<any>, formGroupMain, typeControl, prevValue) {
+            autocomplete: true
+        },
 
-                                    fg[2].formAction.formGroup[0].formGroup[1].formAction.options = [{ id: 1, description: "DUE" }];
-                                },
-                                required: true,
-                                autocomplete: true
-
-                            },
-
-                        }, {
-                            formAction: {
-                                title: "Cognome",
-                                type: TYPE_CONTROL_FORM.COMBO,
-                                css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
-                                formControl: new FormControl(null),
-                                options: [],
-                                formName: "cognome",
-                                onChange(idGroup, idForm, formCOntrol, formName, fg, formGroupMain, typeControl, prevValue) {
-                                    
-                                }
-                            }
-                        }, {
-                            formAction: {
-                                title: "CAP",
-                                type: TYPE_CONTROL_FORM.COMBO,
-                                css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
-                                formControl: new FormControl(null),
-                                options: [],
-                                formName: "cap",
-                                onChange(idGroup, idForm, formCOntrol, formName, fg, formGroupMain, typeControl, prevValue) {
-                                    
-                                }
-                            }
-                        }, {
-                            formAction: {
-                                // title: "ssssssssss",
-                                type: TYPE_CONTROL_FORM.GROUP,
-                                css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
-                                formControl: new FormControl(),
-                                options: [],
-                                formName: "residenza",
-                                onChange(idGroup, idForm, formCOntrol, formName, fg, formGroupMain, typeControl, prevValue) {
-                                    
-                                },
-                                formGroup: [
-                                    {
-                                        title: "Residenza",
-                                        formGroup: [
-                                            {
-                                                formAction: {
-                                                    title: "Via",
-                                                    type: TYPE_CONTROL_FORM.COMBO,
-                                                    css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
-                                                    formControl: new FormControl(null, [Validators.required]),
-                                                    options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
-                                                    formName: "via",
-                                                    onChange(idGroup, idForm, formCOntrol, formName, fg: Array<any>, formGroupMain, typeControl, prevValue) {
-                                                        fg[1].formAction.options = [{ id: 1, description: "QUATTRO" }]
-                                                    },
-                                                    onInitialize(idGroup, idForm, formCOntrol, formName, fg, typeControl, allGroup) {
-                                                        JSON.changeValuesByKey(JSON.findByKeyAndValue(allGroup, "formName", "cap", ["formControl"]), "options", [{ id: 1, description: "UNO" }], ["formControl"]);
-
-                                                    },
-                                                    required: true,
-                                                    autocomplete: true
-
-                                                },
-
-                                            }, {
-                                                formAction: {
-                                                    title: "CAP",
-                                                    type: TYPE_CONTROL_FORM.COMBO,
-                                                    css: { class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
-                                                    formControl: new FormControl(null),
-                                                    options: [],
-                                                    formName: "cap",
-                                                    onChange(idGroup, idForm, formCOntrol, formName, fg, formGroupMain, typeControl, prevValue) {
-                                                        
-                                                    }
-                                                }
-                                            }, {
-                                                formAction: {
-                                                    title: "Comune",
-                                                    type: TYPE_CONTROL_FORM.RADIOGROUP,
-                                                    css: { classRadio: ["col-3"], class: ["col-3", "col-sm-3", "col-md-3", "col-lg-3", "col-xl-3", "col-xxl-3"] },
-                                                    formControl: new FormControl(null),
-                                                    options: [{ id: "1", description: "Uno" }, { id: "2", description: "Due" }],
-                                                    formName: "comune",
-                                                    onChange(idGroup, idForm, formCOntrol, formName, fg, formGroupMain, typeControl, prevValue) {
-                                                        
-                                                    }
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
+    }, {
+        formAction: {
+            title: "CURRENCY",
+            type: TYPE_CONTROL_FORM.CURRENCY,
+            simbol: "€",
+            css: { class: ["col-3"] },
+            formControl: new FormControl(null),
+            options: [],
+            formName: "CURRENCY",
+            onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
         }
-    }
-    ]
+    }, {
+        formAction: {
+            title: "DATA",
+            type: TYPE_CONTROL_FORM.DATA,
+            css: { class: ["col-3"] },
+            formControl: new FormControl(null),
+            options: [],
+            formName: "DATA",
+            onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
+        }
+    }, {
+        formAction: {
+            title: "DATARANGE",
+            type: TYPE_CONTROL_FORM.DATARANGE,
+            css: { class: ["col-3"] },
+            formControl: new FormGroup({ from: new FormControl(), to: new FormControl() }),
+            options: [],
+            formName: "DATARANGE",
+            onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
+        }
+    }, {
+        formAction: {
+            title: "DATETIME",
+            type: TYPE_CONTROL_FORM.DATETIME,
+            css: { class: ["col-3"] },
+            formControl: new FormControl(null),
+            options: [],
+            formName: "DATETIME",
+            onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
+        }
+    }, {
+        formAction: {
+            title: "FILE",
+            type: TYPE_CONTROL_FORM.FILE,
+            css: { class: ["col-3"] },
+            formControl: new FormControl(null),
+            options: [],
+            formName: "FILE",
+            onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
+        }
+    }, {
+        formAction: {
+            title: "TEXT",
+            type: TYPE_CONTROL_FORM.TEXT,
+            css: { class: ["col-3"] },
+            formControl: new FormControl(null),
+            options: [],
+            formName: "TEXT",
+            onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
+        }
+    }, {
+        formAction: {
+            title: "LABEL",
+            type: TYPE_CONTROL_FORM.LABEL,
+            css: { class: ["col-3"] },
+            formControl: new FormControl("LABEL"),
+            options: [],
+            formName: "LABEL",
+            onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
+        }
+    }, {
+        formAction: {
+            title: "SORTACTION",
+            type: TYPE_CONTROL_FORM.SORTACTION,
+            css: { class: ["col-1" ], toggleIcons:['assets/img/top-priority.svg' , 'assets/img/bottom-priority.svg'] },
+            formControl: new FormControl<"ASC"|"DESC">({value:"ASC",disabled:false}),
+            options: [],
+            formName: "SORTACTION", 
+            onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
+        }
+    }, {
+        formAction: {
+            title: "LINK",
+            type: TYPE_CONTROL_FORM.LINK,
+            css: { class: ["col-3" ]  },
+            formControl: new FormControl({value:"ASC",disabled:false}),
+            options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
+            formName: "LINK", 
+            onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
+        }
+    }, {
+        formAction: {
+            title: "NUMBER",
+            type: TYPE_CONTROL_FORM.NUMBER,
+            css: { class: ["col-3" ]  },
+            formControl: new FormControl({value:"ASC",disabled:false}),
+            formName: "NUMBER", 
+            onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
+        }
+    }, {
+        formAction: {
+            title: "TEXTAREA",
+            type: TYPE_CONTROL_FORM.TEXTAREA,
+            css: { class: ["col-3" ]  },
+            formControl: new FormControl({value:"ASC",disabled:false}),
+            formName: "TEXTAREA", 
+            onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
+        }
+    }]
 }

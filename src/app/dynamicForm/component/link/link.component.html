@@ -1,12 +1,8 @@
 <ng-container *ngIf=" !control.formAction?.css?.hide">
   <div class="w-100">
-    <label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
-    </label>
-
-    <nav class="nav" *ngFor="let listFile of control.formAction.options ">
-      <a class=" " *ngFor="let link of listFile.description" (click)="  optionSelected( link)">
-        <i class="fa mx-2  fa-minus-circle me-1" style="color: var(--primary);"></i> {{link }}
-      </a>
+    <label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}  </label>
+    <nav class="nav" >
+      <a class ="mx-1" *ngFor="let link of control.formAction.options" (click)="  optionSelected( link.description)"> {{link.description }} </a>
     </nav>
 
   </div>

@@ -1,0 +1,9 @@
+<ng-container *ngIf=" !control.formAction?.css?.hide"  >
+  <div class="row m-1 m-auto p-0 text-end" *ngIf="{sortupper:'ASC'} as view">
+    <img title="Sort" (click)="view.sortupper =='ASC' ?  view.sortupper='DESC' : view.sortupper='ASC' ; control.formAction?.formControl.setValue(view.sortupper); control.formAction?.toggleAction ? control.formAction?.toggleAction(view.sortupper) : null"
+                      [src]=" view.sortupper =='ASC' ? control.formAction?.css?.toggleIcons[0] : control.formAction?.css?.toggleIcons[1]"
+                      [formControl]="control.formAction?.formControl"
+                      [class.disabled]="control.formAction.formControl.disabled"
+                      >
+  </div>
+</ng-container>

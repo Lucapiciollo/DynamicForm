@@ -7,7 +7,7 @@ import { FormArray, FormControl, FormGroup } from "@angular/forms";
 
 export type TypeOptionDate = { max?: string, min?: string, onClose?: (value: any, formgroup: FormGroup) => void };
 export type TypeComboOption = Array<{ id: any, description: string, img?: string }>;
-export type TypeCss = { classRadio?: Array<string>, class?: Array<string>, col?: string, hide?: boolean, font?: { color?: string }, rows?: number };
+export type TypeCss = { classRadio?: Array<string>, class?: Array<string>, col?: string, hide?: boolean, font?: { color?: string }, rows?: number , toggleIcons?: [string, string]};
 export type TypeInputText = { maxlength?: number, password?: boolean };
 export type TypeOption = { date?: TypeOptionDate, css?: TypeCss, inputText?: TypeInputText }
 export type FormAction = {
@@ -36,7 +36,7 @@ export type FormAction = {
 }
 
 export enum TYPE_CONTROL_FORM {
-  BUTTON, DATETIME, LABEL, ACTIONREPORT, LINK, RADIOGROUP, TEXT, TEXTAREA, CHECKBOX, FILE, CURRENCY, NUMBER, COMBO, DATA, DATARANGE, EMAIL, TIME, GROUP
+  BUTTON, DATETIME, LABEL, ACTIONREPORT, LINK, RADIOGROUP, TEXT, TEXTAREA, CHECKBOX, FILE, CURRENCY, NUMBER, COMBO, DATA, DATARANGE, EMAIL, TIME, GROUP,SORTACTION
 }
 
 

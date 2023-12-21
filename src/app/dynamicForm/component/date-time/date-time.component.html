@@ -2,21 +2,21 @@
 
 <ng-container *ngIf=" !control.formAction?.css?.hide"  >
       
-       <div class="row px-4">
+      <mat-form-field  class="w-100" >
             <mat-label class="form-label"
                   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
                   {{control.formAction.simbol}}<span *ngIf="control.formAction.required" class="required">*</span>
             </mat-label>
-              <input  type="datetime-local"  style="border: none;"
+              <input  type="datetime-local"  style="border: none;" matInput
                     [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
                     [min]="control.formAction?.date?.min" [max]="control.formAction?.date?.max"
                     [formControl]="control.formAction?.formControl"
                     [class.disabled]="control.formAction.formControl.disabled">
 
                     <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
-                  </div>
+                  
          
-    
+      </mat-form-field>
 
 </ng-container>
  

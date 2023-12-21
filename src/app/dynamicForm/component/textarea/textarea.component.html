@@ -16,7 +16,7 @@
                         cdkTextareaAutosize
                         >
                     </textarea>
-                      <img   speech [formControl]="control.formAction?.formControl" matSuffix src="assets/img/mic.svg" class="text-center " *ngIf="!control.formAction.formControl.disabled  && !control?.formAction?.disableSpeech">  
+                      <!-- <img   speech [formControl]="control.formAction?.formControl" matSuffix src="assets/img/mic.svg" class="text-center " *ngIf="!control.formAction.formControl.disabled  && !control?.formAction?.disableSpeech">   -->
                     
                      <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
              </mat-form-field>

@@ -18,6 +18,7 @@ import { QuestionRadioButtonComponent } from "./component/question-radion-button
 import { TextareaComponent } from "./component/textarea/textarea.component";
 import { LinkComponent } from "./component/link/link.component";
 import { SpeechDirective } from "./directive/speech-recognition";
+import { SortActionComponent } from "./component/sort-action/sort-action.component";
 
 /**
  * @author luca.piciollo
@@ -47,7 +48,8 @@ import { SpeechDirective } from "./directive/speech-recognition";
     QuestionRadioButtonComponent,
     TextareaComponent,
     LinkComponent,
-    SpeechDirective
+    SpeechDirective,
+    SortActionComponent
   ],
   imports: [
     CommonModule,
@@ -57,6 +59,7 @@ import { SpeechDirective } from "./directive/speech-recognition";
     CommonModule
   ],
   exports: [
+    SortActionComponent,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,

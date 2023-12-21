@@ -57,7 +57,8 @@
                                     <app-number *ngSwitchCase="TYPE_CONTROL_FORM.NUMBER"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-number>
                                     <app-radiobutton *ngSwitchCase="TYPE_CONTROL_FORM.RADIOGROUP"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-radiobutton>
                                     <app-textarea *ngSwitchCase="TYPE_CONTROL_FORM.TEXTAREA"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-textarea>  
-                         
+                                    <app-sort-action *ngSwitchCase="TYPE_CONTROL_FORM.SORTACTION"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-sort-action>  
+
                                 </ng-container>
 
 
