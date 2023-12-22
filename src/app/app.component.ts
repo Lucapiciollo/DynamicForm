@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Observable, debounce, exhaustMap, merge, mergeAll, of, timer, toArray } from 'rxjs';
 import { ConfigForm } from './dynamicForm/interface';
-import { activityForm } from './activity-form-builder.';
+import { activityForm, createRegistry } from './activity-form-builder.';
 import { FormArray, FormGroup } from '@angular/forms';
 
 @Component({
@@ -13,7 +13,9 @@ export class AppComponent {
   questions$: Observable<ConfigForm>;
 
   constructor() {
-     this.questions$ = of(activityForm(null)); 
+     this.questions$ = of(activityForm({},null)); 
+
+     
      
      JSON["changeValuesByKey"] = function (json, key, nextValue,  ignore:Array<string>=[]) {
       let recursive = function (json:any, previousValue:any, nextValue:any, ignore:any ) {

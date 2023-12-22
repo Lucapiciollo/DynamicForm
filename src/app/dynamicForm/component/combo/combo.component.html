@@ -3,14 +3,11 @@
 
 
     <mat-form-field class="w-100">
-      <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}  {{control.formAction.simbol}} </mat-label>  
-
-
-      <mat-select   [formControl]="control.formAction?.formControl"  [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'">
-        <mat-option [value]=" null"  (click)="control.formAction.optionSelected ? control.formAction.optionSelected(  control.formAction.formName ,null) : null">
+      <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
+      <mat-select   [formControl]="control.formAction?.formControl"  [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" [multiple]="control.formAction?.multiple">
+        <!-- <mat-option [value]=" null"  (click)="control.formAction.optionSelected ? control.formAction.optionSelected(  control.formAction.formName ,null) : null" >
           <span [class.disabled]="control.formAction.formControl.disabled"> </span>
-        </mat-option>
-
+        </mat-option> -->
         <mat-option *ngFor="let secondElement of control.formAction.options" class="" [value]=" secondElement.id " (click)="control.formAction.optionSelected ? control.formAction.optionSelected(  control.formAction.formName,secondElement ) : null">
           <span [class.disabled]="control.formAction.formControl.disabled"> {{secondElement.description}} </span>
         </mat-option>
@@ -23,24 +20,22 @@
 
 
 
-  <div *ngIf="control.formAction.autocomplete">
+   <div *ngIf="control.formAction.autocomplete">
     <mat-form-field class="w-100">
-      <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}  {{control.formAction.simbol}} </mat-label>  
+      <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
       <input #inp [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
-        (keydown.backspace)="control.formAction.formControl.setValue(null); control.formAction.optionSelected ? control.formAction.optionSelected(  control.formAction.formName ,null) : null"
-        matInput [placeholder]="control.formAction.placeholder"   [formControl]="control.formAction?.formControl" 
+        matInput [placeholder]="control.formAction.placeholder"   [formControl]="filtercontrol" 
         [matAutocomplete]="combo" />
-      <mat-autocomplete #combo="matAutocomplete" autoActiveFirstOption="true">
+      <mat-autocomplete #combo="matAutocomplete" autoActiveFirstOption="true" multiple>
         <mat-option #opt
           [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'"
-           class=" "  (click)="optionSelected(control.formAction.formName ,option) ; control.formAction.optionSelected ? control.formAction.optionSelected(control.formAction.formName,  option) : null"
+          (click)="optionSelected(control.formAction.formName ,option) ; control.formAction.optionSelected ? control.formAction.optionSelected(control.formAction.formName,  option) : null"
           *ngFor="let option of filteredOptions | async" [value]="option.id">
           {{ option.description }}
         </mat-option>
       </mat-autocomplete>
       <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
-    </mat-form-field>
-
+    </mat-form-field>  
 
   </div>
 

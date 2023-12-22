@@ -2,24 +2,23 @@
 
 
 <ng-container *ngIf="  !control.formAction?.css?.hide ">
+      <mat-form-field  class="w-100">
+            <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
       
-                 <mat-form-field  class="w-100">
-                       <mat-label [class.disabled]="control.formAction.formControl.disabled">  {{control.formAction.title}}    </mat-label>
-                
-                        <input  [type]="control.formAction?.inputText?.password ? 'password':'text'"  
-                                [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" type="text"
-                                matInput 
-                                [formControl]="control.formAction?.formControl" 
-                                [class.disabled]="control.formAction.formControl.disabled"
-                                [placeholder]="control.formAction.placeholder||''"
-                                [maxlength]="control.formAction?.inputText?.maxlength"
-                          >
-                          
- 
-                        <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
-                 </mat-form-field>    
- 
+            <input  [type]="control.formAction?.inputText?.password ? 'password':'text'"  #inputs
+                        [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"  
+                        matInput 
+                        [formControl]="control.formAction?.formControl" 
+                        [class.disabled]="control.formAction.formControl.disabled"
+                        [placeholder]="control.formAction.placeholder||''"
+                        [maxlength]="control.formAction?.inputText?.maxlength" 
+                        (change)=" control.formAction?.formControl.setValue($any($event).target.value)"
+             >
                   
-        
-</ng-container>
+            <img speech [e]="inputs" matSuffix src="assets/img/mic.svg" class="text-center" 
+                 *ngIf="control.formAction?.inputText?.password!='password' && !control.formAction.formControl.disabled  && !control?.formAction?.disableSpeech">
+             <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+             <mat-hint *ngIf="control.formAction?.inputText?.maxlength" align="start">{{inputs.value.length}}/{{control.formAction?.inputText?.maxlength}}</mat-hint>
+      </mat-form-field>    
+ </ng-container>
 

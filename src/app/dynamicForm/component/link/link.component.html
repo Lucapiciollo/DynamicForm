@@ -1,6 +1,6 @@
 <ng-container *ngIf=" !control.formAction?.css?.hide">
   <div class="w-100">
-    <label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}  </label>
+    <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
     <nav class="nav" >
       <a class ="mx-1" *ngFor="let link of control.formAction.options" (click)="  optionSelected( link.description)"> {{link.description }} </a>
     </nav>

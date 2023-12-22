@@ -3,10 +3,7 @@
 <ng-container *ngIf=" !control.formAction?.css?.hide"  >
       
       <mat-form-field  class="w-100" >
-            <mat-label class="form-label"
-                  [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
-                  {{control.formAction.simbol}}<span *ngIf="control.formAction.required" class="required">*</span>
-            </mat-label>
+            <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
               <input  type="datetime-local"  style="border: none;" matInput
                     [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
                     [min]="control.formAction?.date?.min" [max]="control.formAction?.date?.max"

@@ -3,8 +3,9 @@
             <div  [class]="control?.formAction?.css?.classRadio">
                <mat-checkbox [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" 
                   [class.disabled]="control.formAction.formControl.disabled"  
-                  [formControl]="control.formAction?.formControl"  class=" "> {{control.formAction.title}} {{control.formAction.simbol}}
+                  [formControl]="control.formAction?.formControl"  class=" "> {{control.formAction.title}}
               </mat-checkbox> 
+             
           </div>
           <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
         </div>

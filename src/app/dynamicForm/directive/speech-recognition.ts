@@ -23,7 +23,7 @@ export class SpeechDirective {
 
     }
   }
-  @Input() formControl: FormControl | undefined;
+  @Input() e :any;
  
   @HostListener('touchstart', ['$event'])
   @HostListener('mousedown', ['$event'])
@@ -35,9 +35,12 @@ export class SpeechDirective {
       for (let i = event.resultIndex; i < event.results.length; i++) {
         if (event.results[i].isFinal) {
           const content = event.results[i][0].transcript.trim();
-          if (this.formControl) {
-            let value = (this.formControl)?.value || "";
-            this.formControl.setValue((value + " " + content).trim());
+          if (this.e) {
+            this.e.value = (this.e.value + " " + content).trim();
+            // this.formControl.setValue((value + " " + content).trim());
+            (this.e as HTMLInputElement).dispatchEvent(
+              new Event("change")
+            );
           }
         }
       }

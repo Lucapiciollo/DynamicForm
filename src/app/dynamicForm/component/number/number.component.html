@@ -4,8 +4,7 @@
 <ng-container *ngIf="  !control.formAction?.css?.hide"  >
    
                      <mat-form-field  class="w-100">
-                        <!-- <span *ngIf="control.formAction.required"  class="required">*</span> -->
-                        <mat-label [class.disabled]="control.formAction.formControl.disabled"> {{control.formAction.title}} {{control.formAction.simbol}}</mat-label>
+                        <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
                         <input  matInput type="number"  
                                 [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"  
                                 [formControl]="control.formAction?.formControl"

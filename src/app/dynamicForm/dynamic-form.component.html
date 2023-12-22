@@ -4,13 +4,13 @@
      
               <ng-template #ConfigForm let-configForm   [ngIf]="questions">
                    
-                <div class="row my-1" #containerForm *ngIf=" configForm!=null"> 
-                     
+                <div class="row my-2 containerForm px-2" #containerForm *ngIf=" configForm!=null"> 
+                  
                         <ng-container *ngFor="let data  of configForm ;let formGroupIndex=index"
                                     [ngTemplateOutlet]="  TypeForm "
                                     [ngTemplateOutletContext]="{  $implicit: data.formGroup ,formGroupIndex:formGroupIndex, group:data ,containerForm:containerForm}">
                                 
-                                        <h5 class="  title text-left " > <div  >{{data.title }}</div></h5>   
+                                     <div  *ngIf="data.title" class="title text-left my-3">{{data.title }}</div>
                                         
                          </ng-container>
          
@@ -22,13 +22,14 @@
 
 
               <ng-template #TypeForm let-typeForm let-formGroupIndex="formGroupIndex"    let-group="group" let-containerForm="containerForm">
+                <div class="row">
                   <ng-container *ngFor="let data  of   typeForm ;let formActionIndex=index"
                                 [ngTemplateOutlet]="  FormAction "
                                 [ngTemplateOutletContext]="{  $implicit: data.formAction  ,formGroupIndex:formGroupIndex ,formActionIndex:formActionIndex, group:group.formGroup,containerForm:containerForm}">
-                                <!-- <div class="subTitle my-2"  *ngIf="data?.formAction?.title" > <div  >{{data.formAction.title }}</div></div> -->
-    
-                  </ng-container>
- 
+                                <!-- <div style="width: auto;" class="subTitle my-2"  *ngIf="data?.formAction?.title" > <div  >{{data.formAction.title }}</div></div> -->
+                                <div class="subTitle my-2" *ngIf="data.formAction.title && data?.formAction?.typeControlForm==TYPE_CONTROL_FORM.GROUP"  >{{data.formAction.title }}</div>
+                   </ng-container>
+                </div>
               </ng-template>
 
 
@@ -41,8 +42,7 @@
                                  [ngTemplateOutletContext]="{  $implicit: formAction.formGroup }">
                
                                 
-                                <ng-container [ngSwitch]="formAction.type" >
-                                 
+                                <ng-container [ngSwitch]="formAction.typeControlForm" >
                                     <app-combo *ngSwitchCase="TYPE_CONTROL_FORM.COMBO"     [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-combo>
                                     <app-checkbox *ngSwitchCase="TYPE_CONTROL_FORM.CHECKBOX" [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-checkbox>
                                     <app-currency *ngSwitchCase="TYPE_CONTROL_FORM.CURRENCY"     [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-currency>

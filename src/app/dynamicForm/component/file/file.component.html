@@ -2,7 +2,7 @@
          
  
                 <mat-form-field class="w-100" >
-                        <mat-label [class.disabled]="control.formAction.formControl.disabled">  {{control.formAction.title}}    </mat-label>
+                        <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
                         <div camscan (onCaptureCam)="handleFileInputChange($any($event))"></div>
                         <button mat-icon-button matPrefix (click)="f_input.click()" >
                                  <mat-icon>attach_file</mat-icon>

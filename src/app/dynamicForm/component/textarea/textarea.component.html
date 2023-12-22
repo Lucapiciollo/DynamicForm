@@ -1,11 +1,8 @@
 <ng-container *ngIf="   !control.formAction?.css?.hide"  >
-  
- 
-  
+   
             <mat-form-field class="w-100" >
-                <!-- <span *ngIf="control.formAction.required"  class="required">*</span> -->
-                <mat-label [class.disabled]="control.formAction.formControl.disabled"> {{control.formAction.title}} {{control.formAction.simbol}}</mat-label>
-                <textarea   [formControl]="control.formAction?.formControl"
+              <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
+                <textarea   [formControl]="control.formAction?.formControl" #inputs
                          matInput
                         [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" type="text"
                         [class.disabled]="control.formAction.formControl.disabled"
@@ -14,13 +11,12 @@
                         [cdkAutosizeMaxRows]="control.formAction?.css?.rows || '5'"  
                         #autosize="cdkTextareaAutosize"
                         cdkTextareaAutosize
+                        (change)=" control.formAction?.formControl.setValue($any($event).target.value)"
                         >
                     </textarea>
-                      <!-- <img   speech [formControl]="control.formAction?.formControl" matSuffix src="assets/img/mic.svg" class="text-center " *ngIf="!control.formAction.formControl.disabled  && !control?.formAction?.disableSpeech">   -->
-                    
+                     <img   speech [e]="inputs" matSuffix src="assets/img/mic.svg" class="text-center " *ngIf="!control.formAction.formControl.disabled  && !control?.formAction?.disableSpeech">
+                     <mat-hint *ngIf="control.formAction?.inputText?.maxlength" align="start">{{inputs.value.length}}/{{control.formAction?.inputText?.maxlength}}</mat-hint>
                      <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
              </mat-form-field>
-
-
-    
+  
 </ng-container>

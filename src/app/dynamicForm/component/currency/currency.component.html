@@ -4,17 +4,14 @@
 <ng-container *ngIf="  !control.formAction?.css?.hide"  >
     
                      <mat-form-field class="w-100" >
-                        <!-- <span *ngIf="control.formAction.required"  class="required">*</span> -->
-                        <mat-label [class.disabled]="control.formAction.formControl.disabled"> {{control.formAction.title}} 
-                        </mat-label>
+                      <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
                         <input  #inp
                                 [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" type="number"
                                 matInput 
                                 [formControl]="control.formAction?.formControl"
                                 [class.disabled]="control.formAction.formControl.disabled"
                                 [placeholder]="control.formAction.placeholder||''" >
-                              <span *ngIf="control.formAction.simbol" matTextPrefix>{{control.formAction.simbol}}  </span>
-                              <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+                                <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
                         </mat-form-field>
   
 </ng-container>
