@@ -437,77 +437,83 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formControl: new FormControl(),
                 formName: "residenza",
                 formGroup: [{
-                    formGroup: [  
-                    {
-                
-                        formAction: {
-                            css: { hide: true },
-                            formControl: new FormControl(object.fiscalCode, { updateOn: "blur" }),
-                            formName: "fiscalCodePatient" 
+                    actions: [{
+                        label: "test",
+                        action(fg, id, formArray, button) {
+                            console.log(fg, id, formArray, button)
                         }
-                    },
-                
-                    {
-                        formAction: {
-                            title: "VIA/PIAZZA",
-                            typeControlForm: TYPE_CONTROL_FORM.TEXT,
-                            css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-6", "col-xl-6", "col-xxl-6"] },
-                            formControl: new FormControl(object.street, { updateOn: "blur", validators: [Validators.required] }),
-                            formName: "street" 
-                         
-                        }
-                    },
-                    {
-                        formAction: {
-                            title: "CIVICO",
-                            typeControlForm: TYPE_CONTROL_FORM.TEXT,
-                            css: { class: ["col-12", "col-sm-4", "col-md-2", "col-lg-2", "col-xl-2", "col-xxl-2"] },
-                            formControl: new FormControl(object.civic, { updateOn: "blur", validators: [Validators.required] }),
-                            formName: "civic" 
-                        }
-                    },
-                    {
-                        formAction: {
-                            title: "CAP",
-                            typeControlForm: TYPE_CONTROL_FORM.TEXT,
-                            css: { class: ["col-12", "col-sm-4", "col-md-2", "col-lg-2", "col-xl-2", "col-xxl-2"] },
-                            formControl: new FormControl(object.cap, { updateOn: "blur", validators: [] }),
-                            formName: "cap" 
-                        }
-                    },
-                    {
-                        formAction: {
-                            title: "REGIONE",
-                            typeControlForm: TYPE_CONTROL_FORM.COMBO,
-                            css: { class: ["col-12", "col-sm-4", "col-md-2", "col-lg-2", "col-xl-2", "col-xxl-2"] },
-                            formControl: new FormControl(object.city, { updateOn: "change" }),
-                            formName: "city" ,
-                            autocomplete: true,
-                
-                        }
-                    },
-                    {
-                        formAction: {
-                            title: "PROVINCIA",
-                            typeControlForm: TYPE_CONTROL_FORM.COMBO,
-                            css: { class: ["col-12", "col-sm-4", "col-md-2", "col-lg-2", "col-xl-2", "col-xxl-2"] },
-                            formControl: new FormControl(object.province, { updateOn: "change", validators: [Validators.required] }),
-                            formName: "province" 
-                        }
-                    },
-                
-                
-                
-                    {
-                        formAction: {
-                            title: "COMUNE",
-                            typeControlForm: TYPE_CONTROL_FORM.COMBO,
-                            css: { class: ["col-12", "col-sm-4", "col-md-2", "col-lg-2", "col-xl-2", "col-xxl-2"] },
-                            formControl: new FormControl(object.townHall, { updateOn: "change" }),
-                            formName: "townHall" ,
-                            autocomplete: true
-                        }
-                    }]
+                    }],
+                    formGroup: [
+                        {
+
+                            formAction: {
+                                css: { hide: true },
+                                formControl: new FormControl(object.fiscalCode, { updateOn: "blur" }),
+                                formName: "fiscalCodePatient"
+                            }
+                        },
+
+                        {
+                            formAction: {
+                                title: "VIA/PIAZZA",
+                                typeControlForm: TYPE_CONTROL_FORM.TEXT,
+                                css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-6", "col-xl-6", "col-xxl-6"] },
+                                formControl: new FormControl(object.street, { updateOn: "blur", validators: [Validators.required] }),
+                                formName: "street"
+
+                            }
+                        },
+                        {
+                            formAction: {
+                                title: "CIVICO",
+                                typeControlForm: TYPE_CONTROL_FORM.TEXT,
+                                css: { class: ["col-12", "col-sm-4", "col-md-2", "col-lg-2", "col-xl-2", "col-xxl-2"] },
+                                formControl: new FormControl(object.civic, { updateOn: "blur", validators: [Validators.required] }),
+                                formName: "civic"
+                            }
+                        },
+                        {
+                            formAction: {
+                                title: "CAP",
+                                typeControlForm: TYPE_CONTROL_FORM.TEXT,
+                                css: { class: ["col-12", "col-sm-4", "col-md-2", "col-lg-2", "col-xl-2", "col-xxl-2"] },
+                                formControl: new FormControl(object.cap, { updateOn: "blur", validators: [] }),
+                                formName: "cap"
+                            }
+                        },
+                        {
+                            formAction: {
+                                title: "REGIONE",
+                                typeControlForm: TYPE_CONTROL_FORM.COMBO,
+                                css: { class: ["col-12", "col-sm-4", "col-md-2", "col-lg-2", "col-xl-2", "col-xxl-2"] },
+                                formControl: new FormControl(object.city, { updateOn: "change" }),
+                                formName: "city",
+                                autocomplete: true,
+
+                            }
+                        },
+                        {
+                            formAction: {
+                                title: "PROVINCIA",
+                                typeControlForm: TYPE_CONTROL_FORM.COMBO,
+                                css: { class: ["col-12", "col-sm-4", "col-md-2", "col-lg-2", "col-xl-2", "col-xxl-2"] },
+                                formControl: new FormControl(object.province, { updateOn: "change", validators: [Validators.required] }),
+                                formName: "province"
+                            }
+                        },
+
+
+
+                        {
+                            formAction: {
+                                title: "COMUNE",
+                                typeControlForm: TYPE_CONTROL_FORM.COMBO,
+                                css: { class: ["col-12", "col-sm-4", "col-md-2", "col-lg-2", "col-xl-2", "col-xxl-2"] },
+                                formControl: new FormControl(object.townHall, { updateOn: "change" }),
+                                formName: "townHall",
+                                autocomplete: true
+                            }
+                        }]
                 }]
             }
         }]
