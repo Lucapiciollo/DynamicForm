@@ -447,7 +447,8 @@ export function createRegistry(object: any, context: any): TypeForm {
                         {
 
                             formAction: {
-                                css: { hide: true },
+                                title: "TEST",
+                                typeControlForm: TYPE_CONTROL_FORM.TEXT,
                                 formControl: new FormControl(object.fiscalCode, { updateOn: "blur" }),
                                 formName: "fiscalCodePatient"
                             }

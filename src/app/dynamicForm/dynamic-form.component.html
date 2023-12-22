@@ -72,21 +72,18 @@
                                 
             
                   </ng-container>
-                 
-                        <ng-container *ngIf="formAction.typeControlForm==TYPE_CONTROL_FORM.GROUP" >
-
-
-                            <div class="row m-auto mb-3" >
+                         <ng-container *ngIf="formAction.typeControlForm==TYPE_CONTROL_FORM.GROUP">
+                            <div class="row m-auto mb-3">
                                 <div class="col-12 text-end">
-                                  <button  mat-flat-button #button [class]="action.cssClassButton?.join(' ')"   *ngFor="let action of formAction.formGroup[formGroupIndex]?.actions">
-                                    <i #icon [class]="action.cssClassIcon?.join(' ')" aria-hidden="true">
-                                    </i>{{action.label}}
-                                </button>
+                                    <button mat-flat-button #button [class]="action.cssClassButton?.join(' ')" *ngFor="let action of formAction.formGroup[formGroupIndex]?.actions"
+                                           (click)="action.action(questions,formGroupIndex,formAction.formGroup[formGroupIndex].formGroup,button)"
+                                    >
+                                        <i #icon [class]="action.cssClassIcon?.join(' ')" aria-hidden="true">  </i>{{action.label}}
+                                    </button>
                                 </div>
-                              </div> 
-                                       
+                            </div>
                         </ng-container>
-              </ng-template>
+           </ng-template>
   
    
      </ng-container>
