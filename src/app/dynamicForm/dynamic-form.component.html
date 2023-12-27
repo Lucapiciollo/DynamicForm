@@ -5,21 +5,14 @@
               <ng-template #ConfigForm let-configForm   [ngIf]="questions">
                    
                 <div class="row my-2 containerForm px-2" #containerForm *ngIf=" configForm!=null"> 
-
- 
-
-
                     
-                  
                         <ng-container *ngFor="let data  of configForm ;let formGroupIndex=index"
                                     [ngTemplateOutlet]="  TypeForm "
-                                    [ngTemplateOutletContext]="{  $implicit: data.formGroup ,formGroupIndex:formGroupIndex, group:data ,containerForm:containerForm}">
+                                    [ngTemplateOutletContext]="{  $implicit: data.formGroup ,formGroupIndex:formGroupIndex, group:data ,containerForm:containerForm, actions:data.actions||[]}">
                                     <div  *ngIf="data.title" class="title text-left my-3">{{data.title }}</div>
  
                          </ng-container>
-                        
-                         
-         
+          
                  </div>    
             
 
@@ -27,7 +20,7 @@
               </ng-template>
 
 
-              <ng-template #TypeForm let-typeForm let-formGroupIndex="formGroupIndex"    let-group="group" let-containerForm="containerForm">
+              <ng-template #TypeForm let-typeForm let-formGroupIndex="formGroupIndex"    let-group="group" let-containerForm="containerForm" let-actions="actions">
                 <div class="row">
                     <ng-container *ngFor="let data  of   typeForm ;let formActionIndex=index"
                                 [ngTemplateOutlet]="  FormAction "
@@ -36,7 +29,20 @@
                                 <div class="subTitle my-2" *ngIf="data.formAction.title && data?.formAction?.typeControlForm==TYPE_CONTROL_FORM.GROUP"  >{{data.formAction.title }}</div>
  
                     </ng-container>
+                   
                     
+                        <div class="row m-auto mb-3" >
+                            <div class="col-12 text-end">
+                                 <button mat-flat-button #button [class]="action.cssClassButton?.join(' ')" *ngFor="let action of actions"
+                                       (click)="action.action(questions,formGroupIndex,typeForm[formGroupIndex].formGroup,button)"
+                                >
+                                    <i #icon [class]="action.cssClassIcon?.join(' ')" aria-hidden="true">  </i>{{action.label}}
+                                </button>
+                            </div>
+                        </div>
+                     
+
+
                 </div>
               </ng-template>
 

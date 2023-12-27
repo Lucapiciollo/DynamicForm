@@ -9,7 +9,7 @@ import { StepperService } from './dynamic-form.service';
   templateUrl: './dynamic-form.component.html',
   providers: [StepperService]
 })
-export class DynamicFormComponent implements OnInit {
+export class DynamicFormComponent {
   @Input() questions!: ConfigForm | null;
   @Output() onFormCreate: EventEmitter<FormGroup | FormArray> = new EventEmitter<FormGroup | FormArray>();
   private stepperService: StepperService = inject(StepperService);
@@ -30,9 +30,7 @@ export class DynamicFormComponent implements OnInit {
     this.onFormCreate.emit(this.formGroup);
 
   }
-
-
-
+ 
 
 
 }  
