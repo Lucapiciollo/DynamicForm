@@ -29,8 +29,13 @@ export class DynamicFormComponent {
     }
     this.onFormCreate.emit(this.formGroup);
 
-  }
- 
 
+
+  }
+
+
+  addForm(form: any) {
+    this.ngOnInit()
+  }
 
 }  

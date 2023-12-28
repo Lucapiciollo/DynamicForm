@@ -214,12 +214,13 @@ export function activityForm(registry: any, context: any): ConfigForm {
             formGroup: createRegistry(registry, context),
             actions: [{
                 label: "Add residenza",
-                action(fg, id, formArray, button) {
+                action(fg, id, formArray, button:any) {
+                    (fg[0] as any).formGroup.push(createResidenza(registry, context))
                     console.log(fg, id, formArray, button);
-                    (fg[0] as any).formGroup=[...(fg[0] as any).formGroup.push(createResidenza(registry, context))]
+                    button("ciao")
                 }
             }],
-        }
+        } 
     ];
 }
 
@@ -452,10 +453,11 @@ export function createResidenza(object: any, context: any): Form {
             formName: "residenza",
             formGroup: [{
                 actions: [{
-                    label: "test",
-                    action(fg, id, formArray, button) {
+                    label: "Elimina",
+                    action(fg, id, formArray, button:any) {
+                        (fg[0] as any).formGroup.push(createResidenza(object, context))
                         console.log(fg, id, formArray, button);
-                        (fg[0] as any).formGroup = [...(fg[0] as any).formGroup.push(createResidenza(object, context))]
+                        button("ciao")
                     }
                 }],
                 formGroup: [
