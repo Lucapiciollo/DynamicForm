@@ -25,8 +25,8 @@
                 <div class="row" *ngIf="{isLast:false} as last">
                     <ng-container *ngFor="let data  of   typeForm ;let formActionIndex=index ; let last=last"
                                 [ngTemplateOutlet]="  FormAction "
-                                [ngTemplateOutletContext]="{  $implicit: data.formAction  ,formGroupIndex:formGroupIndex ,formActionIndex:formActionIndex, group:group.formGroup,containerForm:containerForm}">
-                                <div class="subTitle my-2" *ngIf="data.formAction.title && data?.formAction?.typeControlForm==TYPE_CONTROL_FORM.GROUP"  >{{data.formAction.title }}</div>                        
+                                [ngTemplateOutletContext]="{  $implicit: data?.formAction||{}  ,formGroupIndex:formGroupIndex ,formActionIndex:formActionIndex, group:group.formGroup,containerForm:containerForm}">
+                                <div class="subTitle my-2" *ngIf="data?.formAction?.title && data?.formAction?.typeControlForm==TYPE_CONTROL_FORM.GROUP"  >{{data?.formAction?.title }}</div>                        
  
                     </ng-container>
                      
@@ -35,7 +35,7 @@
                     <div class="row m-auto mb-3"  >
                         <div class="col-12 text-end">
                              <button mat-flat-button #button [class]="action.cssClassButton?.join(' ')" *ngFor="let action of actions"
-                                   (click)="action.action(questions,group.id,formGroup,addForm.bind(this))"
+                                   (click)="action.action(questions,group.id||'',formGroup,addForm.bind(this))"
                               >
                                 <i #icon [class]="action.cssClassIcon?.join(' ')" aria-hidden="true">  </i>{{action.label}} 
                             </button>
@@ -54,7 +54,7 @@
                                                 
   
                 <ng-container  [ngTemplateOutlet]="ConfigForm"
-                                 [ngTemplateOutletContext]="{  $implicit: formAction.formGroup }">
+                                 [ngTemplateOutletContext]="{  $implicit: formAction?.formGroup }">
                
                                 
                                 <ng-container [ngSwitch]="formAction.typeControlForm" >
