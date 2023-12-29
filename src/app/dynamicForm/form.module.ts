@@ -19,7 +19,6 @@ import { TextareaComponent } from "./component/textarea/textarea.component";
 import { LinkComponent } from "./component/link/link.component";
 import { SpeechDirective } from "./directive/speech-recognition";
 import { SortActionComponent } from "./component/sort-action/sort-action.component";
-
 /**
  * @author luca.piciollo
  * @email lucapiciollo@gmail.com

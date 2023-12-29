@@ -31,13 +31,14 @@ interface Array<T> {
 interface JSON {
   changeValues: (json: any, previousValue: any, nextValue: any) => any;
   changeValuesByKey: (json: any, key: any, nextValue: any ,ignore:Array<string>) => any;
-  findByValue: (json: any, value: any) => any;
-  json2flat: (json: any) => any;
-  json2array: (json: any) => any;
-  json2flatObj: (json: any) => any;
+  findByValue: (json: any, value: any,ignore:Array<string>) => any;
+  json2flat: (json: any,ignore:Array<string>) => any;
+  json2array: (json: any,ignore:Array<string>) => any;
+  json2flatObj: (json: any,ignore:Array<string>) => any;
   findKey: (json: any, keyFind: any,ignore:Array<string>) => any;
   findByKeyAndValue: (json, keyFind, valueFind ,ignore:Array<string>) => any;
   deleteKey: <T>(json: T, keys: Array<string>) => T;
+  deleteByValue:any;
 }
 
 

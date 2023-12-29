@@ -37,20 +37,104 @@ export class AppComponent {
     }
 
 
+    JSON["deleteByValue"] = function (json:any, value:any,ignore:Array<string>=[]): Array<any> {
+      let keys:any = [];
+      let recursive = function (object:any, value:any, key:any, obj:any,ignore:any) {
+        let k = "";
+        if (object instanceof Object) {
+          for (k in object) {
+            if (object.hasOwnProperty(k) && ignore.indexOf(k)<0) {
+              recursive(object[k], value, key + "." + k, object,ignore);
+            }
+          }
+        } else {
+          if (object === value) {
+            object.delete(key.substring(1, key.length))
+            // keys.push({ key: key.substring(1, key.length), value: object, object: obj });
+          }
+        }
+      }
+      recursive(json, value, "", json,ignore);
+      return keys
+    }
+
+    
+
+    JSON["json2flat"] = function (json,ignore:Array<string>=[]): Array<any> {
+      let keys :any= [];
+      let recursive = function (object:any, key:any,ignore:any) {
+        let k = "";
+        if (object instanceof Object) {
+          for (k in object) {
+            if (object.hasOwnProperty(k)&& ignore.indexOf(k)<0) {
+              recursive(object[k], key + "." + k,ignore);
+            }
+          }
+        } else {
+          keys.push({ key: key.substring(1, key.length), value: object });
+        }
+      }
+      recursive(json, "",ignore);
+      return keys;
+    };
+
+
+    JSON["findByValue"] = function (json, value,ignore:Array<string>=[]): Array<any> {
+      let keys:any = [];
+      let recursive = function (object:any, value:any, key:any, obj:any,ignore:any) {
+        let k = "";
+        if (object instanceof Object) {
+          for (k in object) {
+            if (object.hasOwnProperty(k)&& ignore.indexOf(k)<0) {
+              recursive(object[k], value, key + "." + k, object,ignore);
+            }
+          }
+        } else {
+          if (object === value) {
+            keys.push({ key: key.substring(1, key.length), value: object, object: obj });
+          }
+        }
+      }
+      recursive(json, value, "", json,ignore);
+      return keys
+    }
+
+
+
+    JSON["json2array"] = function (json,ignore:Array<string>=[]): Array<any> {
+      let keys:any = [];
+      let recursive = function (object:any, key:any,ignore:any) {
+        let k = "";
+        if (object instanceof Object) {
+          for (k in object) {
+            if (object.hasOwnProperty(k)&& ignore.indexOf(k)<0) {
+              recursive(object[k], k,ignore);
+            }
+          }
+        } else {
+          keys.push({ key: key, value: object });
+        }
+      }
+      recursive(json, "",ignore);
+      return keys;
+    };
+
+
+
 
      JSON["findByKeyAndValue"] =  function(json:any, keyFind:any, valueFind:any,ignore:Array<string>=[]):any  {
       let keys:any = [];
-      let recursive = function (object:any, value:any, key:any, obj:any,ignore:any):any  {
+      let recursive = function (object:any, value:any, key:any, obj:any,ignore:any ):any  {
         let k:any  = "";
         if (object instanceof Object) {
-          for (k in object) {
+           for (k in object) {
             if (object.hasOwnProperty(k) && ignore.indexOf(k)<0) {
               recursive(object[k], value, k, object,ignore);
             }
           }
         }
         if (key === keyFind && object == valueFind) {
-          keys.push({ "key": key, value: object, object: obj });
+          keys.push({ "key": key, value: object, object: obj  });
         }
       }
       recursive(json, keyFind, "", json,ignore);

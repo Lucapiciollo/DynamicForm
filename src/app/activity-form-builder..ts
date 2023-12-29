@@ -214,13 +214,13 @@ export function activityForm(registry: any, context: any): ConfigForm {
             formGroup: createRegistry(registry, context),
             actions: [{
                 label: "Add residenza",
-                action(fg, id, formArray, button:any) {
+                action(fg, id, formArray, button: any) {
                     (fg[0] as any).formGroup.push(createResidenza(registry, context))
                     console.log(fg, id, formArray, button);
                     button("ciao")
                 }
             }],
-        } 
+        }
     ];
 }
 
@@ -438,7 +438,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 }
             }
         }
-       ]
+    ]
 
 
 }
@@ -454,9 +454,10 @@ export function createResidenza(object: any, context: any): Form {
             formGroup: [{
                 actions: [{
                     label: "Elimina",
-                    action(fg, id, formArray, button:any) {
-                        (fg[0] as any).formGroup.push(createResidenza(object, context))
-                        console.log(fg, id, formArray, button);
+                    action(fg, id: any, formArray, button: any) {
+
+                        let form = JSON.findByValue(fg, id, ["formControl"]);
+                        delete (fg[0] as any).formGroup[(form[0].key as string).split(".")[2]]
                         button("ciao")
                     }
                 }],

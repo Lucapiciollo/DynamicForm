@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { FormArray, FormGroup } from "@angular/forms";
 import { ConfigForm, TYPE_CONTROL_FORM } from "./interface";
 import { ReplaySubject } from "rxjs";
+import { v4 as uuidv4 } from 'uuid';
 
 
 
@@ -9,12 +10,18 @@ import { ReplaySubject } from "rxjs";
 export class StepperService {
 
  
-  toFormGroup(questions: ConfigForm, formArray: FormArray<any> = new FormArray<any>([])): FormArray {
+  toFormGroup(questions: ConfigForm , formArray: FormArray<any> = new FormArray<any>([])): FormArray {
     questions.forEach(question => {
+      let uuid=uuidv4();
       if (question.formGroup) {
-        formArray.push(new FormGroup({}))
+        formArray.push(new FormGroup({}));
+  
+        (question as any)["id"]=uuid;
+ 
         question.formGroup?.forEach(fg => {
+          
           if (fg.formAction.formGroup) {
+           
             fg.formAction.typeControlForm = TYPE_CONTROL_FORM.GROUP;
             (formArray.controls[formArray.controls.length - 1] as FormGroup).addControl(fg.formAction.formName as string, new FormArray<any>([]))
             this.toFormGroup(fg.formAction.formGroup, (formArray.controls[formArray.controls.length - 1] as FormGroup).get(fg.formAction.formName as string) as FormArray)
