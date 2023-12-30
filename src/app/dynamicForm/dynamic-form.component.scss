@@ -1,8 +1,37 @@
 ::ng-deep mat-form-field > .mat-mdc-text-field-wrapper {
-    background: rgba(0,0,0,.03) !important;
-    border-radius: 12px;
+    background: rgba(0,0,0,.01) !important;
+    border-radius: 5px;
+    // border-bottom: 1px solid  rgba(0,0,0,.1) !important;;
 
 }
+
+::ng-deep mat-form-field > .mat-mdc-text-field-wrapper:after {
+    content: "";
+    background: rgba(255, 0, 0,0.1);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    width: 2px;
+    border-radius: 5px;
+  }
+
+
+::ng-deep mat-form-field > .mat-mdc-text-field-wrapper:hover:after {
+    content: "";
+    background: rgba(255, 0, 0,0.3);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    width: 2px;
+    border-radius: 5px;
+  }
+
+
+ 
+
+
 ::ng-deep .mdc-notched-outline > *{
     border :none !important;
 }
