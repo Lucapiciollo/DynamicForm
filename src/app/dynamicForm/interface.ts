@@ -19,7 +19,7 @@ export type FormAction = {
   formControl: FormControl | FormArray | FormGroup,
   readOnly?: boolean,
   css?: TypeCss,
-  typeControlForm?: TYPE_CONTROL_FORM,
+  type?: TYPE_CONTROL_FORM,
   optionDate?: TypeOptionDate,
   optionInputText?: TypeInputText
   options?: TypeComboOption,
@@ -27,8 +27,8 @@ export type FormAction = {
   simbol?: string,
   placeholder?: string,
   disableSpeech?: boolean,
-  onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, typeControlForm: TYPE_CONTROL_FORM, prevValue: any, allGroup: Array<ConfigForm>) => void,
-  onInitialize?: (idGroup: number, idForm: number, formCOntrol: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, typeControlForm: TYPE_CONTROL_FORM, allGroup: Array<ConfigForm>) => void,
+  onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: Array<ConfigForm>) => void,
+  onInitialize?: (idGroup: number, idForm: number, formCOntrol: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: Array<ConfigForm>) => void,
   optionSelected?: (name: string, formGroup: FormGroup, value: any) => void,
   formGroup?: ConfigForm,
 }
@@ -48,7 +48,9 @@ export type ConfigForm = Array<{
   title?: string,
   formGroup?: TypeForm,
   bottomLabel?: string,
-  actions?: Array<{ label: string, action: (fg: Array<Form>, id: number, formArray: Array<any>, button: HTMLElement) => void, cssClassIcon?: Array<string>, cssClassButton?: Array<string> }>
+  actions?: Array<{
+    label: string, action: (questions: Array<Form>, idForm: string, formGroup: FormGroup | FormArray, initializeForm: () => void) => void, cssClassIcon?: Array<string>, cssClassButton?: Array<string>
+  }>
 }>;
 
 

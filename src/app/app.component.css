@@ -1,0 +1,10 @@
+::ng-deep.form-title {
+    --form-background-color: white !important;
+    --form-border-color: white !important;
+    --form-border-style: solid !important;
+    --form-border-width: 1px !important;
+    --form-padding: 5px 5px 5px 15px !important;
+    --form-color: brown !important;
+    --form-border-radius: 5px !important;
+    font-weight: bold;
+}

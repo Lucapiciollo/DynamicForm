@@ -141,6 +141,31 @@ export class AppComponent {
       return keys
     }
 
+
+    JSON["json2flatObj"] = function (data, ignore: Array<string> = []): JSON {
+      var result :any= {};
+      let recursive = function (cur:any, prop:any) {
+        if (Object(cur) !== cur ||  ignore.indexOf(prop) < 0) {
+          result[prop] = cur;
+        } else if (Array.isArray(cur)) {
+          for (var i = 0, l = cur.length; i < l; i++)
+            recursive(cur[i], prop + "[" + i + "]");
+          if (l == 0)
+            result[prop] = [];
+        } else {
+          var isEmpty = true;
+          for (var p in cur) {
+            isEmpty = false;
+            recursive(cur[p], prop ? prop + "." + p : p);
+          }
+          if (isEmpty && prop)
+            result[prop] = {};
+        }
+      }
+      recursive(data, "");
+      return <JSON>result;
+    }
+   
   }
 
   onFormCreate(formGroup:FormGroup | FormArray ){

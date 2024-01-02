@@ -13,18 +13,11 @@ import { BaseComponent } from '../bsae-component.component';
   templateUrl: './currency.component.html',
   styleUrls: ['../../dynamic-form.component.scss']
 })
-export class CurrencyComponent extends BaseComponent  {
+export class CurrencyComponent extends BaseComponent {
 
-  
-   /************************************************************************************************************************************************************************ */
-
- 
   /************************************************************************************************************************************************************************ */
-
-
   constructor(protected override injector: Injector, protected override element: ElementRef) {
-    super(injector,element);
- 
+    super(injector, element);
   }
   /************************************************************************************************************************************************************************ */
 

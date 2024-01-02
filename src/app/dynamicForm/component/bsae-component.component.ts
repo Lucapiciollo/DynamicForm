@@ -70,7 +70,7 @@ export class BaseComponent implements IBaseComponent {
             pairwise()
           ).subscribe(([prevValue, next]: [any, any]) => {
             if (control.formAction && control.formAction.onChange)
-              control.formAction.onChange(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.typeControlForm as TYPE_CONTROL_FORM, prevValue, this._allGroup);
+              control.formAction.onChange(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, prevValue, this._allGroup);
           })
         }
         if (control.formAction.autocomplete == true) {
@@ -95,7 +95,7 @@ export class BaseComponent implements IBaseComponent {
           })
         }
         if (control.formAction && control.formAction.onInitialize) {
-          control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.typeControlForm as TYPE_CONTROL_FORM, allGroup);
+          control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup);
         }
       }
     })
@@ -125,7 +125,7 @@ export class BaseComponent implements IBaseComponent {
         this.control.formAction?.formControl,
         this.control.formAction.formName,
         this.group,
-        this.control.formAction.typeControlForm, null, this._allGroup);
+        this.control.formAction.type, null, this._allGroup);
   }
 
   /************************************************************************************************************************************************************************ */

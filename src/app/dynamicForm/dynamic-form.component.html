@@ -1,23 +1,22 @@
- <form class="px-3 ">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+ <div class="p-1 px-3">
 
      <ng-container  >
      
               <ng-template #ConfigForm let-configForm   [ngIf]="questions">
                    
-                <div class="row my-2 containerForm px-2" #containerForm *ngIf=" configForm!=null"> 
+                <div class="p-1 px-3  " #containerForm *ngIf=" configForm!=null"> 
                    
                         <ng-container *ngFor="let data  of configForm ;let formGroupIndex=index"
                        
                                     [ngTemplateOutlet]="  TypeForm "
                                     [ngTemplateOutletContext]="{ $implicit: data.formGroup   ,formGroupIndex:formGroupIndex, group:data ,containerForm:containerForm, actions: data.actions||[]  , cfForm:configForm}">
-                                    <div  *ngIf="data.title" class="title text-left my-3">{{data.title }}  </div>
+                                    <div  *ngIf="data.title" class="form-title text-left my-3">{{data.title }}  </div>
                                    
                          </ng-container>
           
-                 </div>    
+                </div>    
             
-
-               
               </ng-template>
 
 
@@ -26,20 +25,20 @@
                     <ng-container *ngFor="let data  of   typeForm ;let formActionIndex=index ; let last=last"
                                 [ngTemplateOutlet]="  FormAction "
                                 [ngTemplateOutletContext]="{  $implicit: data?.formAction||{}  ,formGroupIndex:formGroupIndex ,formActionIndex:formActionIndex, group:group.formGroup,containerForm:containerForm}">
-                                <div class="subTitle my-2" *ngIf="data?.formAction?.title && data?.formAction?.typeControlForm==TYPE_CONTROL_FORM.GROUP"  >{{data?.formAction?.title }}</div>                        
+                                <div class="form-sub-title" *ngIf="data?.formAction?.title && data?.formAction?.type==TYPE_CONTROL_FORM.GROUP"  >{{data?.formAction?.title }}</div>                        
  
                     </ng-container>
                      
                     
                     
-                    <div class="row m-auto mb-3"  >
-                        <div class="col-12 text-end">
+                    <div class="row my-2 container-action"  >
+                       
                              <button mat-flat-button #button [class]="action.cssClassButton?.join(' ')" *ngFor="let action of actions"
-                                   (click)="action.action(questions,group.id||'',formGroup,addForm.bind(this))"
+                                   (click)="action.action(questions,group.id||'',formGroup,initializeForm.bind(this))"
                               >
                                 <i #icon [class]="action.cssClassIcon?.join(' ')" aria-hidden="true">  </i>{{action.label}} 
                             </button>
-                        </div>
+                       
                     </div>    
                      
 
@@ -57,7 +56,7 @@
                                  [ngTemplateOutletContext]="{  $implicit: formAction?.formGroup }">
                
                                 
-                                <ng-container [ngSwitch]="formAction.typeControlForm" >
+                                <ng-container [ngSwitch]="formAction.type" >
                                     <app-combo *ngSwitchCase="TYPE_CONTROL_FORM.COMBO"     [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-combo>
                                     <app-checkbox *ngSwitchCase="TYPE_CONTROL_FORM.CHECKBOX" [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-checkbox>
                                     <app-currency *ngSwitchCase="TYPE_CONTROL_FORM.CURRENCY"     [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-currency>
@@ -88,10 +87,12 @@
 
  
 
-    </form>
+    </div> 
 
 
 
+
+ 
 
 
 

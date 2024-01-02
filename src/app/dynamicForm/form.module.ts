@@ -77,7 +77,8 @@ import { SortActionComponent } from "./component/sort-action/sort-action.compone
     NumberComponent,
     QuestionRadioButtonComponent,
     TextareaComponent,
-    LinkComponent
+    LinkComponent,
+    MaterialModule
   ]
 
 })

@@ -1,32 +1,38 @@
-::ng-deep mat-form-field > .mat-mdc-text-field-wrapper {
-    background: rgba(0,0,0,.01) !important;
-    border-radius: 5px;
-    // border-bottom: 1px solid  rgba(0,0,0,.1) !important;;
+ :host{
+    --error-color : 255, 0, 0 ;
+    --line-left-color: linear-gradient(0deg, rgba(var(--error-color),1)  , rgba(var(--error-color),0) 100%);
+    --form-field-background:rgba(0,0,0,.01) !important;
+    --form-field-border-bottom: 1px solid  rgba(0,0,0,.1) !important; 
+    --border-radius: 5px;
+ }
 
+::ng-deep mat-form-field > .mat-mdc-text-field-wrapper {
+    background: var(--form-field-background);
+    border-radius: var(--border-radius);
+    border-bottom: var(--form-field-border-bottom);
 }
 
 ::ng-deep mat-form-field > .mat-mdc-text-field-wrapper:after {
+    transition: height 0.5s ease-out;
     content: "";
-    background: rgba(255, 0, 0,0.1);
     position: absolute;
     bottom: 0;
     left: 0;
-    height: 100%;
-    width: 2px;
-    border-radius: 5px;
-  }
+    height: 0%;
+    width: 3px;
+}
 
 
 ::ng-deep mat-form-field > .mat-mdc-text-field-wrapper:hover:after {
+    transition: height 0.2s ease-in;
     content: "";
-    background: rgba(255, 0, 0,0.3);
+    background: var(--line-left-color);
     position: absolute;
     bottom: 0;
     left: 0;
     height: 100%;
-    width: 2px;
-    border-radius: 5px;
-  }
+    width: 3px;
+   }
 
 
  
@@ -52,52 +58,51 @@
 }
 
 ::ng-deep.mdc-text-field--invalid:not(.mdc-text-field--disabled) .mdc-floating-label{
-    color: red !important;
+    color: rgb(var(--error-color)) !important;
 }
 
  
-.title{
-    --background-color: brown;
-    --border-color: brown;
-    --border-style: solid;
-    --border-width: 1px;
-    --padding: 5px 5px 5px 15px;
-    --color:white;
-    --border-radius: 5px;
-    --font-size: 1.2rem;
-
-     font-size: var(--font-size);
-    background-color: var(--background-color);
-    border-color: var(--border-color);
-    border-style: var(--border-style);
-    border-width: var(--border-width);
-    padding: var(--padding);
-    color: var(--color);
-    border-radius: var(--border-radius);
+.form-title{
+    --form-background-color: brown;
+    --form-border-color: brown;
+    --form-border-style: solid;
+    --form-border-width: 1px;
+    --form-padding: 5px 5px 5px 15px;
+    --form-color:white;
+    --form-border-radius: 5px;
+ 
+    font-size: var(--form-font-size);
+    background-color: var(--form-background-color);
+    border-color: var(--form-border-color);
+    border-style: var(--form-border-style);
+    border-width: var(--form-border-width);
+    padding: var(--form-padding);
+    color: var(--form-color);
+    border-radius: var(--form-border-radius);
+    font-weight: bold;
 }
 
-.subTitle{
-    --background-color: rgba(165, 42, 42, 0.1);
-    --border-color: rgba(165, 42, 42, 0.5);
-    --border-style: solid;
-    --border-width: 1px;
-    --padding: 3px 3px 3px 15px;
-    --color:brown;
-    --border-radius: 5px;
-    --font-size: 0.9rem;
-
+.form-sub-title{
+    --sub-title-background-color: white
+    --sub-title-border-color: rgba(165, 42, 42, 0.5);
+    --sub-title-border-style: none;
+    --sub-title-border-width: 1px;
+    --sub-title-padding: 3px 3px 3px 15px;
+    --sub-title-color:brown;
+    --sub-title-border-radius: 5px;
+ 
     font-size: var(--font-size);
-    background-color: var(--background-color);
-    border-color: var(--border-color);
-    border-style: var(--border-style);
-    border-width: var(--border-width);
-    padding: var(--padding);
-    color: var(--color);
-    border-radius: var(--border-radius);
+    background-color: var(--sub-title-background-color);
+    border-color: var(--sub-title-border-color);
+    border-style: var(--sub-title-border-style);
+    border-width: var(--sub-title-border-width);
+    padding: var(--sub-title-padding);
+    color: var(--sub-title-color);
+    border-radius: var(--sub-title-border-radius);
+    font-weight: bold;
 }
 
 .containerForm{
-    // background-color: rgba(0,0,0,.03);
-
+  padding: 20px;
     
 }

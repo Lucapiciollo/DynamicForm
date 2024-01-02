@@ -4,17 +4,16 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { FormModule } from './dynamicForm/form.module';
 import { MaterialModule } from './dynamicForm/material.module';
- 
+import { MatStepperModule } from '@angular/material/stepper';
+
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
-    
     BrowserAnimationsModule,
     BrowserModule,
     FormModule,
-    MaterialModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
