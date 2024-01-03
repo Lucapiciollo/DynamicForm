@@ -8,3 +8,7 @@
     --form-border-radius: 5px !important;
     font-weight: bold;
 }
+
+:host{
+    --line-left-color: red !important;
+}

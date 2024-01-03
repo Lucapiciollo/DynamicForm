@@ -215,19 +215,19 @@ export function activityForm(registry: any, context: any): ConfigForm {
                 cssClassButton: ["col"],
                 cssClassIcon: ["fa", "fa-plus", "mx-2"],
                 label: "Add residenza",
-                action(questions, idForm, formGroup, initializeForm) {
+                action(questions, idForm, formGroup) {
                     (questions[0] as any).formGroup.push(createResidenza(registry, context))
 
-                    initializeForm();
+                     
                 }
             }, {
                 cssClassButton: ["col"],
                 cssClassIcon: ["fa", "fa-plus", "mx-2"],
                 label: "Add Documento",
-                action(questions, idForm, formGroup, initializeForm) {
+                action(questions, idForm, formGroup) {
                     (questions[0] as any).formGroup.push(createDocument(registry, context))
 
-                    initializeForm();
+                    
                 }
             }]
         }
@@ -478,10 +478,9 @@ export function createResidenza(object: any, context: any): Form {
             formGroup: [{
                 actions: [{
                     label: "Elimina",
-                    action(questions, idForm, formGroup, initializeForm) {
+                    action(questions, idForm, formGroup) {
                         let form = JSON.findByValue(questions, idForm, ["formControl"]);
-                        delete (questions[0] as any).formGroup[(form[0].key as string).split(".")[2]];
-                        initializeForm();
+                        delete (questions[0] as any).formGroup[(form[0].key as string).split(".")[2]]; 
                     }
                 }],
                 formGroup: [
@@ -572,7 +571,7 @@ export function createDocument<T extends Document>(object: T, context: any): For
             formGroup: [{
                 actions: [{
                     label: "Elimina",
-                    action(questions, idForm, formGroup, initializeForm) {
+                    action(questions, idForm, formGroup) {
                         let form = JSON.findByValue(questions, idForm, ["formControl"]);
                         delete (questions[0] as any).formGroup[(form[0].key as string).split(".")[2]]
                     }

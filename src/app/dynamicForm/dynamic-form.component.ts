@@ -34,7 +34,7 @@ export class DynamicFormComponent {
   }
 
 
-  initializeForm(form: any) {
+  initializeForm() {
     this.ngOnInit()
   }
 

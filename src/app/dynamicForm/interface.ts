@@ -49,7 +49,7 @@ export type ConfigForm = Array<{
   formGroup?: TypeForm,
   bottomLabel?: string,
   actions?: Array<{
-    label: string, action: (questions: Array<Form>, idForm: string, formGroup: FormGroup | FormArray, initializeForm: () => void) => void, cssClassIcon?: Array<string>, cssClassButton?: Array<string>
+    label: string, action: (questions: Array<Form>, idForm: string, formGroup: FormGroup | FormArray ) => void, cssClassIcon?: Array<string>, cssClassButton?: Array<string>
   }>
 }>;
 
