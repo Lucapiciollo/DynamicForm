@@ -28,7 +28,7 @@
 
 //     return [
 //         {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "CHECKBOX",
 //             type: TYPE_CONTROL_FORM.CHECKBOX,
 //             css: { class: ["col-3"] },
@@ -38,7 +38,7 @@
 //             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
 //         }
 //     }, {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "COMBOAUTOCOMPLETE",
 //             type: TYPE_CONTROL_FORM.COMBO,
 //             css: { class: ["col-3"] },
@@ -56,7 +56,7 @@
 //         },
 
 //     }, {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "COMBO",
 //             type: TYPE_CONTROL_FORM.COMBO,
 //             multiple: true,
@@ -68,7 +68,7 @@
 //         },
 
 //     }, {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "RADIOGROUP",
 //             type: TYPE_CONTROL_FORM.RADIOGROUP,
 //             multiple: true,
@@ -80,7 +80,7 @@
 //         },
 
 //     }, {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "CURRENCY",
 //             type: TYPE_CONTROL_FORM.CURRENCY,
 //             simbol: "€",
@@ -91,7 +91,7 @@
 //             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
 //         }
 //     }, {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "DATA",
 //             type: TYPE_CONTROL_FORM.DATA,
 //             css: { class: ["col-3"] },
@@ -101,7 +101,7 @@
 //             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
 //         }
 //     }, {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "DATARANGE",
 //             type: TYPE_CONTROL_FORM.DATARANGE,
 //             css: { class: ["col-3"] },
@@ -111,7 +111,7 @@
 //             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
 //         }
 //     }, {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "DATETIME",
 //             type: TYPE_CONTROL_FORM.DATETIME,
 //             css: { class: ["col-3"] },
@@ -122,7 +122,7 @@
 //         }
 //     }, 
 //     {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "FILE",
 //             type: TYPE_CONTROL_FORM.FILE,
 //             css: { class: ["col-3"] },
@@ -133,7 +133,7 @@
 //         }
 //     }, 
 //     {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "TEXT",
 //             type: TYPE_CONTROL_FORM.TEXT,
 //             css: { class: ["col-3"] },
@@ -144,7 +144,7 @@
 //         }
 //     }
 //     , {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "LABEL",
 //             type: TYPE_CONTROL_FORM.LABEL,
 //             css: { class: ["col-3"] },
@@ -154,7 +154,7 @@
 
 //         }
 //     }, {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "SORTACTION",
 //             type: TYPE_CONTROL_FORM.SORTACTION,
 //             css: { iconCss:"iconCss", class: ["col-1"], toggleIcons: ['assets/img/top-priority.svg', 'assets/img/bottom-priority.svg'] },
@@ -164,7 +164,7 @@
 //             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
 //         }
 //     }, {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "LINK",
 //             type: TYPE_CONTROL_FORM.LINK,
 //             css: { class: ["col-3"] },
@@ -174,7 +174,7 @@
 //             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
 //         }
 //     }, {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "NUMBER",
 //             type: TYPE_CONTROL_FORM.NUMBER,
 //             css: { class: ["col-3"] },
@@ -184,7 +184,7 @@
 //         }
 //     }
 //     , {
-//         formAction: {
+//       formAction: { disableSpeech:true,
 //             title: "TEXTAREA",
 //             type: TYPE_CONTROL_FORM.TEXTAREA,
 //             css: { class: ["col-3"] },
@@ -197,11 +197,10 @@
 // }
 
 
-import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
+import { FormControl, Validators } from "@angular/forms";
 
-import { inject } from "@angular/core";
-import { ConfigForm, Form, TYPE_CONTROL_FORM, TypeForm } from "./dynamicForm/interface";
 import * as moment from "moment";
+import { ConfigForm, Form, TYPE_CONTROL_FORM, TypeForm } from "./dynamicForm/interface";
 
 
 
@@ -241,6 +240,7 @@ export function createRegistry(object: any, context: any): TypeForm {
     return [
         {
             formAction: {
+                disableSpeech: true,
                 css: { hide: true },
                 formControl: new FormControl(object?.registryId),
                 formName: "registryId",
@@ -253,6 +253,7 @@ export function createRegistry(object: any, context: any): TypeForm {
         {
 
             formAction: {
+                disableSpeech: true,
                 css: { hide: true },
                 formControl: new FormControl(object?.registryId),
                 formName: "residence",
@@ -263,7 +264,7 @@ export function createRegistry(object: any, context: any): TypeForm {
         },
         // {
 
-        //     formAction: {
+        //   formAction: { disableSpeech:true,
         //         formControl: new FormControl(object?.registryId),
         //         title: "Documento",
         //         formName: "document",
@@ -274,6 +275,7 @@ export function createRegistry(object: any, context: any): TypeForm {
         {
 
             formAction: {
+                disableSpeech: true,
                 css: { hide: true },
                 formControl: new FormControl(object?.registryId),
                 formName: "domicile",
@@ -285,6 +287,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
         {
             formAction: {
+                disableSpeech: true,
                 title: "NOME",
                 type: TYPE_CONTROL_FORM.TEXT,
                 css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
@@ -297,6 +300,7 @@ export function createRegistry(object: any, context: any): TypeForm {
         },
         {
             formAction: {
+                disableSpeech: true,
                 title: "COGNOME",
                 type: TYPE_CONTROL_FORM.TEXT,
                 css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
@@ -309,6 +313,7 @@ export function createRegistry(object: any, context: any): TypeForm {
         },
         {
             formAction: {
+                disableSpeech: true,
                 title: "SESSO",
                 type: TYPE_CONTROL_FORM.COMBO,
                 css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
@@ -325,6 +330,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
         {
             formAction: {
+                disableSpeech: true,
                 title: "DATA DI ASCITA",
                 type: TYPE_CONTROL_FORM.DATA,
                 css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-3", "col-xxl-3"] },
@@ -339,6 +345,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
         {
             formAction: {
+                disableSpeech: true,
                 title: "PROVINCIA DI NASCITA",
                 type: TYPE_CONTROL_FORM.COMBO,
                 css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-3"] },
@@ -351,6 +358,7 @@ export function createRegistry(object: any, context: any): TypeForm {
             }
         }, {
             formAction: {
+                disableSpeech: true,
                 title: "COMUNE",
                 type: TYPE_CONTROL_FORM.COMBO,
                 css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-3"] },
@@ -365,6 +373,7 @@ export function createRegistry(object: any, context: any): TypeForm {
         },
         {
             formAction: {
+                disableSpeech: true,
                 title: "CODICE FISCALE",
                 type: TYPE_CONTROL_FORM.TEXT,
                 css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-3", "col-xxl-3"] },
@@ -378,6 +387,7 @@ export function createRegistry(object: any, context: any): TypeForm {
         },
         {
             formAction: {
+                disableSpeech: true,
                 title: "CITTADINANZA",
                 type: TYPE_CONTROL_FORM.COMBO,
                 css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
@@ -395,6 +405,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
         {
             formAction: {
+                disableSpeech: true,
                 title: "TELEFONO",
                 type: TYPE_CONTROL_FORM.TEXT,
                 css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
@@ -409,6 +420,7 @@ export function createRegistry(object: any, context: any): TypeForm {
         },
         {
             formAction: {
+                disableSpeech: true,
                 title: "MOBILE",
                 type: TYPE_CONTROL_FORM.TEXT,
                 css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
@@ -423,6 +435,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
         {
             formAction: {
+                disableSpeech: true,
                 title: "EMAIL",
                 type: TYPE_CONTROL_FORM.TEXT,
                 css: { class: ["col-12", "col-sm-4", "col-md-6", "col-lg-6", "col-xl-6", "col-xxl-6"] },
@@ -436,6 +449,7 @@ export function createRegistry(object: any, context: any): TypeForm {
         },
         {
             formAction: {
+                disableSpeech: true,
                 title: "PEC",
                 type: TYPE_CONTROL_FORM.TEXT,
                 css: { class: ["col-12", "col-sm-4", "col-md-6", "col-lg-6", "col-xl-6", "col-xxl-6"] },
@@ -456,6 +470,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 export function createResidenza(object: any, context: any): Form {
     return {
         formAction: {
+            disableSpeech: true,
             title: "Residenza",
             type: TYPE_CONTROL_FORM.GROUP,
             formControl: new FormControl(),
@@ -473,6 +488,7 @@ export function createResidenza(object: any, context: any): Form {
 
                     {
                         formAction: {
+                            disableSpeech: true,
                             title: "VIA/PIAZZA",
                             type: TYPE_CONTROL_FORM.TEXT,
                             css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-6", "col-xl-6", "col-xxl-6"] },
@@ -483,6 +499,7 @@ export function createResidenza(object: any, context: any): Form {
                     },
                     {
                         formAction: {
+                            disableSpeech: true,
                             title: "CIVICO",
                             type: TYPE_CONTROL_FORM.TEXT,
                             css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
@@ -492,6 +509,7 @@ export function createResidenza(object: any, context: any): Form {
                     },
                     {
                         formAction: {
+                            disableSpeech: true,
                             title: "CAP",
                             type: TYPE_CONTROL_FORM.TEXT,
                             css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
@@ -501,6 +519,7 @@ export function createResidenza(object: any, context: any): Form {
                     },
                     {
                         formAction: {
+                            disableSpeech: true,
                             title: "REGIONE",
                             type: TYPE_CONTROL_FORM.COMBO,
                             css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
@@ -512,6 +531,7 @@ export function createResidenza(object: any, context: any): Form {
                     },
                     {
                         formAction: {
+                            disableSpeech: true,
                             title: "PROVINCIA",
                             type: TYPE_CONTROL_FORM.COMBO,
                             css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
@@ -524,6 +544,7 @@ export function createResidenza(object: any, context: any): Form {
 
                     {
                         formAction: {
+                            disableSpeech: true,
                             title: "COMUNE",
                             type: TYPE_CONTROL_FORM.COMBO,
                             css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
@@ -543,6 +564,7 @@ export function createDocument<T extends Document>(object: T, context: any): For
 
     return {
         formAction: {
+            disableSpeech: true,
             title: "Documento",
             type: TYPE_CONTROL_FORM.GROUP,
             formControl: new FormControl(),
@@ -558,6 +580,7 @@ export function createDocument<T extends Document>(object: T, context: any): For
                 formGroup: [{
 
                     formAction: {
+                        disableSpeech: true,
                         css: { hide: true },
                         formControl: new FormControl(null, { updateOn: "blur" }),
                         formName: "documentId",
@@ -569,6 +592,7 @@ export function createDocument<T extends Document>(object: T, context: any): For
                 {
 
                     formAction: {
+                        disableSpeech: true,
                         css: { hide: true },
                         formControl: new FormControl(null, { updateOn: "blur" }),
                         formName: "fiscalCode",
@@ -580,6 +604,7 @@ export function createDocument<T extends Document>(object: T, context: any): For
 
                 {
                     formAction: {
+                        disableSpeech: true,
                         title: "TIPO",
                         type: TYPE_CONTROL_FORM.COMBO,
                         css: { class: ["col-12", "col-sm-4", "col-md-2", "col-lg-2", "col-xl-2", "col-xxl-2"] },
@@ -594,6 +619,7 @@ export function createDocument<T extends Document>(object: T, context: any): For
                 },
                 {
                     formAction: {
+                        disableSpeech: true,
                         title: "NUMERO",
                         type: TYPE_CONTROL_FORM.TEXT,
                         css: { class: ["col-12", "col-sm-4", "col-md-2", "col-lg-2", "col-xl-2", "col-xxl-2"] },
@@ -608,6 +634,7 @@ export function createDocument<T extends Document>(object: T, context: any): For
 
                 {
                     formAction: {
+                        disableSpeech: true,
                         title: "RILASCIATA IL",
                         optionDate: { min: moment().subtract(10, "year").format("yyyy-MM-DD"), max: moment().add(10, "year").format("yyyy-MM-DD") },
                         type: TYPE_CONTROL_FORM.DATA,
@@ -623,6 +650,7 @@ export function createDocument<T extends Document>(object: T, context: any): For
 
                 {
                     formAction: {
+                        disableSpeech: true,
                         title: "DATA SCADENZA",
                         type: TYPE_CONTROL_FORM.DATA,
                         optionDate: { min: moment().subtract(10, "year").format("yyyy-MM-DD"), max: moment().add(10, "year").format("yyyy-MM-DD") },

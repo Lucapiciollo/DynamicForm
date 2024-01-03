@@ -19,6 +19,8 @@ import { TextareaComponent } from "./component/textarea/textarea.component";
 import { LinkComponent } from "./component/link/link.component";
 import { SpeechDirective } from "./directive/speech-recognition";
 import { SortActionComponent } from "./component/sort-action/sort-action.component";
+import { PlCoreModule } from "pl-core-utils-library";
+import { InitializerModule } from "../initializer.module";
 /**
  * @author luca.piciollo
  * @email lucapiciollo@gmail.com
@@ -55,11 +57,10 @@ import { SortActionComponent } from "./component/sort-action/sort-action.compone
     ReactiveFormsModule,
     FormsModule,
     MaterialModule,
-    CommonModule
-  ],
+   
+    ],
   exports: [
     SortActionComponent,
-    CommonModule,
     ReactiveFormsModule,
     FormsModule,
     ComboComponent,

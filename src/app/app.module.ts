@@ -3,18 +3,20 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { FormModule } from './dynamicForm/form.module';
-import { MaterialModule } from './dynamicForm/material.module';
-import { MatStepperModule } from '@angular/material/stepper';
+import { PlCoreModule } from 'pl-core-utils-library';
+import { InitializerModule } from './initializer.module';
 
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
+    // InitializerModule.forRoot(),
     BrowserAnimationsModule,
     BrowserModule,
     FormModule,
   ],
+  exports: [ ],
   providers: [],
   bootstrap: [AppComponent]
 })
