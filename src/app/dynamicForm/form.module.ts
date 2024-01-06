@@ -20,8 +20,7 @@ import { LinkComponent } from "./component/link/link.component";
 import { SpeechDirective } from "./directive/speech-recognition";
 import { SortActionComponent } from "./component/sort-action/sort-action.component";
 import { PlCoreModule } from "pl-core-utils-library";
-import { InitializerModule } from "../initializer.module";
-/**
+ /**
  * @author luca.piciollo
  * @email lucapiciollo@gmail.com
  * @create date 2022-03-29 19:47:50

@@ -13,16 +13,16 @@ export class AppComponent {
   questions$: Observable<ConfigForm>;
 
   constructor() {
-     this.questions$ = of(activityForm({},null)); 
+    this.questions$ = of(activityForm({}, null));
 
-      
-   
+
+
   }
 
-  onFormCreate(formGroup:FormGroup | FormArray ){
-    formGroup.valueChanges.pipe(debounce(()=>timer(0,1000))).subscribe(
-       value=>
-          console.log(value)
+  onFormCreate(formGroup: FormGroup | FormArray) {
+    formGroup.valueChanges.pipe(debounce(() => timer(0, 1000))).subscribe(
+      (value: any) =>
+        console.log(value)
     )
   }
 }

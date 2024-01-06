@@ -4,14 +4,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { FormModule } from './dynamicForm/form.module';
 import { PlCoreModule } from 'pl-core-utils-library';
-import { InitializerModule } from './initializer.module';
-
+import { InitializerModule } from './core/module/initializer.module';
+ 
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
-    // InitializerModule.forRoot(),
+    InitializerModule,
     BrowserAnimationsModule,
     BrowserModule,
     FormModule,

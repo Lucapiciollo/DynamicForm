@@ -249,29 +249,8 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 }
             }
-        },
-        {
-
-            formAction: {
-                disableSpeech: true,
-                css: { hide: true },
-                formControl: new FormControl(object?.registryId),
-                formName: "residence",
-                onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-
-                }
-            }
-        },
-        // {
-
-        //   formAction: { disableSpeech:true,
-        //         formControl: new FormControl(object?.registryId),
-        //         title: "Documento",
-        //         formName: "document",
-        //         onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { },
-
-        //     }
-        // },
+        } ,
+       
         {
 
             formAction: {
@@ -474,7 +453,7 @@ export function createResidenza(object: any, context: any): Form {
             title: "Residenza",
             type: TYPE_CONTROL_FORM.GROUP,
             formControl: new FormControl(),
-            formName: "residenza",
+            formName: "residence",
             formGroup: [{
                 actions: [{
                     label: "Elimina",
