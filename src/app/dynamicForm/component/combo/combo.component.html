@@ -23,10 +23,10 @@
    <div *ngIf="control.formAction.autocomplete">
     <mat-form-field class="w-100">
       <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
-      <input #inp [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
+      <input #inp [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" 
         matInput [placeholder]="control.formAction.placeholder"   [formControl]="filtercontrol" 
         [matAutocomplete]="combo" />
-      <mat-autocomplete #combo="matAutocomplete" autoActiveFirstOption="true" multiple>
+      <mat-autocomplete #combo="matAutocomplete" autoActiveFirstOption="true" multiple >
         <mat-option #opt
           [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'"
           (click)="optionSelected(control.formAction.formName ,option) ; control.formAction.optionSelected ? control.formAction.optionSelected(control.formAction.formName,  option) : null"

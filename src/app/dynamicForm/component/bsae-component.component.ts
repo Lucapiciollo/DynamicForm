@@ -57,12 +57,25 @@ export class BaseComponent implements IBaseComponent {
   public filtercontrol: FormControl = new FormControl();
 
   ngOnInit() {
+
+    
+
     combineLatest({
       control: this.obsQuestions,
       allGroup: this.obsAllGroup
     }).subscribe({
       next: ({ allGroup, control }) => {
         if (!control.formAction.autocomplete) {
+
+
+          
+          control.formAction?.formControl.statusChanges.pipe(
+            takeUntilDestroyed(this.destroyRef)
+          ).subscribe(status=> {
+            console.log(status)
+            this.filtercontrol.disable()
+          });
+
           control.formAction?.formControl.valueChanges.pipe(
             takeUntilDestroyed(this.destroyRef),
             startWith(null),

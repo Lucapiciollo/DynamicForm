@@ -16,7 +16,7 @@ import { FormControl } from '@angular/forms';
 })
 export class ComboComponent extends BaseComponent {
 
- 
+
 
 
   override toString(num: any): string {
@@ -31,11 +31,13 @@ export class ComboComponent extends BaseComponent {
   }
   /************************************************************************************************************************************************************************ */
   optionSelected(name: string, value: any) {
-    this.filtercontrol.setValue(value.description, { emitEvent: false });
-    this.control.formAction.formControl.setValue(value.id);
-    this.callOnhange();
+    if (!this.control.formAction.formControl.disabled) {
+      this.filtercontrol.setValue(value.description, { emitEvent: false });
+      this.control.formAction.formControl.setValue(value.id);
+      this.callOnhange();
+    }
 
   }
 
- 
+
 }

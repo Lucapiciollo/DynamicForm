@@ -302,7 +302,8 @@ export function createRegistry(object: any, context: any): TypeForm {
 
 
                 },
-                options: [{ id: "M", description: "Maschio" }, { id: "F", description: "Femmina" }]
+                options: [{ id: "M", description: "Maschio" }, { id: "F", description: "Femmina" }],
+                autocomplete:true
             }
         },
 
