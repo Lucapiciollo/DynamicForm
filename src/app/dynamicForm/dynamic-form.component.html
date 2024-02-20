@@ -1,105 +1,121 @@
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
- <div class="p-1 px-3">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<div class="p-1 px-3">
 
-     <ng-container  >
-     
-              <ng-template #ConfigForm let-configForm   [ngIf]="questions">
-                   
-                <div class="p-1 px-3  " #containerForm *ngIf=" configForm!=null"> 
-                   
-                        <ng-container *ngFor="let data  of configForm ;let formGroupIndex=index"
-                       
-                                    [ngTemplateOutlet]="  TypeForm "
-                                    [ngTemplateOutletContext]="{ $implicit: data.formGroup   ,formGroupIndex:formGroupIndex, group:data ,containerForm:containerForm, actions: data.actions||[]  , cfForm:configForm}">
-                                    <div  *ngIf="data.title" class="form-title text-left my-3">{{data.title }}  </div>
-                                   
-                         </ng-container>
-          
-                </div>    
-            
-              </ng-template>
+  <ng-container>
 
+    <ng-template #ConfigForm let-configForm [ngIf]="_questions">
 
-              <ng-template #TypeForm let-typeForm let-formGroupIndex="formGroupIndex"    let-group="group" let-containerForm="containerForm" let-actions="actions"  let-cfForm="cfForm">
-                <div class="row" *ngIf="{isLast:false} as last">
-                    <ng-container *ngFor="let data  of   typeForm ;let formActionIndex=index ; let last=last"
-                                [ngTemplateOutlet]="  FormAction "
-                                [ngTemplateOutletContext]="{  $implicit: data?.formAction||{}  ,formGroupIndex:formGroupIndex ,formActionIndex:formActionIndex, group:group.formGroup,containerForm:containerForm}">
-                                <div class="form-sub-title" *ngIf="data?.formAction?.title && data?.formAction?.type==TYPE_CONTROL_FORM.GROUP"  >{{data?.formAction?.title }}</div>                        
- 
-                    </ng-container>
-                     
-                    
-                    
-                    <div class="row my-2 container-action"  >
-                       
-                             <button mat-flat-button #button [class]="action.cssClassButton?.join(' ')" *ngFor="let action of actions"
-                                   (click)="action.action(questions,group.id||'',formGroup );initializeForm()"
-                              >
-                                <i #icon [class]="action.cssClassIcon?.join(' ')" aria-hidden="true">  </i>{{action.label}} 
-                            </button>
-                       
-                    </div>    
-                     
+      <div class="p-1 px-3 row" #containerForm *ngIf=" configForm!=null">
+
+        <ng-container *ngFor="let data  of configForm ;let formGroupIndex=index" 
+                       [ngTemplateOutlet]="  TypeForm "
+                       [ngTemplateOutletContext]="{ $implicit: data.formGroup , cssClass:data.class, title:data.title ,formGroupIndex:formGroupIndex, group:data ,containerForm:containerForm, actions: data.actions||[]  , cfForm:configForm}">
+         <!-- <div *ngIf="data.title" class="form-title col-4">{{data.title }} </div>   -->
+
+        </ng-container>
+
+      </div>
+
+    </ng-template>
 
 
-                </div>
-              </ng-template>
+    <ng-template #TypeForm let-typeForm  let-cssClass="cssClass" let-title="title" let-formGroupIndex="formGroupIndex" let-group="group" let-containerForm="containerForm" let-actions="actions" let-cfForm="cfForm">
+       
+      <div [class]="(cssClass||['col-12']).join(' ')"  *ngIf="{isLast:false} as last">
 
-
-              <ng-template #FormAction let-formAction   let-formGroupIndex="formGroupIndex"   let-formActionIndex="formActionIndex"    let-group="group" let-containerForm="containerForm">
-                  
+        <div class="row py-2" *ngIf="title">
+          <div class="col-12"> <div  class="form-title ">{{title }} </div> </div>
+        </div> 
+        
+        <div class="row py-2">
+  
+          <ng-container *ngFor="let data  of   typeForm ;let formActionIndex=index ; let last=last"
+                        [ngTemplateOutlet]="  FormAction "
+                        [ngTemplateOutletContext]="{  $implicit: data?.formAction||{}  ,formGroupIndex:formGroupIndex ,formActionIndex:formActionIndex, group:group.formGroup,containerForm:containerForm}">
                 
-                                                
-  
-                <ng-container  [ngTemplateOutlet]="ConfigForm"
-                                 [ngTemplateOutletContext]="{  $implicit: formAction?.formGroup }">
-               
-                                
-                                <ng-container [ngSwitch]="formAction.type" >
-                                    <app-combo *ngSwitchCase="TYPE_CONTROL_FORM.COMBO"     [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-combo>
-                                    <app-checkbox *ngSwitchCase="TYPE_CONTROL_FORM.CHECKBOX" [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-checkbox>
-                                    <app-currency *ngSwitchCase="TYPE_CONTROL_FORM.CURRENCY"     [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-currency>
-                                    <app-date *ngSwitchCase="TYPE_CONTROL_FORM.DATA"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-date>
-                                    <app-date-range *ngSwitchCase="TYPE_CONTROL_FORM.DATARANGE"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-date-range>
-                                    <app-input-text *ngSwitchCase="TYPE_CONTROL_FORM.TEXT"    [question]="formAction" [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-input-text>
-                                    <app-date-time *ngSwitchCase="TYPE_CONTROL_FORM.DATETIME"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-date-time>
-                                    <app-file *ngSwitchCase="TYPE_CONTROL_FORM.FILE"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-file>                              
-                                    <app-input-time *ngSwitchCase="TYPE_CONTROL_FORM.TIME"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-input-time>
-                                    <app-label *ngSwitchCase="TYPE_CONTROL_FORM.LABEL"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-label>
-                                    <app-link *ngSwitchCase="TYPE_CONTROL_FORM.LINK"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-link>
-                                    <app-number *ngSwitchCase="TYPE_CONTROL_FORM.NUMBER"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-number>
-                                    <app-radiobutton *ngSwitchCase="TYPE_CONTROL_FORM.RADIOGROUP"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-radiobutton>
-                                    <app-textarea *ngSwitchCase="TYPE_CONTROL_FORM.TEXTAREA"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-textarea>  
-                                    <app-sort-action *ngSwitchCase="TYPE_CONTROL_FORM.SORTACTION"    [question]="formAction"  [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="questions"></app-sort-action>  
+                <div class="form-sub-title" *ngIf="data?.formAction?.title && data?.formAction?.type==TYPE_CONTROL_FORM.GROUP">{{data?.formAction?.title  }}</div>
+          </ng-container>
 
-                                </ng-container>
 
-                                
-            
-                  </ng-container>
+
+          <!-- <div class="  my-2 container-action" > -->
+
+            <ng-container *ngFor="let action of actions">
+              <button mat-flat-button #button [class]="action.cssClassButton?.join(' ')"  *ngIf="action?.visible!=null && action?.visible==true"
+                [disabled]="action?.disabled||false"
+                (click)="action.action(_questions,group.id||'',formGroup );initializeForm()">
+                <i #icon [class]="action.cssClassIcon?.join(' ')" aria-hidden="true"> </i>{{action.label}}
+              </button>
+            </ng-container>
+
+          <!-- </div> -->
+        </div>
+      </div>
+    </ng-template>
+
+
+    <ng-template #FormAction let-formAction let-formGroupIndex="formGroupIndex" let-formActionIndex="formActionIndex" let-group="group" let-containerForm="containerForm">
+
+
+
+
+      <ng-container [ngTemplateOutlet]="ConfigForm" [ngTemplateOutletContext]="{  $implicit: formAction?.formGroup }">
+
+
+        <ng-container [ngSwitch]="formAction.type">
+          <app-combo *ngSwitchCase="TYPE_CONTROL_FORM.COMBO" [question]="formAction" [formActionIndex]="formActionIndex"
+            [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-combo>
+          <app-checkbox *ngSwitchCase="TYPE_CONTROL_FORM.CHECKBOX" [question]="formAction"
+            [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
+            [allGroup]="_questions"></app-checkbox>
+          <app-currency *ngSwitchCase="TYPE_CONTROL_FORM.CURRENCY" [question]="formAction"
+            [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
+            [allGroup]="_questions"></app-currency>
+          <app-date *ngSwitchCase="TYPE_CONTROL_FORM.DATA" [question]="formAction" [formActionIndex]="formActionIndex"
+            [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-date>
+          <app-date-range *ngSwitchCase="TYPE_CONTROL_FORM.DATARANGE" [question]="formAction"
+            [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
+            [allGroup]="_questions"></app-date-range>
+          <app-input-text *ngSwitchCase="TYPE_CONTROL_FORM.TEXT" [question]="formAction"
+            [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
+            [allGroup]="_questions"></app-input-text>
+          <app-date-time *ngSwitchCase="TYPE_CONTROL_FORM.DATETIME" [question]="formAction"
+            [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
+            [allGroup]="_questions"></app-date-time>
+          <app-file *ngSwitchCase="TYPE_CONTROL_FORM.FILE" [question]="formAction" [formActionIndex]="formActionIndex"
+            [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-file>
+          <app-input-time *ngSwitchCase="TYPE_CONTROL_FORM.TIME" [question]="formAction"
+            [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
+            [allGroup]="_questions"></app-input-time>
+          <app-label *ngSwitchCase="TYPE_CONTROL_FORM.LABEL" [question]="formAction" [formActionIndex]="formActionIndex"
+            [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-label>
+          <app-link *ngSwitchCase="TYPE_CONTROL_FORM.LINK" [question]="formAction" [formActionIndex]="formActionIndex"
+            [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-link>
+          <app-number *ngSwitchCase="TYPE_CONTROL_FORM.NUMBER" [question]="formAction"
+            [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
+            [allGroup]="_questions"></app-number>
+          <app-radiobutton *ngSwitchCase="TYPE_CONTROL_FORM.RADIOGROUP" [question]="formAction"
+            [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
+            [allGroup]="_questions"></app-radiobutton>
+          <app-textarea *ngSwitchCase="TYPE_CONTROL_FORM.TEXTAREA" [question]="formAction"
+            [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
+            [allGroup]="_questions"></app-textarea>
+          <app-sort-action *ngSwitchCase="TYPE_CONTROL_FORM.SORTACTION" [question]="formAction"
+            [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
+            [allGroup]="_questions"></app-sort-action>
  
-                        
-           </ng-template>
-  
-   
-     </ng-container>
-
- 
-
-    </div> 
+        </ng-container>
 
 
 
-
- 
-
+      </ng-container>
 
 
+    </ng-template>
+
+
+  </ng-container>
 
 
 
-
-
-
- 
+</div>

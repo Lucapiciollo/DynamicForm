@@ -10,7 +10,15 @@ import { StepperService } from './dynamic-form.service';
   providers: [StepperService]
 })
 export class DynamicFormComponent {
-  @Input() questions!: ConfigForm | null;
+  public _questions: ConfigForm = null;
+
+  @Input() set questions(questions: ConfigForm) {
+    if (questions) {
+      this._questions = questions ;
+      this.initializeForm();
+    }
+  };
+
   @Output() onFormCreate: EventEmitter<FormGroup | FormArray> = new EventEmitter<FormGroup | FormArray>();
   private stepperService: StepperService = inject(StepperService);
   public TYPE_CONTROL_FORM = TYPE_CONTROL_FORM;
@@ -19,8 +27,10 @@ export class DynamicFormComponent {
 
   constructor(private viewContainerRef: ViewContainerRef) { }
 
-  ngOnInit() {
-    let fg = ((this.stepperService.toFormGroup(this.questions as any) as FormArray).controls as any);
+  ngOnInit() { }
+
+  compile() {
+    let fg = ((this.stepperService.toFormGroup(this._questions as any) as FormArray)?.controls as any);
     if (fg && fg.length == 1) {
       this.formGroup = fg[0];
     }
@@ -28,14 +38,11 @@ export class DynamicFormComponent {
       this.formGroup = new FormArray([...fg]);
     }
     this.onFormCreate.emit(this.formGroup);
-
-
-
   }
 
 
   initializeForm() {
-    this.ngOnInit()
+    this.compile()
   }
 
 }  

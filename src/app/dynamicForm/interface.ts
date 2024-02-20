@@ -44,14 +44,18 @@ export type Form = {
 
 export type TypeForm = Array<Form>;
 
-export type ConfigForm = Array<{
+export type Group ={
   title?: string,
+  class?: Array<string>,
   formGroup?: TypeForm,
   bottomLabel?: string,
   actions?: Array<{
-    label: string, action: (questions: Array<Form>, idForm: string, formGroup: FormGroup | FormArray ) => void, cssClassIcon?: Array<string>, cssClassButton?: Array<string>
+    label?: string, action: (questions: Array<Form>, idForm: string, formGroup: FormGroup | FormArray) => void, cssClassIcon?: Array<string>, cssClassButton?: Array<string>,
+    disabled?: boolean, visible?: boolean
   }>
-}>;
+}
+
+export type ConfigForm = Array<Group>;
 
 
 

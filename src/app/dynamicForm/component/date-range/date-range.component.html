@@ -3,8 +3,8 @@
     <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>   
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-date-range-input [min]="control.formAction?.date?.min" [max]="control.formAction?.date?.max"  [rangePicker]="picker" [formGroup]="$any(control.formAction.formControl)">
-            <input matStartDate formControlName="from" [class.disabled]="control.formAction.formControl.disabled"   class=" form-control" placeholder="Start date" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'">
-            <input matEndDate formControlName="to" [class.disabled]="control.formAction.formControl.disabled" placeholder="End date" class=" form-control"  [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'">
+            <input matStartDate formControlName="from" [class.disabled]="control.formAction.formControl.disabled"   placeholder="Start date" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'">
+            <input matEndDate formControlName="to" [class.disabled]="control.formAction.formControl.disabled" placeholder="End date"    [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'">
           </mat-date-range-input>
           <mat-date-range-picker #picker   >
             <mat-date-range-picker-actions>
