@@ -26,7 +26,7 @@ export class BaseComponent implements IBaseComponent {
 
   @Output() onCaptureCam: EventEmitter<File> = new EventEmitter<File>();
   @Output() instance: EventEmitter<{ instance: BaseComponent, name: string }> = new EventEmitter<{ instance: BaseComponent, name: string }>();
-  public filteredOptions: Observable<Array<{ id: string; description: string; }>> | undefined;
+  public filteredOptions: Observable<Array<{ id: string; description: string  }>> | undefined;
   public getErrorForm: (formGroup: FormGroup, formName: string) => Array<string> = GetErrorForm;
   public getErrorFormControl: (formControl: FormControl) => Array<string> = GetErrorFormControl;
   private destroyRef: DestroyRef = inject(DestroyRef);
@@ -58,7 +58,7 @@ export class BaseComponent implements IBaseComponent {
 
   ngOnInit() {
 
-    
+
 
     combineLatest({
       control: this.obsQuestions,
@@ -68,18 +68,17 @@ export class BaseComponent implements IBaseComponent {
         if (!control.formAction.autocomplete) {
 
 
-          
+
           control.formAction?.formControl.statusChanges.pipe(
             takeUntilDestroyed(this.destroyRef)
-          ).subscribe(status=> {
-            console.log(status)
-            this.filtercontrol.disable()
+          ).subscribe(status => {
+             this.filtercontrol.disable()
           });
 
           control.formAction?.formControl.valueChanges.pipe(
             takeUntilDestroyed(this.destroyRef),
             startWith(null),
-            distinctUntilChanged((prev, curr) => prev === curr),
+            // distinctUntilChanged((prev, curr) => prev === curr),
             pairwise()
           ).subscribe(([prevValue, next]: [any, any]) => {
             if (control.formAction && control.formAction.onChange)

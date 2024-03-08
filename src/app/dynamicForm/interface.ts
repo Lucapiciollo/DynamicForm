@@ -6,7 +6,8 @@ import { FormArray, FormControl, FormGroup } from "@angular/forms";
 /*********************************************************************************************************************************** */
 
 export type TypeOptionDate = { max?: string, min?: string, onClose?: (value: any, formgroup: FormGroup) => void };
-export type TypeComboOption = Array<{ id: any, description: string, img?: string }>;
+export type TypeOptionNumber = { max?: number, min?: number, step?:number};
+export type TypeComboOption = Array<{ id: any, description: string, img?: string ,extra?:any }>;
 export type TypeCss = { iconCss?: string, classRadio?: Array<string>, class?: Array<string>, hide?: boolean, font?: { color?: string }, rows?: number, toggleIcons?: [string, string] };
 export type TypeInputText = { maxlength?: number, password?: boolean };
 export type TypeOption = { date?: TypeOptionDate, css?: TypeCss, inputText?: TypeInputText }
@@ -21,6 +22,7 @@ export type FormAction = {
   css?: TypeCss,
   type?: TYPE_CONTROL_FORM,
   optionDate?: TypeOptionDate,
+  optionNumber?: TypeOptionNumber,
   optionInputText?: TypeInputText
   options?: TypeComboOption,
   tipContent?: string,
@@ -29,7 +31,7 @@ export type FormAction = {
   disableSpeech?: boolean,
   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: Array<ConfigForm>) => void,
   onInitialize?: (idGroup: number, idForm: number, formCOntrol: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: Array<ConfigForm>) => void,
-  optionSelected?: (name: string, formGroup: FormGroup, value: any) => void,
+  optionSelected?: (name: string, formGroup: FormGroup ) => void,
   formGroup?: ConfigForm,
 }
 

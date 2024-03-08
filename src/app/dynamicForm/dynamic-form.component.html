@@ -1,13 +1,13 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<div class="p-1 px-3">
+<div class="px-1  ">
 
   <ng-container>
 
     <ng-template #ConfigForm let-configForm [ngIf]="_questions">
 
-      <div class="p-1 px-3 row" #containerForm *ngIf=" configForm!=null">
+      <div class="px-2  row" #containerForm *ngIf=" configForm!=null">
 
-        <ng-container *ngFor="let data  of configForm ;let formGroupIndex=index" 
+        <ng-container *ngFor="let data  of configForm ;let formGroupIndex=index"
                        [ngTemplateOutlet]="  TypeForm "
                        [ngTemplateOutletContext]="{ $implicit: data.formGroup , cssClass:data.class, title:data.title ,formGroupIndex:formGroupIndex, group:data ,containerForm:containerForm, actions: data.actions||[]  , cfForm:configForm}">
          <!-- <div *ngIf="data.title" class="form-title col-4">{{data.title }} </div>   -->
@@ -20,26 +20,26 @@
 
 
     <ng-template #TypeForm let-typeForm  let-cssClass="cssClass" let-title="title" let-formGroupIndex="formGroupIndex" let-group="group" let-containerForm="containerForm" let-actions="actions" let-cfForm="cfForm">
-       
+
       <div [class]="(cssClass||['col-12']).join(' ')"  *ngIf="{isLast:false} as last">
 
         <div class="row py-2" *ngIf="title">
           <div class="col-12"> <div  class="form-title ">{{title }} </div> </div>
-        </div> 
-        
-        <div class="row py-2">
-  
+        </div>
+
+        <div class="row py-1">
+
           <ng-container *ngFor="let data  of   typeForm ;let formActionIndex=index ; let last=last"
                         [ngTemplateOutlet]="  FormAction "
                         [ngTemplateOutletContext]="{  $implicit: data?.formAction||{}  ,formGroupIndex:formGroupIndex ,formActionIndex:formActionIndex, group:group.formGroup,containerForm:containerForm}">
-                
+
                 <div class="form-sub-title" *ngIf="data?.formAction?.title && data?.formAction?.type==TYPE_CONTROL_FORM.GROUP">{{data?.formAction?.title  }}</div>
           </ng-container>
 
 
 
           <!-- <div class="  my-2 container-action" > -->
-
+            <ng-content></ng-content>
             <ng-container *ngFor="let action of actions">
               <button mat-flat-button #button [class]="action.cssClassButton?.join(' ')"  *ngIf="action?.visible!=null && action?.visible==true"
                 [disabled]="action?.disabled||false"
@@ -103,7 +103,7 @@
           <app-sort-action *ngSwitchCase="TYPE_CONTROL_FORM.SORTACTION" [question]="formAction"
             [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
             [allGroup]="_questions"></app-sort-action>
- 
+
         </ng-container>
 
 
