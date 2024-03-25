@@ -24,6 +24,9 @@
         <mat-form-field class="w-100">
             <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>
             <input #inp [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" matInput [placeholder]="control.formAction.placeholder" [formControl]="filtercontrol" [matAutocomplete]="combo" />
+            <button *ngIf="this.control.formAction.formControl.value!=null" matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();filtercontrol.setValue(null);this.control.formAction.formControl.setValue(null)">
+                <mat-icon>close</mat-icon>
+             </button>
             <mat-autocomplete #combo="matAutocomplete" autoActiveFirstOption="true" multiple>
                 <mat-option #opt [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'" (click)="optionSelected(control.formAction.formName ,option) ; control.formAction.optionSelected ? control.formAction.optionSelected(control.formAction.formName, control.formAction  ) : null"
                     *ngFor="let option of filteredOptions | async" [value]="option.id">
