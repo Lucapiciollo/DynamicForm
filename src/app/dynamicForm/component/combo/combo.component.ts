@@ -7,7 +7,6 @@
  */
 import { Component, ElementRef, Injector } from '@angular/core';
 import { BaseComponent } from '../bsae-component.component';
-import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-combo',
@@ -28,11 +27,14 @@ export class ComboComponent extends BaseComponent {
 
   constructor(protected override injector: Injector, protected override element: ElementRef) {
     super(injector, element);
+
   }
   /************************************************************************************************************************************************************************ */
   optionSelected(name: string, value: any) {
     if (!this.control.formAction.formControl.disabled) {
       this.filtercontrol.setValue(value.description, { emitEvent: false });
+      this.control.formAction.formControl.markAsDirty();
+      this.control.formAction.formControl.markAsTouched();
       this.control.formAction.formControl.setValue(value.id);
       this.callOnhange();
     }

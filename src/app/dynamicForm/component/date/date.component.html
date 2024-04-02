@@ -5,9 +5,9 @@
  
                     <mat-form-field  class="w-100" >
                       <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
-                        <input matInput [matDatepicker]="datepicker"  
+                        <input matInput [matDatepicker]="datepicker"   [matTooltip]="control.formAction?.tipContent || null"
                               [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
-                              [min]="control.formAction?.date?.min" [max]="control.formAction?.date?.max"
+                              [min]="control.formAction?.optionDate?.min" [max]="control.formAction?.optionDate?.max"
                               [formControl]="control.formAction?.formControl"
                               [class.disabled]="control.formAction.formControl.disabled">
                         <mat-datepicker-toggle matIconSuffix [for]="datepicker"  ></mat-datepicker-toggle>

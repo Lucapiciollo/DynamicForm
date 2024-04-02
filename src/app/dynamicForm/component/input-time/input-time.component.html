@@ -5,7 +5,7 @@
         
                  <mat-form-field  class="w-100">
                         <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
-                        <input  type ="time" 
+                        <input  type ="time"  [matTooltip]="control.formAction?.tipContent || null"
                                 [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"  
                                 matInput 
                                 [formControl]="control.formAction?.formControl"

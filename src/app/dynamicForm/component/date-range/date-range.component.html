@@ -1,15 +1,15 @@
 <ng-container *ngIf="  !control.formAction?.css?.hide" [formGroup]="control.formAction?.formControl">
-  <mat-form-field  class="w-100" >
+  <mat-form-field  class="w-100" [matTooltip]="control.formAction?.tipContent || null">
     <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>   
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-date-range-input [min]="control.formAction?.date?.min" [max]="control.formAction?.date?.max"  [rangePicker]="picker" [formGroup]="$any(control.formAction.formControl)">
+          <mat-date-range-input [min]="control.formAction?.optionDate?.min" [max]="control.formAction?.optionDate?.max"  [rangePicker]="picker" [formGroup]="$any(control.formAction.formControl)">
             <input matStartDate formControlName="from" [class.disabled]="control.formAction.formControl.disabled"   placeholder="Start date" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'">
             <input matEndDate formControlName="to" [class.disabled]="control.formAction.formControl.disabled" placeholder="End date"    [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'">
           </mat-date-range-input>
           <mat-date-range-picker #picker   >
             <mat-date-range-picker-actions>
               <button mat-button matDateRangePickerCancel>Cancel</button>
-              <button mat-raised-button color="primary" matDateRangePickerApply (click)="control.formAction?.date?.onClose($any(control.formAction.formControl).value,control.formAction?.formControl)">OK</button>
+              <button mat-raised-button color="primary" matDateRangePickerApply (click)="control.formAction?.optionDate?.onClose($any(control.formAction.formControl).value,control.formAction?.formControl)">OK</button>
             </mat-date-range-picker-actions>
           </mat-date-range-picker>
  

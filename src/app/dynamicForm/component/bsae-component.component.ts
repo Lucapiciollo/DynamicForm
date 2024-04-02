@@ -6,13 +6,22 @@
  * @desc [description]
  */
 import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, ElementRef, EventEmitter, Injector, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  EventEmitter,
+  Injector,
+  Input,
+  Output,
+  inject,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Observable, ReplaySubject, Subject, combineLatest, debounceTime, distinctUntilChanged, map, pairwise, startWith, tap } from 'rxjs';
+import { Observable, ReplaySubject, combineLatest, map, pairwise, startWith } from 'rxjs';
 import { IBaseComponent } from './base-component-interface';
 import { GetErrorForm, GetErrorFormControl } from './error-message-utils';
-import { ConfigForm, Form, TYPE_CONTROL_FORM } from '../interface';
+import { Form, TYPE_CONTROL_FORM } from '../interface';
 import { StepperService } from '../dynamic-form.service';
 
 @Component({
@@ -65,6 +74,8 @@ export class BaseComponent implements IBaseComponent {
       allGroup: this.obsAllGroup
     }).subscribe({
       next: ({ allGroup, control }) => {
+
+        
         if (!control.formAction.autocomplete) {
 
 
@@ -117,7 +128,9 @@ export class BaseComponent implements IBaseComponent {
   ngOnDestroy(): void { }
   /************************************************************************************************************************************************************************ */
 
-  constructor(protected injector: Injector, protected element: ElementRef) { }
+  constructor(protected injector: Injector, protected element: ElementRef) {
+  
+   }
   /************************************************************************************************************************************************************************ */
 
   private _filter(value: string = ""): any {

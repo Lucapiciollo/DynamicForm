@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewContainerRef, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewContainerRef, inject } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { ConfigForm, TYPE_CONTROL_FORM } from './interface';
 import { StepperService } from './dynamic-form.service';
@@ -20,6 +20,7 @@ export class DynamicFormComponent {
   };
 
   @Output() onFormCreate: EventEmitter<FormGroup | FormArray> = new EventEmitter<FormGroup | FormArray>();
+  @Output() onQuestionsCreate: EventEmitter<ConfigForm> = new EventEmitter<ConfigForm>();
   private stepperService: StepperService = inject(StepperService);
   public TYPE_CONTROL_FORM = TYPE_CONTROL_FORM;
   public formGroup!: FormGroup | FormArray;
@@ -27,7 +28,7 @@ export class DynamicFormComponent {
 
   constructor(private viewContainerRef: ViewContainerRef) { }
 
-  ngOnInit() { }
+   
 
   compile() {
     let fg = ((this.stepperService.toFormGroup(this._questions as any) as FormArray)?.controls as any);
@@ -38,6 +39,7 @@ export class DynamicFormComponent {
       this.formGroup = new FormArray([...fg]);
     }
     this.onFormCreate.emit(this.formGroup);
+    this.onQuestionsCreate.emit(this._questions);
   }
 
 

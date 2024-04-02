@@ -1,7 +1,7 @@
 <ng-container *ngIf="  !control.formAction?.css?.hide ">
     <div class="row    w-100 " >
-            <div  [class]="control?.formAction?.css?.classRadio">
-               <mat-checkbox [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" 
+            <div  [class]="control?.formAction?.css?.classRadio"  >
+               <mat-checkbox [matTooltip]="control.formAction?.tipContent || null" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" 
                   [class.disabled]="control.formAction.formControl.disabled"  
                   [formControl]="control.formAction?.formControl"  class=" "> {{control.formAction.title}}
               </mat-checkbox> 

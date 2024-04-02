@@ -7,7 +7,7 @@
                         <button mat-icon-button matPrefix (click)="f_input.click()" [disabled]="control.formAction.formControl.disabled">
                                  <mat-icon>attach_file</mat-icon>
                         </button>
-                        <input type="text" 
+                        <input type="text" [matTooltip]="control.formAction?.tipContent || null"
                                 [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
                                 readonly 
                                 matInput 

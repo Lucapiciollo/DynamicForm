@@ -3,7 +3,7 @@
         <div class="row m-auto w-100">
             <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
 
-            <mat-radio-group [formControl]="control.formAction?.formControl" class="row">
+            <mat-radio-group [formControl]="control.formAction?.formControl" class="row" [matTooltip]="control.formAction?.tipContent || null">
                 <mat-radio-button  *ngFor="let secondElement of control.formAction.options" [value]=" secondElement.id " [class]="control?.formAction?.css?.classRadio">
                      <img [src]="secondElement.img" *ngIf="secondElement.img"> {{secondElement.description}}
                 </mat-radio-button>

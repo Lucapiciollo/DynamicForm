@@ -2,7 +2,7 @@
    
             <mat-form-field class="w-100" >
               <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
-                <textarea   [formControl]="control.formAction?.formControl" #inputs
+                <textarea   [formControl]="control.formAction?.formControl" #inputs [matTooltip]="control.formAction?.tipContent || null"
                          matInput
                         [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" type="text"
                         [class.disabled]="control.formAction.formControl.disabled"
