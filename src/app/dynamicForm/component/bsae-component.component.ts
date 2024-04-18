@@ -19,7 +19,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Observable, ReplaySubject, combineLatest, filter, map, pairwise, startWith, tap } from 'rxjs';
+import { Observable, ReplaySubject, combineLatest, map, pairwise, startWith } from 'rxjs';
 import { IBaseComponent } from './base-component-interface';
 import { GetErrorForm, GetErrorFormControl } from './error-message-utils';
 import { Form, TYPE_CONTROL_FORM } from '../interface';
@@ -99,33 +99,30 @@ export class BaseComponent implements IBaseComponent {
 
 
           control.formAction?.formControl.disabled ? this.filtercontrol.disable() : this.filtercontrol.enable();
+
           control.formAction?.formControl.valueChanges.pipe(
             takeUntilDestroyed(this.destroyRef),
-            // startWith(null),
-            map(value => {
-              // this.filtercontrol.setValue(value);
-              // let res = this.control.formAction?.options?.find(f => f?.id == value?.id || value);
-              this.filtercontrol.setValue(value, { emitEvent: true });
-              return value;
-            })
-          ).subscribe()
+          ).subscribe(async (next) => {
+            let res = this.control.formAction?.options?.find(f => f?.id == next);
+            this.filtercontrol.setValue(next != null ? res?.description || null : null, { emitEvent: true });
+            this.callOnhange();
+          })
 
 
           this.filteredOptions = this.filtercontrol.valueChanges.pipe(
             takeUntilDestroyed(this.destroyRef),
+            // distinctUntilChanged((a, b) => a?.id != b?.id),
             startWith(null),
-            map(value => this._filter(value as any || ''))
+            map(value => this._filter(value as any || '')),
+            map(value => {
+              if (value && value.length < 1) {
+                control.formAction?.formControl.setValue(null, { emitEvent: false, });
+                return this._filter('')
+              }
+              return value
+            })
           )
 
-           this.filtercontrol.valueChanges.pipe(
-            takeUntilDestroyed(this.destroyRef),
-            // startWith(null),
-            filter(f=>this.control.formAction?.options.length>0),
-             tap(value => {
-              let res = this.control.formAction?.options?.find(f => f?.id == value?.id || value);
-              this.filtercontrol.setValue(value, { emitEvent: false });
-            })
-          ).subscribe()
 
 
 
