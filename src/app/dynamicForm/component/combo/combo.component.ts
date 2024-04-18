@@ -7,6 +7,7 @@
  */
 import { Component, ElementRef, Injector } from '@angular/core';
 import { BaseComponent } from '../bsae-component.component';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-combo',
@@ -14,7 +15,6 @@ import { BaseComponent } from '../bsae-component.component';
   styleUrls: ['../../dynamic-form.component.scss']
 })
 export class ComboComponent extends BaseComponent {
-
 
 
 
@@ -32,14 +32,27 @@ export class ComboComponent extends BaseComponent {
   /************************************************************************************************************************************************************************ */
   optionSelected(name: string, value: any) {
     if (!this.control.formAction.formControl.disabled) {
-      this.filtercontrol.setValue(value.description, { emitEvent: false });
+      let res = this.control.formAction?.options?.find(f => f?.id == value?.id);
+      this.filtercontrol.setValue(value != null ? res?.description || null : null, { emitEvent: true });
+      this.control.formAction.formControl.setValue(value?.id || value);
       this.control.formAction.formControl.markAsDirty();
       this.control.formAction.formControl.markAsTouched();
-      this.control.formAction.formControl.setValue(value.id);
       this.callOnhange();
     }
 
   }
 
+  initialize() {
+    if (this.filtercontrol.value == null) {
+      this.filtercontrol.setValue(null, { emitEvent: true });
+    }
+  }
+
+
+  clearButton(filtercontrol) {
+    this.filtercontrol.reset();
+    (this.control.formAction.formControl as FormControl).reset( )
+    this.callOnhange();
+  }
 
 }
