@@ -70,6 +70,7 @@ export const DATE_PIPE_TIME = new InjectionToken<any>("Default date pipe time");
 
   ],
   exports: [
+
     LanguagePipe,
     LoadChildDirective,
     CamScanDirective,

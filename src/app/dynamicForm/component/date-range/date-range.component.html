@@ -1,19 +1,22 @@
-<ng-container *ngIf="  !control.formAction?.css?.hide" [formGroup]="control.formAction?.formControl">
-  <mat-form-field  class="w-100" [matTooltip]="control.formAction?.tipContent || null">
-    <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>   
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-date-range-input [min]="control.formAction?.optionDate?.min" [max]="control.formAction?.optionDate?.max"  [rangePicker]="picker" [formGroup]="$any(control.formAction.formControl)">
-            <input matStartDate formControlName="from" [class.disabled]="control.formAction.formControl.disabled"   placeholder="Start date" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'">
-            <input matEndDate formControlName="to" [class.disabled]="control.formAction.formControl.disabled" placeholder="End date"    [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'">
-          </mat-date-range-input>
-          <mat-date-range-picker #picker   >
-            <mat-date-range-picker-actions>
-              <button mat-button matDateRangePickerCancel>Cancel</button>
-              <button mat-raised-button color="primary" matDateRangePickerApply (click)="control.formAction?.optionDate?.onClose($any(control.formAction.formControl).value,control.formAction?.formControl)">OK</button>
-            </mat-date-range-picker-actions>
-          </mat-date-range-picker>
- 
-     <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
-    </mat-form-field   >
+<ng-container *ngIf="  !control.formAction?.css?.hide">
+  <mat-form-field class="w-100" [matTooltip]="control.formAction?.tipContent || null">
+    <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
+      <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
+    </mat-label>
+    <mat-date-range-input #datainput [min]="control.formAction?.optionDate?.min" [max]="control.formAction?.optionDate?.max" [rangePicker]="picker" [formGroup]="$any(control.formAction.formControl)">
+      <input matStartDate #input formControlName="from" [class.disabled]="control.formAction.formControl.disabled" placeholder="Start date" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'">
+      <input matEndDate formControlName="to" [class.disabled]="control.formAction.formControl.disabled" placeholder="End date" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'">
+    </mat-date-range-input>
+
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker (opened)="openedStream($event)" (closed)="closedStream($event)">
+      <mat-date-range-picker-actions>
+        <button mat-button matDateRangePickerCancel>Cancel</button>
+        <button mat-raised-button color="primary" matDateRangePickerApply (click)="control.formAction?.optionDate?.onClose($any(control.formAction.formControl).value,control.formAction?.formControl)">OK</button>
+      </mat-date-range-picker-actions>
+    </mat-date-range-picker>
+
+    <mat-hint>{{control.formAction.hint}}</mat-hint>
+    <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+  </mat-form-field>
 </ng-container>
-   

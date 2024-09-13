@@ -38,17 +38,17 @@
 
 
 
-          <!-- <div class="  my-2 container-action" > -->
+           <!-- <div style="position: absolute;  bottom   : 2%;" > -->
             <ng-content></ng-content>
             <ng-container *ngFor="let action of actions">
               <button mat-flat-button #button [class]="action.cssClassButton?.join(' ')"  *ngIf="action?.visible!=null && action?.visible==true"
                 [disabled]="action?.disabled||false"
-                (click)="action.action(_questions,group.id||'',formGroup );initializeForm()">
+                (click)="action.action(_questions,group.id||'',formGroup ); ">
                 <i #icon [class]="action.cssClassIcon?.join(' ')" aria-hidden="true"> </i>{{action.label}}
               </button>
             </ng-container>
 
-          <!-- </div> -->
+           <!-- </div> -->
         </div>
       </div>
     </ng-template>
@@ -56,11 +56,7 @@
 
     <ng-template #FormAction let-formAction let-formGroupIndex="formGroupIndex" let-formActionIndex="formActionIndex" let-group="group" let-containerForm="containerForm">
 
-
-
-
       <ng-container [ngTemplateOutlet]="ConfigForm" [ngTemplateOutletContext]="{  $implicit: formAction?.formGroup }">
-
 
         <ng-container [ngSwitch]="formAction.type">
           <app-combo *ngSwitchCase="TYPE_CONTROL_FORM.COMBO" [question]="formAction" [formActionIndex]="formActionIndex"
@@ -103,6 +99,8 @@
           <app-sort-action *ngSwitchCase="TYPE_CONTROL_FORM.SORTACTION" [question]="formAction"
             [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
             [allGroup]="_questions"></app-sort-action>
+
+
 
         </ng-container>
 

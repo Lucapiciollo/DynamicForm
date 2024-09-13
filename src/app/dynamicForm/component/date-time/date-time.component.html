@@ -1,19 +1,15 @@
- 
+<ng-container *ngIf=" !control.formAction?.css?.hide">
 
-<ng-container *ngIf=" !control.formAction?.css?.hide"  >
-      
-      <mat-form-field  class="w-100" >
-            <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
-              <input  type="datetime-local" [matTooltip]="control.formAction?.tipContent || null"  style="border: none;" matInput
-                    [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
-                    [min]="control.formAction?.optionDate?.min" [max]="control.formAction?.optionDate?.max"
-                    [formControl]="control.formAction?.formControl"
-                    [class.disabled]="control.formAction.formControl.disabled">
+  <mat-form-field class="w-100">
+    <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
+      <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
+    </mat-label>
+    <input type="datetime-local" [matTooltip]="control.formAction?.tipContent || null" style="border: none;" matInput [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" [min]="control.formAction?.optionDate?.min" [max]="control.formAction?.optionDate?.max" [formControl]="control.formAction?.formControl" [class.disabled]="control.formAction.formControl.disabled">
 
-                    <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
-                  
-         
-      </mat-form-field>
+
+    <mat-hint>{{control.formAction.hint}}</mat-hint>
+    <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+
+  </mat-form-field>
 
 </ng-container>
- 

@@ -17,9 +17,12 @@ export type FormAction = {
   defaultValue?: any,
   formName?: string,
   title?: string,
-  formControl: FormControl | FormArray | FormGroup,
+  action?:( formControl: FormControl | FormArray | FormGroup,)=>void,
+  formControl?: FormControl | FormArray | FormGroup,
   readOnly?: boolean,
+  minFilterLength?:number,
   css?: TypeCss,
+  hint?:string,
   type?: TYPE_CONTROL_FORM,
   optionDate?: TypeOptionDate,
   optionNumber?: TypeOptionNumber,
@@ -29,10 +32,12 @@ export type FormAction = {
   simbol?: string,
   placeholder?: string,
   disableSpeech?: boolean,
-  onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: Array<ConfigForm>) => void,
-  onInitialize?: (idGroup: number, idForm: number, formCOntrol: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: Array<ConfigForm>) => void,
+  onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup:  ConfigForm ) => void,
+  onInitialize?: (idGroup: number, idForm: number, formCOntrol: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup:  ConfigForm ) => void,
   optionSelected?: (name: string, formGroup: FormGroup ) => void,
   formGroup?: ConfigForm,
+  event?: {onClick?: (formControl: any)=> void},
+  info?: {msg:string, color:string},
 }
 
 export enum TYPE_CONTROL_FORM {

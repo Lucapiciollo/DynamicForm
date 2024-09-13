@@ -14,8 +14,8 @@ const ErrorMessage = {
     mismatch: "Le due password non coincidono",
     pressureError: "Formato corretto 000/000",
     temperatureError: "Formato corretto 00.0",
-    max: "Massimo {0} ore",
-    min: "Ore non valide",
+    max: "Valore massimo: {0}",
+    min: "Valore minimo: {0}",
 }
 /************************************************************************************************************************************************************* */
 

@@ -1,7 +1,9 @@
 <ng-container >
     <ng-container *ngIf="  !control.formAction.css?.hide"  >
         <div class="row m-auto w-100">
-            <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
+            <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
+              <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
+            </mat-label>
 
             <mat-radio-group [formControl]="control.formAction?.formControl" class="row" [matTooltip]="control.formAction?.tipContent || null">
                 <mat-radio-button  *ngFor="let secondElement of control.formAction.options" [value]=" secondElement.id " [class]="control?.formAction?.css?.classRadio">

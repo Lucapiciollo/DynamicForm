@@ -94,3 +94,42 @@
 .containerForm {
     padding: 20px;
 }
+
+input.mat-mdc-input-element::-webkit-calendar-picker-indicator {
+  display: block;
+}
+
+
+mat-hint{
+  font-size: 0.8rem !important;
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+mat-error{
+  font-size: 0.8rem !important;
+  font-style: italic;
+  color: rgba(255, 0, 0,0.8);
+}
+
+
+::ng-deep.chip-combo {
+   background: transparent !important;
+}
+
+
+::ng-deep.chip-combo > span > .mat-mdc-chip-action-label {
+  text-decoration: underline !important;
+}
+::ng-deep.chip-combo > span > button > mat-icon {
+  font-size: 16px !important;
+  margin-top: 3px;
+}
+
+::ng-deep.chip-combo    {
+  height: 12px !important;
+}
+
+::ng-deep.display-contents>div>label {
+  display: contents !important;
+}

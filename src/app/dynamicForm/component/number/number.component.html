@@ -4,7 +4,9 @@
 <ng-container *ngIf="  !control.formAction?.css?.hide"  >
 
                      <mat-form-field  class="w-100">
-                        <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>
+                        <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
+                          <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
+                        </mat-label>
                         <input  matInput type="number" [matTooltip]="control.formAction?.tipContent || null"
                                 [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
                                 [formControl]="control.formAction?.formControl"
@@ -12,8 +14,10 @@
                                 [placeholder]="control.formAction.placeholder||''"
                                 [min]="control.formAction?.optionNumber?.min"
                                 [max]="control.formAction?.optionNumber?.max"
-                                [step]="control.formAction?.optionNumber?.step">
+                                [step]="control.formAction?.optionNumber?.step"
+                                >
                                 <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
                  </mat-form-field>
+
 
  </ng-container>

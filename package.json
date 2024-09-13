@@ -62,13 +62,13 @@
     "npm": "^10.4.0",
     "pdfkit": "^0.13.0",
     "pl-core-utils-library": "^2.0.9",
-    "pl-decorator": "^1.4.23",
+    "pl-decorator": "^1.4.28",
     "rxjs": "~7.8.0",
     "svg-to-pdfkit": "^0.1.8",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
-},
-"devDependencies": {
+  },
+  "devDependencies": {
     "@angular-devkit/build-angular": "^16.0.0",
     "@angular-eslint/builder": "^16.0.0",
     "@angular-eslint/eslint-plugin": "^16.0.0",

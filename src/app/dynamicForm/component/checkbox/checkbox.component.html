@@ -1,12 +1,14 @@
 <ng-container *ngIf="  !control.formAction?.css?.hide ">
-    <div class="row    w-100 " >
+    <div class="row    w-auto " >
             <div  [class]="control?.formAction?.css?.classRadio"  >
-               <mat-checkbox [matTooltip]="control.formAction?.tipContent || null" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" 
-                  [class.disabled]="control.formAction.formControl.disabled"  
-                  [formControl]="control.formAction?.formControl"  class=" "> {{control.formAction.title}}
-              </mat-checkbox> 
-             
+               <mat-checkbox [matTooltip]="control.formAction?.tipContent || null" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
+                  [class.disabled]="control.formAction.formControl.disabled"
+                  [formControl]="control.formAction?.formControl"  class="display-contents"> {{control.formAction.title}}
+                  <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2 p-1" style="font-size:large" >info_outline</mat-icon>
+              </mat-checkbox>
+
           </div>
           <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
         </div>
+
 </ng-container>

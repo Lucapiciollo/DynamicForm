@@ -1,22 +1,24 @@
 <ng-container *ngIf="   !control.formAction?.css?.hide"  >
-   
+
             <mat-form-field class="w-100" >
-              <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}</mat-label>  
+              <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
+                <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
+              </mat-label>
                 <textarea   [formControl]="control.formAction?.formControl" #inputs [matTooltip]="control.formAction?.tipContent || null"
                          matInput
                         [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" type="text"
                         [class.disabled]="control.formAction.formControl.disabled"
                         [placeholder]="control.formAction.placeholder||''"
                         cdkAutosizeMinRows="1"
-                        [cdkAutosizeMaxRows]="control.formAction?.css?.rows || '5'"  
+                        [cdkAutosizeMaxRows]="control.formAction?.css?.rows || '5'"
                         #autosize="cdkTextareaAutosize"
                         cdkTextareaAutosize
                         (change)=" control.formAction?.formControl.setValue($any($event).target.value)"
                         >
                     </textarea>
                      <img   speech [e]="inputs" matSuffix src="assets/img/mic.svg" class="text-center " *ngIf="!control.formAction.formControl.disabled  && !control?.formAction?.disableSpeech">
-                     <mat-hint *ngIf="control.formAction?.inputText?.maxlength" align="start">{{inputs.value.length}}/{{control.formAction?.inputText?.maxlength}}</mat-hint>
+                     <mat-hint *ngIf="control.formAction?.inputText?.maxlength" [attr.align]="'start'">{{inputs.value.length}}/{{control.formAction?.inputText?.maxlength}}</mat-hint>
                      <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
              </mat-form-field>
-  
+
 </ng-container>
