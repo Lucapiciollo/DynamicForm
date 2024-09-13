@@ -27,7 +27,8 @@ import { Form, TYPE_CONTROL_FORM } from '../interface';
 import { StepperService } from '../dynamic-form.service';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import moment from 'moment';
-import { debug } from '../../../utils/custom.operator';
+import { debug } from './custom.operator';
+ 
 
 @Component({
   selector: '',

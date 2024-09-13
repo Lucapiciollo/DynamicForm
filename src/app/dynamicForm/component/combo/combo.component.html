@@ -1,110 +1,110 @@
 <ng-container *ngIf=" !control.formAction.css?.hide">
-    <div *ngIf="!control.formAction.autocomplete">
+  <div *ngIf="!control.formAction.autocomplete">
 
 
-        <mat-form-field class="w-100" >
-            <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
-              <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
-            </mat-label>
-            <mat-select  [matTooltip]="control.formAction?.tipContent || null" [formControl]="control.formAction?.formControl" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" [multiple]="control.formAction?.multiple"
-            (click)="control?.formAction?.event?.onClick(control.formAction)">
-                <!-- <mat-option [value]=" null"  (click)="control.formAction.optionSelected ? control.formAction.optionSelected(  control.formAction.formName ,null) : null" >
-          <span [class.disabled]="control.formAction.formControl.disabled"> </span>
-        </mat-option> -->
-                <mat-option *ngFor="let secondElement of control.formAction.options" class="" [value]=" secondElement.id " (click)="control.formAction.optionSelected ? control.formAction.optionSelected(  control.formAction.formName,secondElement  ) : null">
-                    <span [class.disabled]="control.formAction.formControl.disabled"> {{secondElement.description}} </span>
-                </mat-option>
-            </mat-select>
-            <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
-        </mat-form-field>
-
-
-    </div>
-
-
-
-
-    <div *ngIf="control.formAction.autocomplete && !control.formAction.multiple" >
-        <mat-form-field class="w-100"  >
-            <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
-              <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
-            </mat-label>
-            <input  [matTooltip]="control.formAction?.tipContent || null"
-                    #inp
-                    [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
-                    matInput
-                    [placeholder]="control.formAction.placeholder"
-                    [formControl]="this.control.formAction.formControl"
-                    [matAutocomplete]="combo"
-                    (keyup.enter)="optionSelected(control.formAction.formName ,control.formAction.formControl.value) ; control.formAction.optionSelected ? control.formAction.optionSelected(control.formAction.formName, control.formAction  ) : null"
-                    />
-             <button *ngIf="this.control.formAction.formControl.value!==null && !control.formAction.formControl.disabled" matSuffix mat-icon-button aria-label="Clear"
-                      (click)=" $event.stopPropagation(); clearButton(this.control.formAction.formControl) ">
-                <mat-icon>close</mat-icon>
-             </button>
-            <mat-autocomplete  #combo="matAutocomplete"    [displayWith]="displayFn">
-                <mat-option #opt [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'"
-                            (click)="optionSelected(control.formAction.formName ,option) ; control.formAction.optionSelected ? control.formAction.optionSelected(control.formAction.formName, control.formAction  ) : null"
-                            *ngFor="let option of filteredOptions | async" [value]="option.id">
-                           {{ option.description }}
-                </mat-option>
-            </mat-autocomplete>
-            <mat-error *ngFor="let error of getErrorFormControl( this.control.formAction.formControl )">{{error}} </mat-error>
-        </mat-form-field>
-
-    </div>
-
-
-
-    <div *ngIf="control.formAction.autocomplete && control.formAction.multiple" >
-      <mat-form-field class="w-100"   >
+      <mat-form-field class="w-100" >
           <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
             <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
           </mat-label>
-
-          <mat-chip-grid #chipGrid aria-label="Fruit selection">
-
-            <mat-chip-row class="chip-combo"  (removed)="toggleSelection(item,{ checked:false})  ; setValueForm()" *ngFor="let item of selectedItems" >
-              <button matChipRemove  >
-                <mat-icon>close</mat-icon>
-              </button>
-              {{ item.description }}
-            </mat-chip-row>
-
-
-
-            <input  [matTooltip]="control.formAction?.tipContent || null"
-                    #inp
-                    [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
-                    matInput
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    [matChipInputFor]="chipGrid"
-                    [placeholder]="control.formAction.placeholder"
-                    [formControl]="this.control.formAction.formControl"
-                    [matAutocomplete]="combo"
-                    (keyup.enter)="optionSelected(control.formAction.formName ,control.formAction.formControl.value) ; control.formAction.optionSelected ? control.formAction.optionSelected(control.formAction.formName, control.formAction  ) : null"
-            />
-            <!-- <button *ngIf="this.control.formAction.formControl.value!==null && !control.formAction.formControl.disabled" matSuffix mat-icon-button aria-label="Clear" (click)=" $event.stopPropagation(); clearButton(this.control.formAction.formControl) ">
-              <mat-icon>close</mat-icon>
-            </button> -->
-
-        </mat-chip-grid>
-           <mat-autocomplete #combo="matAutocomplete" [displayWith]="displayFn">
-            <mat-option #opt *ngFor="let option of filteredOptions | async" [value]="option.id" [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'">
-              <div (click)="optionClicked($event, option)">
-
-                <mat-checkbox [checked]="$any(option).selected || checkIfSelected(option)" (change)="toggleSelection(option,$event) ">
-                  {{ option.description }}
-                </mat-checkbox>
-              </div>
-            </mat-option>
-          </mat-autocomplete>
-           <mat-error *ngFor="let error of getErrorFormControl( this.control.formAction.formControl )">{{error}} </mat-error>
-          </mat-form-field>
-
+          <mat-select  [matTooltip]="control.formAction?.tipContent || null" [formControl]="control.formAction?.formControl" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" [multiple]="control.formAction?.multiple"
+          (click)="control?.formAction?.event?.onClick(control.formAction)">
+              <!-- <mat-option [value]=" null"  (click)="control.formAction.optionSelected ? control.formAction.optionSelected(  control.formAction.formName ,null) : null" >
+        <span [class.disabled]="control.formAction.formControl.disabled"> </span>
+      </mat-option> -->
+              <mat-option *ngFor="let secondElement of control.formAction.options" class="" [value]=" secondElement.id " (click)="control.formAction.optionSelected ? control.formAction.optionSelected(  control.formAction.formName,secondElement  ) : null">
+                  <span [class.disabled]="control.formAction.formControl.disabled"> {{secondElement.description}} </span>
+              </mat-option>
+          </mat-select>
+          <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+      </mat-form-field>
 
 
   </div>
+
+
+
+
+  <div *ngIf="control.formAction.autocomplete && !control.formAction.multiple" >
+      <mat-form-field class="w-100"  >
+          <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
+            <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
+          </mat-label>
+          <input  [matTooltip]="control.formAction?.tipContent || null"
+                  #inp
+                  [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
+                  matInput
+                  [placeholder]="control.formAction.placeholder"
+                  [formControl]="this.control.formAction.formControl"
+                  [matAutocomplete]="combo"
+                  (keyup.enter)="optionSelected(control.formAction.formName ,control.formAction.formControl.value) ; control.formAction.optionSelected ? control.formAction.optionSelected(control.formAction.formName, control.formAction  ) : null"
+                  />
+           <button *ngIf="this.control.formAction.formControl.value!==null && !control.formAction.formControl.disabled" matSuffix mat-icon-button aria-label="Clear"
+                    (click)=" $event.stopPropagation(); clearButton(this.control.formAction.formControl) ">
+              <mat-icon>close</mat-icon>
+           </button>
+          <mat-autocomplete  #combo="matAutocomplete"    [displayWith]="displayFn">
+              <mat-option #opt [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'"
+                          (click)="optionSelected(control.formAction.formName ,option) ; control.formAction.optionSelected ? control.formAction.optionSelected(control.formAction.formName, control.formAction  ) : null"
+                          *ngFor="let option of filteredOptions | async" [value]="option.id">
+                         {{ option.description }}
+              </mat-option>
+          </mat-autocomplete>
+          <mat-error *ngFor="let error of getErrorFormControl( this.control.formAction.formControl )">{{error}} </mat-error>
+      </mat-form-field>
+
+  </div>
+
+
+
+  <div *ngIf="control.formAction.autocomplete && control.formAction.multiple" >
+    <mat-form-field class="w-100"   >
+        <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
+          <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
+        </mat-label>
+
+        <mat-chip-grid #chipGrid aria-label="Fruit selection">
+
+          <mat-chip-row class="chip-combo"  (removed)="toggleSelection(item,{ checked:false})  ; setValueForm()" *ngFor="let item of selectedItems" >
+            <button matChipRemove  >
+              <mat-icon>close</mat-icon>
+            </button>
+            {{ item.description }}
+          </mat-chip-row>
+
+
+
+          <input  [matTooltip]="control.formAction?.tipContent || null"
+                  #inp
+                  [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
+                  matInput
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  [matChipInputFor]="chipGrid"
+                  [placeholder]="control.formAction.placeholder"
+                  [formControl]="this.control.formAction.formControl"
+                  [matAutocomplete]="combo"
+                  (keyup.enter)="optionSelected(control.formAction.formName ,control.formAction.formControl.value) ; control.formAction.optionSelected ? control.formAction.optionSelected(control.formAction.formName, control.formAction  ) : null"
+          />
+          <!-- <button *ngIf="this.control.formAction.formControl.value!==null && !control.formAction.formControl.disabled" matSuffix mat-icon-button aria-label="Clear" (click)=" $event.stopPropagation(); clearButton(this.control.formAction.formControl) ">
+            <mat-icon>close</mat-icon>
+          </button> -->
+
+      </mat-chip-grid>
+         <mat-autocomplete #combo="matAutocomplete" [displayWith]="displayFn">
+          <mat-option #opt *ngFor="let option of filteredOptions | async" [value]="option.id" [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'">
+            <div (click)="optionClicked($event, option)">
+
+              <mat-checkbox [checked]="$any(option).selected || checkIfSelected(option)" (change)="toggleSelection(option,$event) ">
+                {{ option.description }}
+              </mat-checkbox>
+            </div>
+          </mat-option>
+        </mat-autocomplete>
+         <mat-error *ngFor="let error of getErrorFormControl( this.control.formAction.formControl )">{{error}} </mat-error>
+        </mat-form-field>
+
+
+
+</div>
 
 
 </ng-container>
