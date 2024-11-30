@@ -1,25 +1,27 @@
 <ng-container *ngIf=" !control.formAction?.css?.hide"  >
 
 
-                <mat-form-field class="w-100" >
-                        <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
+                <mat-form-field class="w-100 customMY" >
+                        <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}} <span *ngIf="getRequired()">*</span>
                           <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
                         </mat-label>
                         <div camscan (onCaptureCam)="handleFileInputChange($any($event))"></div>
-                        <button mat-icon-button matPrefix (click)="f_input.click()" [disabled]="control.formAction.formControl.disabled">
-                                 <mat-icon>attach_file</mat-icon>
-                        </button>
-                        <input type="text" [matTooltip]="control.formAction?.tipContent || null"
+
+                        <input type="text" class="pointer" [matTooltip]="control.formAction?.tipContent || null"
                                 [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
                                 readonly
                                 matInput
                                 [formControl]="display"
                                 [class.disabled]="control.formAction.formControl.disabled"
+                                (click)="f_input.click()"
                         />
                         <input type="file" multiple hidden #f_input (change)="handleFileInputChange($any(f_input).files )" />
 
                         <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+                        <button *ngIf="control.formAction?.resetButton"  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
+                              <mat-icon>close</mat-icon>
+                        </button>
                  </mat-form-field>
-                <div  class="p-2 m-2 w-100"></div>
+
 </ng-container>
 

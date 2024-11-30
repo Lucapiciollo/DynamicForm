@@ -23,6 +23,7 @@ import { SpeechDirective } from "./directive/speech-recognition";
 import { DynamicFormComponent } from "./dynamic-form.component";
 import { LanguagePipe } from "./form.pipe";
 import { MaterialModule } from "./material.module";
+import { SeparatorComponent } from "./component/separator/separator.component";
 /**
 * @author luca.piciollo
 * @email lucapiciollo@gmail.com
@@ -41,6 +42,8 @@ export const DATE_PIPE_TIME = new InjectionToken<any>("Default date pipe time");
     { provide: DATE_PIPE_TIME, useValue: { dateFormat: 'yyyy-MM-ddTHH:mm:ss' } }
   ],
   declarations: [
+
+    SeparatorComponent,
     LanguagePipe,
     CamScanDirective,
     LoadChildDirective,
@@ -70,7 +73,7 @@ export const DATE_PIPE_TIME = new InjectionToken<any>("Default date pipe time");
 
   ],
   exports: [
-
+    SeparatorComponent,
     LanguagePipe,
     LoadChildDirective,
     CamScanDirective,

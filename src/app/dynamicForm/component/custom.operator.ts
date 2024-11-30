@@ -1,54 +1,33 @@
-import { filter, pairwise, tap } from "rxjs";
+import { buffer, debounceTime, filter, OperatorFunction, pairwise, Subject } from "rxjs";
 import { Observable } from "rxjs/internal/Observable";
 
 
-
-export const minChars = (length: number) => {
-  return <T>(source: Observable<T>): Observable<T> => {
-    return new Observable(subscriber => {
-      const subscription = source.pipe(pairwise(), filter(([prevValue, next]: [any, any]) => next?.length > length || prevValue?.length>=next?.length)).subscribe({
-        async next(value) {
-          subscriber.next(value[1]);
-        },
-        error(error) {
-          subscriber.error(error);
-        },
-        complete() {
-          subscriber.complete();
+export function bufferWithMaxAwaitTime<T, R>(project: (value: Array<T>, length: number) => R, maxAwaitTime: number = 0, minOccurrence: number | null = 0): OperatorFunction<T, R> {
+  return (source) =>
+    new Observable((destination) => {
+      const ListenerSubject = new Subject<T>();
+      const debounceListener$ = ListenerSubject.pipe(debounceTime(maxAwaitTime));
+      const Listener$ = ListenerSubject.pipe(buffer(debounceListener$));
+      Listener$.subscribe((results: Array<T>) => {
+        if (minOccurrence && minOccurrence > 0) {
+          if (results.length - 1 >= minOccurrence)
+            destination.next(project(results, results.length))
         }
+        else
+          destination.next(project(results, results.length))
       });
-      return () => { subscription.unsubscribe() };
-    });
-  }
-}
-
-
-export const debug = (tag: string,name?:string) => {
-  return <T>(source: Observable<T>): Observable<T> => {
-    return new Observable(subscriber => {
-      const subscription = source.pipe(filter(f=>f!=null),tap({
-        next(value) {
-           console.log(`%c[Class: ${name} - ${tag}: Next]`, "background: green; color: #fff; padding: 3px; font-size: 0.7rem;" ,value )
-        },
-        error(error) {
-          console.log(`%c[Class: ${name} - ${tag}: Error]`, "background: red; color: #fff; padding: 3px; font-size: 0.7rem;", error)
-        },
-        complete() {
-           console.log(`%c[Class: ${name} - ${tag}]: Complete`, "background: #00BCD4; color: #fff; padding: 3px; font-size: 0.7remx;")
+      source.subscribe(({
+        next: (value) => {
+          ListenerSubject.next(value);
+        }, error: (err) => {
+          ListenerSubject.complete();
+          destination.complete();
+          destination.error(err);
+        }, complete() {
+          ListenerSubject.complete();
+          destination.complete()
         }
-      })).pipe().subscribe({
-        next(value) {
-          subscriber.next(value);
-        },
-        error(error) {
-          subscriber.error(error);
-        },
-        complete() {
-          subscriber.complete();
-        }
-      });
-
-      return () => subscription.unsubscribe();
+      }));
+      return () => destination.unsubscribe();
     });
-  }
 }

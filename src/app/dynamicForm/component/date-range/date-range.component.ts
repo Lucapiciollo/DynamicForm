@@ -1,5 +1,5 @@
 import { Component, ElementRef, Injector, ViewChild } from '@angular/core';
-import { BaseComponent } from '../bsae-component.component';
+import { BaseComponent } from '../base-component.component';
 import { MatDateRangeInput, MatMonthView } from '@angular/material/datepicker';
 import { Subscription } from 'rxjs';
 import { Delay } from 'pl-decorator';

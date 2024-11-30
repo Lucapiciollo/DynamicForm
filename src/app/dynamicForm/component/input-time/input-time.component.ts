@@ -5,8 +5,9 @@
  * @modify date 2022-03-30 00:30:41
  * @desc [description]
  */
-import { Component, ElementRef, Injector, OnInit } from '@angular/core';
-import { BaseComponent } from '../bsae-component.component';
+import { Component, ElementRef, Injector } from '@angular/core';
+import { BaseComponent } from '../base-component.component';
+import moment from 'moment';
 
 @Component({
   selector: 'app-input-time',
@@ -15,17 +16,20 @@ import { BaseComponent } from '../bsae-component.component';
 })
 export class InputTimeComponent extends BaseComponent {
   /************************************************************************************************************************************************************************ */
-  
-   /************************************************************************************************************************************************************************ */
+  public hours = [];
+  /************************************************************************************************************************************************************************ */
 
- 
+
   /************************************************************************************************************************************************************************ */
 
   constructor(protected override injector: Injector, protected override element: ElementRef) {
     super(injector, element);
+    Array.from({ length: 24 }, (_, i) => this.hours.push( moment().hour(i).minute(0).format("HH:00")))
 
   }
   /************************************************************************************************************************************************************************ */
+
+
 
 }
 

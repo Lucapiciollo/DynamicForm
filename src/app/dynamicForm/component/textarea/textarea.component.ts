@@ -6,7 +6,7 @@
  * @desc [description]
  */
 import { Component, ElementRef, Injector } from '@angular/core';
-import { BaseComponent } from '../bsae-component.component';
+import { BaseComponent } from '../base-component.component';
 
 @Component({
   selector: 'app-textarea',
@@ -19,7 +19,7 @@ export class TextareaComponent extends BaseComponent {
   /************************************************************************************************************************************************************************ */
 
 
- 
+
   constructor(protected override injector: Injector, protected override element: ElementRef) {
     super(injector, element);
 

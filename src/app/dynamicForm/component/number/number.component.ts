@@ -5,8 +5,8 @@
  * @modify date 2022-11-18 12:55:11
  * @desc [description]
  */
-import { Component, ElementRef, Injector, OnInit } from '@angular/core';
-import { BaseComponent } from '../bsae-component.component';
+import { Component, ElementRef, Injector } from '@angular/core';
+import { BaseComponent } from '../base-component.component';
 
 @Component({
   selector: 'app-number',
@@ -15,9 +15,9 @@ import { BaseComponent } from '../bsae-component.component';
 })
 export class NumberComponent  extends BaseComponent   {
 
-  
+
    /************************************************************************************************************************************************************************ */
- 
+
   /************************************************************************************************************************************************************************ */
 
   constructor(protected override injector: Injector, protected override element: ElementRef) {

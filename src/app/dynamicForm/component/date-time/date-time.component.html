@@ -1,6 +1,6 @@
 <ng-container *ngIf=" !control.formAction?.css?.hide">
 
-  <mat-form-field class="w-100">
+  <!-- <mat-form-field class="w-100" >
     <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
       <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
     </mat-label>
@@ -10,6 +10,22 @@
     <mat-hint>{{control.formAction.hint}}</mat-hint>
     <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
 
-  </mat-form-field>
+  </mat-form-field> -->
+
+  <mat-form-field class="w-100 customMY" >
+    <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
+      <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
+    </mat-label>
+    <mat-select   [matTooltip]="control.formAction?.tipContent || null" [formControl]="control.formAction?.formControl" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"  >
+        <mat-option *ngFor="let secondElement of control.formAction.options" class="" [value]=" secondElement.id " >
+            <span [class.disabled]="control.formAction.formControl.disabled"> {{secondElement.description}} </span>
+        </mat-option>
+    </mat-select>
+    <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+    <button *ngIf="control.formAction?.resetButton"  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
+      <mat-icon>close</mat-icon>
+    </button>
+</mat-form-field>
+
 
 </ng-container>

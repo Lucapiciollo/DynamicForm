@@ -12,5 +12,4 @@ export * from './input-text/input-text.component';
 // export * from './number/number.component';
 // export * from './question-radion-button/question-radion-button.component';
 // export * from './textarea/textarea.component';
-export * from './bsae-component.component';
- 
+export * from './base-component.component';

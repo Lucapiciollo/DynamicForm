@@ -14,7 +14,7 @@ export class DynamicFormComponent {
 
   @Input() set questions(questions: ConfigForm) {
     if (questions) {
-      this._questions = questions ;
+      this._questions = questions;
       this.initializeForm();
     }
   };
@@ -28,8 +28,6 @@ export class DynamicFormComponent {
 
   constructor(private viewContainerRef: ViewContainerRef) { }
 
-   
-
   compile() {
     let fg = ((this.stepperService.toFormGroup(this._questions as any) as FormArray)?.controls as any);
     if (fg && fg.length == 1) {
@@ -40,11 +38,11 @@ export class DynamicFormComponent {
     }
     this.onFormCreate.emit(this.formGroup);
     this.onQuestionsCreate.emit(this._questions);
-  }
 
+  }
 
   initializeForm() {
     this.compile()
   }
 
-}  
+}

@@ -48,14 +48,14 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
- 
- 
+
+
 
 
 @NgModule({
 
   exports: [
-    
+
     MatToolbarModule,
     MatStepperModule,
     MatSidenavModule,
@@ -102,7 +102,7 @@ import { MatTreeModule } from '@angular/material/tree';
 
   ] ,
   providers: [
-    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline', subscriptSizing:'fixed' ,floatLabel:"auto"}}
+    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline', subscriptSizing:'fixed' }}
   ]
 })
 

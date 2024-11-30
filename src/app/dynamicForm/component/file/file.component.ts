@@ -7,8 +7,8 @@
  */
 import { Component, ElementRef, Injector } from '@angular/core';
 
-import { BaseComponent } from '../bsae-component.component';
-import { FormControl } from '@angular/forms';
+import { BaseComponent } from '../base-component.component';
+import { AbstractControl, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-file',
@@ -25,20 +25,30 @@ export class FileComponent extends BaseComponent {
 
   constructor(protected override injector: Injector, protected override element: ElementRef) {
     super(injector, element);
-
   }
+
   /************************************************************************************************************************************************************************ */
+
+  getRequired() {
+    if (this.control?.formAction?.formControl?.validator)
+      return this.control?.formAction?.formControl?.validator({} as AbstractControl)?.required == true;
+    else
+      return false
+  }
+
+  /************************************************************************************************************************************************************************ */
+
   handleFileInputChange(l: FileList): void {
     if (l.length) {
       const f = l[0];
       const count = l.length > 1 ? `(+${l.length - 1} files)` : "";
-      this.control.formAction.formControl.setValue(l)
+      this.control.formAction.formControl.setValue(l);
       this.display.patchValue(`${f.name} ${count}`);
     } else {
       this.display.patchValue("");
     }
   }
-  /************************************************************************************************************************************************************************ */
 
+  /************************************************************************************************************************************************************************ */
 
 }

@@ -1,16 +1,15 @@
 import { Directive, ElementRef, EventEmitter, Output, Renderer2, inject } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
-import { ErrorBean, ErrorCode } from "@app/cloud/agic/core/bean/error-bean";
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
 import { AlertController, Platform } from "@ionic/angular";
 import { DocumentScanner, ResponseType } from 'capacitor-document-scanner';
-import * as moment from "moment";
+import moment from "moment";
 import { Unsubscribe } from "pl-decorator";
 import { fromEvent, throttleTime } from "rxjs";
- 
+
 @Directive({
   selector: '[camscan]',
- 
+
 })
 @Unsubscribe()
 export class CamScanDirective {
@@ -34,7 +33,7 @@ export class CamScanDirective {
   private buttonElement: HTMLElement;
   private iELement: HTMLElement;
 
-  constructor(private element: ElementRef, private renderer: Renderer2 ,private sanitizer: DomSanitizer) {
+  constructor(private element: ElementRef, private renderer: Renderer2, private sanitizer: DomSanitizer) {
     if (this.platform.is("cordova")) {
       this.divRowELement = this.renderer.createElement("div");
       this.divColELement = this.renderer.createElement("div");
@@ -70,9 +69,9 @@ export class CamScanDirective {
       ).subscribe(async val => {
         try {
           this.scanDocument().then(async (imageData) => {
-          // this.camera.getPicture(this.options).then((imageData) => {
-             let base64Image = `data:image/jpeg;base64,${ imageData}` ;
-             fetch(base64Image)
+            // this.camera.getPicture(this.options).then((imageData) => {
+            let base64Image = `data:image/jpeg;base64,${imageData}`;
+            fetch(base64Image)
               .then(res => res.blob())
               .then(async blob => {
 
@@ -102,10 +101,10 @@ export class CamScanDirective {
 
               })
           }, (err) => {
-            throw new ErrorBean(err.messaeg, ErrorCode.SYSTEMERRORCODE, false, false);
+            throw new Error(err);
           });
         } catch (error) {
-          throw new ErrorBean(error.messaeg, ErrorCode.SYSTEMERRORCODE, false, false);
+          throw new Error(error);
         }
       })
 

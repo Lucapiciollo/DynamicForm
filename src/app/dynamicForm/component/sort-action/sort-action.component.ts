@@ -7,7 +7,7 @@
  */
 import { Component, ElementRef, Injector } from '@angular/core';
 
-import { BaseComponent } from '../bsae-component.component';
+import { BaseComponent } from '../base-component.component';
 
 @Component({
   selector: 'app-sort-action',

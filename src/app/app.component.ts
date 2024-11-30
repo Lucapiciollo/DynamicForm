@@ -20,11 +20,11 @@ export class AppComponent {
   }
 
   onFormCreate(formGroup: FormGroup | FormArray) {
-    formGroup.disable()
-    formGroup.valueChanges.pipe(debounce(() => timer(0, 1000))).subscribe(
-      (value: any) =>
-      console.log(value)
-      )
+    // formGroup.disable()
+    // formGroup.valueChanges.pipe(debounce(() => timer(0, 1000))).subscribe(
+    //   (value: any) =>
+    //   console.log(value)
+    //   )
       
     
         // formGroup.enable()

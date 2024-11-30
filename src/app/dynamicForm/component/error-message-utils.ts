@@ -16,6 +16,7 @@ const ErrorMessage = {
     temperatureError: "Formato corretto 00.0",
     max: "Valore massimo: {0}",
     min: "Valore minimo: {0}",
+    conflictTask: "Codice task già presente"
 }
 /************************************************************************************************************************************************************* */
 

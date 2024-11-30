@@ -1,11 +1,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<div class="px-1  ">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<div class="  ">
 
   <ng-container>
 
     <ng-template #ConfigForm let-configForm [ngIf]="_questions">
 
-      <div class="px-2  row" #containerForm *ngIf=" configForm!=null">
+      <div class=" row g-0" #containerForm *ngIf=" configForm!=null">
 
         <ng-container *ngFor="let data  of configForm ;let formGroupIndex=index"
                        [ngTemplateOutlet]="  TypeForm "
@@ -21,13 +22,13 @@
 
     <ng-template #TypeForm let-typeForm  let-cssClass="cssClass" let-title="title" let-formGroupIndex="formGroupIndex" let-group="group" let-containerForm="containerForm" let-actions="actions" let-cfForm="cfForm">
 
-      <div [class]="(cssClass||['col-12']).join(' ')"  *ngIf="{isLast:false} as last">
+      <div [class]="(cssClass||['col-12','p-0']).join(' ')"  *ngIf="{isLast:false} as last">
 
-        <div class="row py-2" *ngIf="title">
-          <div class="col-12"> <div  class="form-title ">{{title }} </div> </div>
+        <div class="row m-0 p-0 g-0" *ngIf="title">
+          <div class="col-12 p-0 m-0"> <div  class="form-title fs-13 ">{{title }} </div> </div>
         </div>
 
-        <div class="row py-1">
+        <div class="row g-0  ">
 
           <ng-container *ngFor="let data  of   typeForm ;let formActionIndex=index ; let last=last"
                         [ngTemplateOutlet]="  FormAction "
@@ -58,7 +59,7 @@
 
       <ng-container [ngTemplateOutlet]="ConfigForm" [ngTemplateOutletContext]="{  $implicit: formAction?.formGroup }">
 
-        <ng-container [ngSwitch]="formAction.type">
+        <ng-container [ngSwitch]="formAction.type" *ngIf="!formAction?.css?.hide">
           <app-combo *ngSwitchCase="TYPE_CONTROL_FORM.COMBO" [question]="formAction" [formActionIndex]="formActionIndex"
             [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-combo>
           <app-checkbox *ngSwitchCase="TYPE_CONTROL_FORM.CHECKBOX" [question]="formAction"
@@ -99,7 +100,7 @@
           <app-sort-action *ngSwitchCase="TYPE_CONTROL_FORM.SORTACTION" [question]="formAction"
             [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
             [allGroup]="_questions"></app-sort-action>
-
+           <app-separator *ngSwitchCase="TYPE_CONTROL_FORM.SEPARATOR" [question]="formAction"></app-separator>
 
 
         </ng-container>
