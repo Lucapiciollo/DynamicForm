@@ -93,16 +93,17 @@ export class BaseComponent implements IBaseComponent {
 
 
   ngOnInit() {
-
-    combineLatest({ 
-        control: this.obsQuestions, 
-        allGroup: this.obsAllGroup 
+    let app: Subscription = null
+    combineLatest({
+      control: this.obsQuestions,
+      allGroup: this.obsAllGroup
     }).pipe(
       autoUnsubscribe(this.obs),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ allGroup, control }) => {
+      if (app && !app.closed) app.unsubscribe();
       control.formAction.type == TYPE_CONTROL_FORM.COMBO ? this.onSetOption() : null;
-      control.formAction?.formControl.valueChanges.pipe(
+      app = control.formAction?.formControl.valueChanges.pipe(
         autoUnsubscribe(this.obs),
         takeUntilDestroyed(this.destroyRef),
         startWith(null),
@@ -117,6 +118,7 @@ export class BaseComponent implements IBaseComponent {
           this.element?.nativeElement?.classList?.add(c);
         })
       }
+      
       if (control.formAction && control.formAction.onInitialize) {
         control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup);
       }
