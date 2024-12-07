@@ -1,5 +1,5 @@
 <ng-container *ngIf="   !control.formAction?.css?.hide"  >
-
+   <div class="  d-flex w-100 ">
             <mat-form-field class="w-100 customMY"  >
               <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
                 <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
@@ -24,5 +24,6 @@
                     </button>
              </mat-form-field>
              <mat-hint *ngIf="control.formAction?.optionInputText?.maxlength" [attr.align]="'start'">{{inputs.value.length}}/{{control.formAction?.optionInputText?.maxlength}}</mat-hint>
-
+     <div #dynamicContainer class ="px-1"></div>
+  </div>
 </ng-container>

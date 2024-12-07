@@ -36,6 +36,7 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
   }
   /************************************************************************************************************************************************************************ */
   ngAfterViewInit(): void {
+    super.ngAfterViewInit()
     this.search(null);
     if (this.control.formAction.multiple && this.control.formAction.autocomplete) {
       this.control.formAction.formControl.value?.map(m => {

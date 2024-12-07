@@ -8,12 +8,13 @@
 import { DatePipe } from '@angular/common';
 import {
   Component,
+  ComponentRef,
   DestroyRef,
   ElementRef,
   EventEmitter,
   Injector,
   Input,
-  Output, inject
+  Output, ViewChild, ViewContainerRef, inject
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -32,10 +33,9 @@ import { autoUnsubscribe, bufferWithMaxAwaitTime } from './custom.operator';
 })
 
 export class BaseComponent implements IBaseComponent {
-
-
   @Output() onCaptureCam: EventEmitter<File> = new EventEmitter<File>();
   @Output() instance: EventEmitter<{ instance: BaseComponent, name: string }> = new EventEmitter<{ instance: BaseComponent, name: string }>();
+  @ViewChild('dynamicContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
   public filteredOptions: ReplaySubject<any> = new ReplaySubject(1);
   private callOnhangeSubject = new Subject<{ prevValue: any, next: any }>();
   public getErrorForm: (formGroup: FormGroup, formName: string) => Array<string> = GetErrorForm;
@@ -46,7 +46,8 @@ export class BaseComponent implements IBaseComponent {
   public control: any = { formAction: {} };
   public clonedOption;
   public obs: Subscriber<Subscription> = new Subscriber<Subscription>()
-
+  public componentRef!: ComponentRef<any>;
+ 
 
   /************************************************************************************************************************************************************************ */
 
@@ -75,6 +76,14 @@ export class BaseComponent implements IBaseComponent {
 
   protected selectedItems: any[] = new Array<any>();
   /************************************************************************************************************************************************************************ */
+
+  
+  ngAfterViewInit() {
+    if (this.container && this.control?.formAction?.componentRef) {
+      this.createDynamicComponent();
+    }
+  }
+
 
   onSetOption = () => {
     this.internalValue = this.control?.formAction?.options;
@@ -118,7 +127,7 @@ export class BaseComponent implements IBaseComponent {
           this.element?.nativeElement?.classList?.add(c);
         })
       }
-      
+
       if (control.formAction && control.formAction.onInitialize) {
         control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup);
       }
@@ -126,7 +135,9 @@ export class BaseComponent implements IBaseComponent {
 
   }
   /************************************************************************************************************************************************************************ */
-  ngOnDestroy(): void { }
+  ngOnDestroy(): void {
+    this.destroyDynamicComponent()
+  }
   /************************************************************************************************************************************************************************ */
 
   constructor(protected injector: Injector, protected element: ElementRef) {
@@ -170,6 +181,24 @@ export class BaseComponent implements IBaseComponent {
         bufferedChange,
         this._allGroup);
   }
+
+
+  createDynamicComponent() {
+    this.container.clear();
+    this.control?.formAction?.componentRef?.map(component => {
+      const componentRef:any = this.container.createComponent(component);
+      componentRef.instance.form = this.control?.formAction?.formControl;
+    })
+
+  }
+  /************************************************************************************************************************************************************************ */
+
+  destroyDynamicComponent() {
+    if (this.componentRef) {
+      this.componentRef.destroy();
+    }
+  }
+
 
   /************************************************************************************************************************************************************************ */
 }

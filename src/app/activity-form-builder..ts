@@ -268,15 +268,14 @@ export function createRegistry(object: any, context: any): TypeForm {
 
         {
             formAction: {
-
                 title: "NOME",
                 type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
+                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-3", "col-xxl-3"] },
                 formControl: new FormControl(object?.name, { updateOn: "change", validators: [Validators.required, Validators.maxLength(20)] }),
                 formName: "name",
+                
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value,prevValue)
-
+                    console.log(formCOntrol.parent.value, prevValue)
                 }
             }
         },
@@ -285,7 +284,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 title: "COGNOME",
                 type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
+                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-3", "col-xxl-3"] },
                 formControl: new FormControl(object?.surname, { updateOn: "blur", validators: [Validators.required, Validators.maxLength(20)] }),
                 formName: "surname",
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
@@ -297,11 +296,12 @@ export function createRegistry(object: any, context: any): TypeForm {
             formAction: {
 
                 title: "SESSO",
+                
                 type: TYPE_CONTROL_FORM.COMBO,
-                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
-                formControl: new FormControl(object?.gender, { updateOn: "change", validators: [ ] }),
+                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-3", "col-xxl-3"] },
+                formControl: new FormControl(object?.gender, { updateOn: "change", validators: [] }),
                 formName: "gender",
-                multiple:true,
+                multiple: true,
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
                     console.log(formCOntrol.parent.value)
 
@@ -315,9 +315,9 @@ export function createRegistry(object: any, context: any): TypeForm {
 
         {
             formAction: {
-
+                componentRef: [context.componentRef ],
                 title: "DATA DI ASCITA",
-                type: TYPE_CONTROL_FORM.DATARANGE,
+                type: TYPE_CONTROL_FORM.DATA,
                 css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-3", "col-xxl-3"] },
                 formControl: new FormControl(object?.birthDate, [Validators.required]),
                 formName: "birthDate",

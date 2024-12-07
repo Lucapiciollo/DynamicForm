@@ -1,23 +1,24 @@
 <ng-container *ngIf=" !control.formAction?.css?.hide">
 
-
-  <mat-form-field class="w-100 customMY" >
-    <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
-      <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
-    </mat-label>
-    <input [readonly]="control.formAction.readonly" matInput [matDatepicker]="datepicker" [matTooltip]="control.formAction?.tipContent || null" #datainput [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" [min]="control.formAction?.optionDate?.min" [max]="control.formAction?.optionDate?.max" [formControl]="control.formAction?.formControl" [class.disabled]="control.formAction.formControl.disabled">
-    <mat-datepicker-toggle matIconSuffix [for]="datepicker" (click)=" stopOutFocus(datainput)"></mat-datepicker-toggle>
-    <mat-datepicker #datepicker (opened)="openedStream($event,$any(datainput))" (closed)="closedStream($event)">
-      <mat-datepicker-actions>
-        <button mat-button matDatepickerCancel>Cancel</button>
-        <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
-      </mat-datepicker-actions>
-    </mat-datepicker>
-    <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
-    <mat-hint>{{control.formAction.hint}}</mat-hint>
-    <button *ngIf="control.formAction?.resetButton"  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
-      <mat-icon>close</mat-icon>
-    </button>
-  </mat-form-field>
-
+  <div class="  d-flex w-100 ">
+          <mat-form-field class="w-100 customMY" >
+            <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
+              <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
+            </mat-label>
+            <input [readonly]="control.formAction.readonly" matInput [matDatepicker]="datepicker" [matTooltip]="control.formAction?.tipContent || null" #datainput [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" [min]="control.formAction?.optionDate?.min" [max]="control.formAction?.optionDate?.max" [formControl]="control.formAction?.formControl" [class.disabled]="control.formAction.formControl.disabled">
+            <mat-datepicker-toggle matIconSuffix [for]="datepicker" (click)=" stopOutFocus(datainput)"></mat-datepicker-toggle>
+            <mat-datepicker #datepicker (opened)="openedStream($event,$any(datainput))" (closed)="closedStream($event)">
+              <mat-datepicker-actions>
+                <button mat-button matDatepickerCancel>Cancel</button>
+                <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
+              </mat-datepicker-actions>
+            </mat-datepicker>
+            <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
+            <mat-hint>{{control.formAction.hint}}</mat-hint>
+            <button *ngIf="control.formAction?.resetButton"  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        <div #dynamicContainer class ="px-1"></div>
+  </div>
 </ng-container>

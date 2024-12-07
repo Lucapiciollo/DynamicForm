@@ -19,7 +19,7 @@
                                 <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
                  </mat-form-field> -->
 
-
+    <div class="  d-flex w-100 ">
 
         <mat-form-field class="w-100 customMY" >
           <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
@@ -40,7 +40,8 @@
             <mat-icon>close</mat-icon>
           </button>
       </mat-form-field>
-
+      <div #dynamicContainer class ="px-1"></div>
+    </div>
 
 </ng-container>
 

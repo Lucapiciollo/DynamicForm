@@ -1,20 +1,22 @@
 <ng-container >
     <ng-container *ngIf="  !control.formAction.css?.hide"  >
-        <div class="row customMY w-100">
-            <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
-              <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
-            </mat-label>
+        <div class="  d-flex w-100 ">
+                <div class="row customMY w-100">
+                    <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
+                    <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
+                    </mat-label>
 
-            <mat-radio-group [formControl]="control.formAction?.formControl" class="row" [matTooltip]="control.formAction?.tipContent || null">
-                <mat-radio-button  *ngFor="let secondElement of control.formAction.options" [value]=" secondElement.id " [class]="control?.formAction?.css?.classRadio">
-                     <img [src]="secondElement.img" *ngIf="secondElement.img"> {{secondElement.description}}
-                </mat-radio-button>
-                <button *ngIf="control.formAction?.resetButton"  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
-                    <mat-icon>close</mat-icon>
-                  </button>
-            </mat-radio-group>
-
-
+                    <mat-radio-group [formControl]="control.formAction?.formControl" class="row" [matTooltip]="control.formAction?.tipContent || null">
+                        <mat-radio-button  *ngFor="let secondElement of control.formAction.options" [value]=" secondElement.id " [class]="control?.formAction?.css?.classRadio">
+                            <img [src]="secondElement.img" *ngIf="secondElement.img"> {{secondElement.description}}
+                        </mat-radio-button>
+                        <button *ngIf="control.formAction?.resetButton"  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </mat-radio-group>
+                </div>
+                <div #dynamicContainer class ="px-1"></div>
         </div>
     </ng-container>
+    
 </ng-container>
