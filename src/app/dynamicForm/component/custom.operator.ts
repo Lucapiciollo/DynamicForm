@@ -1,4 +1,4 @@
-import { buffer, debounceTime, filter, OperatorFunction, pairwise, Subject } from "rxjs";
+import { buffer, debounceTime, filter, OperatorFunction, pairwise, Subject, Subscriber } from "rxjs";
 import { Observable } from "rxjs/internal/Observable";
 
 
@@ -31,3 +31,16 @@ export function bufferWithMaxAwaitTime<T, R>(project: (value: Array<T>, length: 
       return () => destination.unsubscribe();
     });
 }
+
+export function autoUnsubscribe<T>(subscriber: Subscriber<any>) {
+  return (source: Observable<T>) =>
+    new Observable<T>((observer) => {
+      const subscription = source.subscribe(observer);
+      subscriber.add(subscription);
+      return () => {
+        subscription.unsubscribe();
+        subscriber.remove(subscription);
+      };
+    });
+}
+

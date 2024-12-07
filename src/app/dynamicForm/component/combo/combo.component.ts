@@ -12,7 +12,7 @@ import { FormControl } from '@angular/forms';
 @Component({
   selector: 'app-combo',
   templateUrl: './combo.component.html',
-  styleUrls: ['../../dynamic-form.component.scss']
+  styleUrls: ['../../dynamic-form.component.scss','./combo.component.css']
 })
 export class ComboComponent extends BaseComponent implements AfterViewInit, OnChanges {
   private selectedValues: string[] = [];

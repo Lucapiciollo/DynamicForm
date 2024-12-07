@@ -1,24 +1,29 @@
-.bottomLabel {
-    margin-top: 0px;
-    font-size: 0.7rem;
-}
-
-
-label {
-    display: inline-block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    max-width: 100%;
-    font-size: 12px;
-    color: #666;
-}
-
-.mat-mdc-error {
-    color: #f44336;
-    font-style: italic;
-    font-size: 0.6rem;
-}
  
-.cdk-overlay-pane.mat-mdc-autocomplete-panel-above{
-  width: 100% !important;
+.search-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding-left:  40px ;/* Spazio a destra per l'icona */
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-right: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: gray;
+}
+
+.search-icon i {
+  font-size: 14px;
 }

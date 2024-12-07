@@ -7,7 +7,6 @@
  */
 import { Directive, ElementRef, HostListener, Renderer2 } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { ErrorBean, ErrorCode } from "@core/bean/error-bean";
 
 @Directive({
   selector: 'input[type=file]',
@@ -49,7 +48,7 @@ export class FileValueAccessorDirective implements ControlValueAccessor {
       const normalizedValue = value == null ? '' : value;
       this.render.setProperty(this.element.nativeElement, 'value', normalizedValue);
     } catch (e) {
-      throw new ErrorBean(e.message, ErrorCode.SYSTEMERRORCODE, false, false)
+      throw new Error(e)
     }
   }
 

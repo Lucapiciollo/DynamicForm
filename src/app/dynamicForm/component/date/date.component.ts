@@ -27,8 +27,7 @@ export class DateComponent extends BaseComponent {
 
   private _datarangeinput: MatDatepicker<Date>;
 
-  private obs: Subscription;
-
+ 
   @ViewChild("datepicker") set datarangeinput(datarangeinput: MatDatepicker<Date>) {
     // if (!this.obs) {
     //   this.obs = new Subscription();

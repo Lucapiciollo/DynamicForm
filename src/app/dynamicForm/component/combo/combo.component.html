@@ -20,15 +20,14 @@
 
                   <div class="search-container border-bottom"  *ngIf="control.formAction.autocomplete">
                     <span class="search-icon">
-                      <mat-icon style="font-size:  1.75rem !important ">search</mat-icon>
+                      <mat-icon class="m-auto" >search</mat-icon>
                    </span>
-                    <input matInput  class="mat-mdc-option ps-5"
+                    <input   matInput  class="mat-mdc-option ps-5"
                             [matTooltip]="control.formAction?.tipContent || null"
                             #filterInput
                             (input)="search(filterInput.value)"
                             [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
                             [placeholder]="control.formAction.placeholder" />
-
                   </div>
 
 
@@ -45,8 +44,8 @@
             <button *ngIf="control.formAction?.resetButton"  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
               <mat-icon>close</mat-icon>
             </button>
+            <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
           </mat-form-field>
-          <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
 
 
  

@@ -301,6 +301,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
                 formControl: new FormControl(object?.gender, { updateOn: "change", validators: [ ] }),
                 formName: "gender",
+                multiple:true,
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
                     console.log(formCOntrol.parent.value)
 
@@ -316,7 +317,7 @@ export function createRegistry(object: any, context: any): TypeForm {
             formAction: {
 
                 title: "DATA DI ASCITA",
-                type: TYPE_CONTROL_FORM.DATA,
+                type: TYPE_CONTROL_FORM.DATARANGE,
                 css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-3", "col-xxl-3"] },
                 formControl: new FormControl(object?.birthDate, [Validators.required]),
                 formName: "birthDate",

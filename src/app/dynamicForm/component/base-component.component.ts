@@ -17,12 +17,12 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ReplaySubject, Subject, combineLatest, pairwise, startWith } from 'rxjs';
+import { ReplaySubject, Subject, Subscriber, Subscription, combineLatest, pairwise, startWith } from 'rxjs';
 import { IBaseComponent } from './base-component-interface';
 import { GetErrorForm, GetErrorFormControl } from './error-message-utils';
 import { Form, FormActionDate, FormActionGeneric, TYPE_CONTROL_FORM } from '../interface';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
-import { bufferWithMaxAwaitTime } from './custom.operator';
+import { autoUnsubscribe, bufferWithMaxAwaitTime } from './custom.operator';
 
 
 @Component({
@@ -45,6 +45,8 @@ export class BaseComponent implements IBaseComponent {
   private obsAllGroup: ReplaySubject<any> = new ReplaySubject(1);
   public control: any = { formAction: {} };
   public clonedOption;
+  public obs: Subscriber<Subscription> = new Subscriber<Subscription>()
+
 
   /************************************************************************************************************************************************************************ */
 
@@ -92,9 +94,16 @@ export class BaseComponent implements IBaseComponent {
 
   ngOnInit() {
 
-    combineLatest({ control: this.obsQuestions, allGroup: this.obsAllGroup }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({ allGroup, control }) => {
+    combineLatest({ 
+        control: this.obsQuestions, 
+        allGroup: this.obsAllGroup 
+    }).pipe(
+      autoUnsubscribe(this.obs),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(({ allGroup, control }) => {
       control.formAction.type == TYPE_CONTROL_FORM.COMBO ? this.onSetOption() : null;
       control.formAction?.formControl.valueChanges.pipe(
+        autoUnsubscribe(this.obs),
         takeUntilDestroyed(this.destroyRef),
         startWith(null),
         pairwise()
@@ -120,6 +129,7 @@ export class BaseComponent implements IBaseComponent {
 
   constructor(protected injector: Injector, protected element: ElementRef) {
     this.callOnhangeSubject.pipe(
+      autoUnsubscribe(this.obs),
       takeUntilDestroyed(this.destroyRef),
       bufferWithMaxAwaitTime((value, length) => ({ value, length }), 500),
     ).subscribe(async ({ length, value }: any) => {
