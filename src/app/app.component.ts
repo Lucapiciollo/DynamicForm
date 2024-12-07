@@ -1,8 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { Observable, debounce, exhaustMap, merge, mergeAll, of, timer, toArray } from 'rxjs';
-import { ConfigForm } from './dynamicForm/interface';
+import { ConfigForm, FormAction } from './dynamicForm/interface';
 import { activityForm, createRegistry } from './activity-form-builder.';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { FormComponentTemplate } from './dynamicForm/component/FormComponentTemplate';
+
 
 @Component({
   selector: 'app-root',
@@ -12,7 +14,7 @@ import { FormArray, FormControl, FormGroup } from '@angular/forms';
 export class AppComponent {
   questions$: Observable<ConfigForm>;
 
-  componentRef=DynamicComponent;
+  componentRef = DynamicComponent;
 
   constructor() {
     this.questions$ = of(activityForm({}, this));
@@ -27,24 +29,23 @@ export class AppComponent {
     //   (value: any) =>
     //   console.log(value)
     //   )
-      
-    
-        // formGroup.enable()
+
+
+    // formGroup.enable()
   }
 }
 
 @Component({
-  selector: 'app-dynamic-component',
   template: `
-            <button   matSuffix mat-icon-button aria-label="Clear" (click)="test()" >
+            <button   matSuffix mat-icon-button aria-label="Clear"   >
                 <mat-icon>sort</mat-icon>
             </button>
+            {{formControl.value | date}}
   `
 })
-export class DynamicComponent {
-  @Input({required:true}) form!: FormControl;
-  test(){
-    alert(this.form.value)
-  }
+export class DynamicComponent extends FormComponentTemplate {
+  formParent: FormControl<any> | FormGroup<any> | FormArray<any>;
+  formControl: FormControl<any>;
+  formConfig: FormAction;
 
 }

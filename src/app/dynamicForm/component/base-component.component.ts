@@ -24,6 +24,7 @@ import { GetErrorForm, GetErrorFormControl } from './error-message-utils';
 import { Form, FormActionDate, FormActionGeneric, TYPE_CONTROL_FORM } from '../interface';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { autoUnsubscribe, bufferWithMaxAwaitTime } from './custom.operator';
+import { FormComponentTemplate } from './FormComponentTemplate';
 
 
 @Component({
@@ -186,8 +187,10 @@ export class BaseComponent implements IBaseComponent {
   createDynamicComponent() {
     this.container.clear();
     this.control?.formAction?.componentRef?.map(component => {
-      const componentRef:any = this.container.createComponent(component);
-      componentRef.instance.form = this.control?.formAction?.formControl;
+      const componentRef  = this.container.createComponent<FormComponentTemplate>(component);
+      componentRef.instance.formControl  = this.control?.formAction?.formControl;
+      componentRef.instance.formConfig  = this.control?.formAction;
+      componentRef.instance.formParent  = this.control?.formAction?.formControl?.parent;
     })
 
   }
