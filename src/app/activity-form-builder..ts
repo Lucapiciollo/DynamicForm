@@ -1,206 +1,9 @@
-// import { FormControl, FormGroup, Validators } from "@angular/forms";
-// import { ConfigForm, TypeForm, TYPE_CONTROL_FORM } from "./dynamicForm/interface";
 
 
-
-
-
-
-// export function activityForm(context: any): ConfigForm {
-//     return [
-//         {
-//             title: "Attivitàaaaaaaaa",
-//             formGroup: createform(context),
-//             actions: [{
-//                 label: "test",
-//                 action(fg, id, formArray, button) {
-//                     console.log(fg, id, formArray, button)
-//                 },
-//             }]
-//         } 
-
-//     ];
-// }
-
-
-
-// function createform(context: any): TypeForm {
-
-//     return [
-//         {
-//       formAction: { disableSpeech:true,
-//             title: "CHECKBOX",
-//             type: TYPE_CONTROL_FORM.CHECKBOX,
-//             css: { class: ["col-3"] },
-//             formControl: new FormControl(null),
-//             options: [],
-//             formName: "CHECKBOX",
-//             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
-//         }
-//     }, {
-//       formAction: { disableSpeech:true,
-//             title: "COMBOAUTOCOMPLETE",
-//             type: TYPE_CONTROL_FORM.COMBO,
-//             css: { class: ["col-3"] },
-//             formControl: new FormControl(null, [Validators.required]),
-//             options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
-//             formName: "COMBOAUTOCOMPLETE",
-//             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-//                    JSON.changeValuesByKey(JSON.findByKeyAndValue(fg, "formName", "cap", ["formControl"]), "options", [{ id: 1, description: "QUATTRO" }], ["formControl"]);
-//             },
-//             onInitialize(idGroup, idForm, formCOntrol, formName, fg, typeControl, allGroup) {
-//                 // JSON.changeValuesByKey(JSON.findByKeyAndValue(allGroup, "formName", "cap", ["formControl"]), "options", [{ id: 1, description: "UNO" }], ["formControl"]);
-//             },
-//             autocomplete: true
-
-//         },
-
-//     }, {
-//       formAction: { disableSpeech:true,
-//             title: "COMBO",
-//             type: TYPE_CONTROL_FORM.COMBO,
-//             multiple: true,
-//             css: { class: ["col-3"] },
-//             formControl: new FormControl(null, [Validators.required]),
-//             options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
-//             formName: "COMBO",
-//             autocomplete: false
-//         },
-
-//     }, {
-//       formAction: { disableSpeech:true,
-//             title: "RADIOGROUP",
-//             type: TYPE_CONTROL_FORM.RADIOGROUP,
-//             multiple: true,
-//             css: { class: ["col-6"], classRadio: ["col-4"] },
-//             formControl: new FormControl(null, [Validators.required]),
-//             options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
-//             formName: "RADIOGROUP",
-//             autocomplete: false
-//         },
-
-//     }, {
-//       formAction: { disableSpeech:true,
-//             title: "CURRENCY",
-//             type: TYPE_CONTROL_FORM.CURRENCY,
-//             simbol: "€",
-//             css: { class: ["col-3"] },
-//             formControl: new FormControl(null),
-//             options: [],
-//             formName: "CURRENCY",
-//             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
-//         }
-//     }, {
-//       formAction: { disableSpeech:true,
-//             title: "DATA",
-//             type: TYPE_CONTROL_FORM.DATA,
-//             css: { class: ["col-3"] },
-//             formControl: new FormControl(null),
-//             options: [],
-//             formName: "DATA",
-//             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
-//         }
-//     }, {
-//       formAction: { disableSpeech:true,
-//             title: "DATARANGE",
-//             type: TYPE_CONTROL_FORM.DATARANGE,
-//             css: { class: ["col-3"] },
-//             formControl: new FormGroup({ from: new FormControl(), to: new FormControl() }),
-//             options: [],
-//             formName: "DATARANGE",
-//             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
-//         }
-//     }, {
-//       formAction: { disableSpeech:true,
-//             title: "DATETIME",
-//             type: TYPE_CONTROL_FORM.DATETIME,
-//             css: { class: ["col-3"] },
-//             formControl: new FormControl(null),
-//             options: [],
-//             formName: "DATETIME",
-//             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
-//         }
-//     }, 
-//     {
-//       formAction: { disableSpeech:true,
-//             title: "FILE",
-//             type: TYPE_CONTROL_FORM.FILE,
-//             css: { class: ["col-3"] },
-//             formControl: new FormControl(null),
-//             options: [],
-//             formName: "FILE",
-//             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
-//         }
-//     }, 
-//     {
-//       formAction: { disableSpeech:true,
-//             title: "TEXT",
-//             type: TYPE_CONTROL_FORM.TEXT,
-//             css: { class: ["col-3"] },
-//             formControl: new FormControl(null),
-//             options: [],
-//             formName: "TEXT",
-//             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
-//         }
-//     }
-//     , {
-//       formAction: { disableSpeech:true,
-//             title: "LABEL",
-//             type: TYPE_CONTROL_FORM.LABEL,
-//             css: { class: ["col-3"] },
-//             formControl: new FormControl("LABEL"),
-//             options: [],
-//             formName: "LABEL",
-
-//         }
-//     }, {
-//       formAction: { disableSpeech:true,
-//             title: "SORTACTION",
-//             type: TYPE_CONTROL_FORM.SORTACTION,
-//             css: { iconCss:"iconCss", class: ["col-1"], toggleIcons: ['assets/img/top-priority.svg', 'assets/img/bottom-priority.svg'] },
-//             formControl: new FormControl<"ASC" | "DESC">({ value: "ASC", disabled: false }),
-//             options: [],
-//             formName: "SORTACTION",
-//             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
-//         }
-//     }, {
-//       formAction: { disableSpeech:true,
-//             title: "LINK",
-//             type: TYPE_CONTROL_FORM.LINK,
-//             css: { class: ["col-3"] },
-//             formControl: new FormControl({ value: "ASC", disabled: false }),
-//             options: [{ id: 1, description: "UNO" }, { id: 2, description: "DUE" }, { id: 3, description: "TRE" }],
-//             formName: "LINK",
-//             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
-//         }
-//     }, {
-//       formAction: { disableSpeech:true,
-//             title: "NUMBER",
-//             type: TYPE_CONTROL_FORM.NUMBER,
-//             css: { class: ["col-3"] },
-//             formControl: new FormControl({ value: "ASC", disabled: false }),
-//             formName: "NUMBER",
-//             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
-//         }
-//     }
-//     , {
-//       formAction: { disableSpeech:true,
-//             title: "TEXTAREA",
-//             type: TYPE_CONTROL_FORM.TEXTAREA,
-//             css: { class: ["col-3"] },
-//             formControl: new FormControl({ value: "ASC", disabled: false }),
-//             formName: "TEXTAREA",
-//             onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { }
-//         }
-//     }
-//  ]
-// }
-
-
-import { FormControl, Validators } from "@angular/forms";
+import { FormArray, FormControl, FormGroup, Validators } from "@angular/forms";
 
 import * as moment from "moment";
-import { ConfigForm, Form, TYPE_CONTROL_FORM, TypeForm } from "./dynamicForm/interface";
+import { ConfigForm, Form, FormActionCombo, TYPE_CONTROL_FORM, TypeForm } from "./dynamicForm/dynamic-form.interface";
 
 
 
@@ -235,6 +38,7 @@ export function activityForm(registry: any, context: any): ConfigForm {
 }
 
 
+type FormControlType = FormControl | FormArray | FormGroup
 
 export function createRegistry(object: any, context: any): TypeForm {
     return [
@@ -270,10 +74,10 @@ export function createRegistry(object: any, context: any): TypeForm {
             formAction: {
                 title: "NOME",
                 type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-3", "col-xxl-3"] },
+                css: { class: ["col-12"] },
                 formControl: new FormControl(object?.name, { updateOn: "change", validators: [Validators.required, Validators.maxLength(20)] }),
                 formName: "name",
-                
+
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
                     console.log(formCOntrol.parent.value, prevValue)
                 }
@@ -284,7 +88,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 title: "COGNOME",
                 type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-3", "col-xxl-3"] },
+                css: { class: ["col-12"] },
                 formControl: new FormControl(object?.surname, { updateOn: "blur", validators: [Validators.required, Validators.maxLength(20)] }),
                 formName: "surname",
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
@@ -296,17 +100,15 @@ export function createRegistry(object: any, context: any): TypeForm {
             formAction: {
 
                 title: "SESSO",
-                
+                componentRef: [context.componentRef],
                 type: TYPE_CONTROL_FORM.COMBO,
-                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-3", "col-xxl-3"] },
+                css: { class: ["col-12"] },
                 formControl: new FormControl(object?.gender, { updateOn: "change", validators: [] }),
                 formName: "gender",
                 multiple: true,
-                async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value)
-
-
-                },
+                onChange(idGroup: number, idForm: number, formControl: FormControlType, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) {
+                 
+                 },
                 options: [{ id: "M", description: "Maschio" }, { id: "F", description: "Femmina" }],
                 autocomplete: true
             }
@@ -315,15 +117,13 @@ export function createRegistry(object: any, context: any): TypeForm {
 
         {
             formAction: {
-                componentRef: [context.componentRef ],
                 title: "DATA DI ASCITA",
                 type: TYPE_CONTROL_FORM.DATA,
-                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-3", "col-xxl-3"] },
+                css: { class: ["col-12"] },
                 formControl: new FormControl(object?.birthDate, [Validators.required]),
                 formName: "birthDate",
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
                     console.log(formCOntrol.parent.value)
-
                 }
             }
         },
@@ -333,7 +133,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 title: "PROVINCIA DI NASCITA",
                 type: TYPE_CONTROL_FORM.COMBO,
-                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-3"] },
+                css: { class: ["col-12"] },
                 formControl: new FormControl(object?.province, [Validators.required]),
                 formName: "province",
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
@@ -347,7 +147,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 title: "COMUNE",
                 type: TYPE_CONTROL_FORM.COMBO,
-                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-3"] },
+                css: { class: ["col-12"] },
                 formControl: new FormControl(object?.townHall, []),
                 formName: "townHall",
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
@@ -363,7 +163,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 title: "CODICE FISCALE",
                 type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-3", "col-xxl-3"] },
+                css: { class: ["col-12"] },
                 formControl: new FormControl(object?.fiscalCode, { updateOn: "blur", validators: [Validators.required] }),
                 formName: "fiscalCode",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
@@ -378,7 +178,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 title: "CITTADINANZA",
                 type: TYPE_CONTROL_FORM.COMBO,
-                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
+                css: { class: ["col-12"] },
                 formControl: new FormControl(object?.citizenship, { updateOn: "blur", validators: [] }),
                 formName: "citizenship",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
@@ -397,7 +197,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 title: "TELEFONO",
                 type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
+                css: { class: ["col-12"] },
                 formControl: new FormControl(object?.phone, { updateOn: "blur", validators: [] }),
                 formName: "phone",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
@@ -413,7 +213,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 title: "MOBILE",
                 type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
+                css: { class: ["col-12"] },
                 formControl: new FormControl(object?.mobile, { updateOn: "blur", validators: [Validators.maxLength(10)] }),
                 formName: "mobile",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
@@ -429,7 +229,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 title: "EMAIL",
                 type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12", "col-sm-4", "col-md-6", "col-lg-6", "col-xl-6", "col-xxl-6"] },
+                css: { class: ["col-12"] },
                 formControl: new FormControl(object?.email, { updateOn: "blur", validators: [Validators.email] }),
                 formName: "email",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
@@ -444,7 +244,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 title: "PEC",
                 type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12", "col-sm-4", "col-md-6", "col-lg-6", "col-xl-6", "col-xxl-6"] },
+                css: { class: ["col-12"] },
                 formControl: new FormControl(object?.pec, { updateOn: "blur", validators: [Validators.email] }),
                 formName: "pec",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
@@ -483,7 +283,7 @@ export function createResidenza(object: any, context: any): Form {
 
                             title: "VIA/PIAZZA",
                             type: TYPE_CONTROL_FORM.TEXT,
-                            css: { class: ["col-12", "col-sm-12", "col-md-12", "col-lg-6", "col-xl-6", "col-xxl-6"] },
+                            css: { class: ["col-12"] },
                             formControl: new FormControl(object.street, { updateOn: "blur", validators: [Validators.required] }),
                             formName: "street"
 
@@ -494,7 +294,7 @@ export function createResidenza(object: any, context: any): Form {
 
                             title: "CIVICO",
                             type: TYPE_CONTROL_FORM.TEXT,
-                            css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
+                            css: { class: ["col-12"] },
                             formControl: new FormControl(object.civic, { updateOn: "blur", validators: [Validators.required] }),
                             formName: "civic"
                         }
@@ -504,7 +304,7 @@ export function createResidenza(object: any, context: any): Form {
 
                             title: "CAP",
                             type: TYPE_CONTROL_FORM.TEXT,
-                            css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
+                            css: { class: ["col-12"] },
                             formControl: new FormControl(object.cap, { updateOn: "blur", validators: [] }),
                             formName: "cap"
                         }
@@ -514,7 +314,7 @@ export function createResidenza(object: any, context: any): Form {
 
                             title: "REGIONE",
                             type: TYPE_CONTROL_FORM.COMBO,
-                            css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
+                            css: { class: ["col-12"] },
                             formControl: new FormControl(object.city, { updateOn: "change" }),
                             formName: "city",
                             autocomplete: true,
@@ -526,7 +326,7 @@ export function createResidenza(object: any, context: any): Form {
 
                             title: "PROVINCIA",
                             type: TYPE_CONTROL_FORM.COMBO,
-                            css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
+                            css: { class: ["col-12"] },
                             formControl: new FormControl(object.province, { updateOn: "change", validators: [Validators.required] }),
                             formName: "province"
                         }
@@ -539,7 +339,7 @@ export function createResidenza(object: any, context: any): Form {
 
                             title: "COMUNE",
                             type: TYPE_CONTROL_FORM.COMBO,
-                            css: { class: ["col-12", "col-sm-4", "col-md-4", "col-lg-3", "col-xl-2", "col-xxl-2"] },
+                            css: { class: ["col-12"] },
                             formControl: new FormControl(object.townHall, { updateOn: "change" }),
                             formName: "townHall",
                             autocomplete: true

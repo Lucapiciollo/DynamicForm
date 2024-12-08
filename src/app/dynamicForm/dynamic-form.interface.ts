@@ -3,6 +3,7 @@
 
 import { ComponentRef } from "@angular/core";
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
+import { FormComponentTemplate } from "./component/FormComponentTemplate";
 
 /*********************************************************************************************************************************** */
 
@@ -36,17 +37,15 @@ export type Group = {
 
 export type ConfigForm = Array<Group>;
 
-
-
-
-
-
+ 
 export type TypeRadioOption = Array<
   {
     id: any,
     description: string,
     disabled?: boolean
   }>;
+
+
 export type TypeComboOption = Array<{
   id: any,
   description: string,
@@ -54,7 +53,6 @@ export type TypeComboOption = Array<{
   disabled?: boolean,
   hide?: boolean
 }>;
-
 
 
 
@@ -68,7 +66,6 @@ export declare type FormActionCombo = {
   formControl?: FormControl | FormArray | FormGroup,
   css?: TypeCss,
   type?: TYPE_CONTROL_FORM.COMBO,
-
   options?: TypeComboOption,
   tipContent?: string,
   formGroup?: ConfigForm,
@@ -104,7 +101,6 @@ export declare type FormActionCurrency = {
   formControl?: FormControl | FormArray | FormGroup,
   css?: TypeCss,
   type?: TYPE_CONTROL_FORM.CURRENCY,
-
   tipContent?: string,
   formGroup?: ConfigForm,
   info?: { msg: string, color: string },
@@ -162,7 +158,6 @@ export declare type FormActionDateTime = {
   formControl?: FormControl | FormArray | FormGroup,
   css?: TypeCss,
   type?: TYPE_CONTROL_FORM.DATETIME,
-
   tipContent?: string,
   options?: TypeComboOption,
   hint?: string,
@@ -171,7 +166,6 @@ export declare type FormActionDateTime = {
   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) => void,
   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm) => void,
   action?: (formControl: FormControl | FormArray | FormGroup,) => void,
-
 };
 
 
@@ -184,7 +178,6 @@ export declare type FormActionFile = {
   formControl?: FormControl | FormArray | FormGroup,
   css?: TypeCss,
   type?: TYPE_CONTROL_FORM.FILE,
-
   tipContent?: string,
   placeholder?: string,
   formGroup?: ConfigForm,
@@ -203,7 +196,6 @@ export declare type FormActionText = {
   formControl?: FormControl | FormArray | FormGroup,
   css?: TypeCss,
   type?: TYPE_CONTROL_FORM.TEXT,
-
   disableSpeech?: boolean,
   tipContent?: string,
   optionInputText?: TypeInputText,
@@ -225,7 +217,6 @@ export declare type FormActionNumber = {
   formControl?: FormControl | FormArray | FormGroup,
   css?: TypeCss,
   type?: TYPE_CONTROL_FORM.NUMBER,
-
   tipContent?: string,
   optionNumber?: TypeOptionNumber,
   placeholder: string,
@@ -245,7 +236,6 @@ export declare type FormActionQuestion = {
   formControl?: FormControl | FormArray | FormGroup,
   css?: TypeCss,
   type?: TYPE_CONTROL_FORM.RADIOGROUP,
-
   tipContent?: string,
   formGroup?: ConfigForm,
   options?: TypeRadioOption,
@@ -265,7 +255,6 @@ export declare type FormActionTextArea = {
   formControl?: FormControl | FormArray | FormGroup,
   css?: TypeCss,
   type?: TYPE_CONTROL_FORM.TEXTAREA,
-
   disableSpeech?: boolean,
   tipContent?: string,
   optionInputText?: TypeInputText,
@@ -282,7 +271,7 @@ export declare type FormActionTextArea = {
 export declare type FormActionGeneric = {
   formName?: string,
   disabled?: boolean,
-  componentRef?: Array<ComponentRef<any>>,
+  componentRef?: Array<ComponentRef<FormComponentTemplate>>,
   title?: string,
   formControl?: FormControl | FormArray | FormGroup,
   css?: TypeCss,

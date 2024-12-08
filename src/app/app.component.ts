@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Observable, debounce, exhaustMap, merge, mergeAll, of, timer, toArray } from 'rxjs';
-import { ConfigForm, FormAction } from './dynamicForm/interface';
+import { ConfigForm, FormAction } from './dynamicForm/dynamic-form.interface';
 import { activityForm, createRegistry } from './activity-form-builder.';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { FormComponentTemplate } from './dynamicForm/component/FormComponentTemplate';
@@ -37,15 +37,29 @@ export class AppComponent {
 
 @Component({
   template: `
-            <button   matSuffix mat-icon-button aria-label="Clear"   >
+            <button matSuffix mat-icon-button aria-label="Clear"   (click)="setConfig(null)">
                 <mat-icon>sort</mat-icon>
             </button>
-            {{formControl.value | date}}
-  `
+   `
 })
 export class DynamicComponent extends FormComponentTemplate {
+
+
+
+  questions: ConfigForm ;
   formParent: FormControl<any> | FormGroup<any> | FormArray<any>;
   formControl: FormControl<any>;
   formConfig: FormAction;
 
+  setConfig(formConfig: FormAction) {
+     (this.questions[0].formGroup[7].formAction as any).options = [...[{ id: 1, description: "test" }]];
+    console.log(this.formParent, this.formConfig, this.formControl, this.questions); 
+
+  }
+
+   public initialize(): void {
+      this.questions=this.getQuestions();
+    }
+
+ 
 }

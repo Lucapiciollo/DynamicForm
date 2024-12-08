@@ -1,5 +1,5 @@
 import { ValidatorFn, AbstractControl } from "@angular/forms";
-import { FormAction } from "../interface";
+import { FormAction } from "../dynamic-form.interface";
 
 
 export function isOptionValid(formAction: FormAction): ValidatorFn {

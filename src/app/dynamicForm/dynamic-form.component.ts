@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, ViewContainerRef, inject } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
-import { ConfigForm, TYPE_CONTROL_FORM } from './interface';
+import { ConfigForm, TYPE_CONTROL_FORM } from './dynamic-form.interface';
 import { StepperService } from './dynamic-form.service';
 
 @Component({

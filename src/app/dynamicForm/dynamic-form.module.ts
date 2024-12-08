@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { InjectionToken, NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { Camera } from "@ionic-native/camera/ngx";
-import { InputTextComponent } from "./component/base.module";
+import { InputTextComponent } from "./component/base-component.module";
 import { CheckboxComponent } from "./component/checkbox/checkbox.component";
 import { ComboComponent } from "./component/combo/combo.component";
 import { CurrencyComponent } from "./component/currency/currency.component";
@@ -21,7 +21,7 @@ import { CamScanDirective } from "./directive/cam-scan";
 import { LoadChildDirective } from "./directive/load-child.directive";
 import { SpeechDirective } from "./directive/speech-recognition";
 import { DynamicFormComponent } from "./dynamic-form.component";
-import { LanguagePipe } from "./form.pipe";
+import { LanguagePipe } from "./pipe/form.pipe";
 import { MaterialModule } from "./material.module";
 import { SeparatorComponent } from "./component/separator/separator.component";
 /**
@@ -100,4 +100,4 @@ export const DATE_PIPE_TIME = new InjectionToken<any>("Default date pipe time");
   ]
 
 })
-export class FormModule { }
+export class DynamicFormModule { }

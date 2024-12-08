@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { FormArray, FormGroup } from "@angular/forms";
 import { v4 as uuidv4 } from 'uuid';
-import { ConfigForm, TYPE_CONTROL_FORM } from "./interface";
+import { ConfigForm, TYPE_CONTROL_FORM } from "./dynamic-form.interface";
 
 @Injectable()
 export class StepperService {

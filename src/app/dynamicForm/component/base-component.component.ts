@@ -8,7 +8,6 @@
 import { DatePipe } from '@angular/common';
 import {
   Component,
-  ComponentRef,
   DestroyRef,
   ElementRef,
   EventEmitter,
@@ -18,13 +17,14 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ReplaySubject, Subject, Subscriber, Subscription, combineLatest, pairwise, startWith } from 'rxjs';
+import { ReplaySubject, Subscriber, Subscription, combineLatest, pairwise, startWith } from 'rxjs';
 import { IBaseComponent } from './base-component-interface';
 import { GetErrorForm, GetErrorFormControl } from './error-message-utils';
-import { Form, FormActionDate, FormActionGeneric, TYPE_CONTROL_FORM } from '../interface';
+
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
-import { autoUnsubscribe, bufferWithMaxAwaitTime } from './custom.operator';
 import { FormComponentTemplate } from './FormComponentTemplate';
+import { Form, TYPE_CONTROL_FORM } from '../dynamic-form.interface';
+import { autoUnsubscribe } from '../custom.operator';
 
 
 @Component({
@@ -34,11 +34,14 @@ import { FormComponentTemplate } from './FormComponentTemplate';
 })
 
 export class BaseComponent implements IBaseComponent {
+
+
+
+
+
   @Output() onCaptureCam: EventEmitter<File> = new EventEmitter<File>();
   @Output() instance: EventEmitter<{ instance: BaseComponent, name: string }> = new EventEmitter<{ instance: BaseComponent, name: string }>();
-  @ViewChild('dynamicContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
   public filteredOptions: ReplaySubject<any> = new ReplaySubject(1);
-  private callOnhangeSubject = new Subject<{ prevValue: any, next: any }>();
   public getErrorForm: (formGroup: FormGroup, formName: string) => Array<string> = GetErrorForm;
   public getErrorFormControl: (formControl: FormControl) => Array<string> = GetErrorFormControl;
   public destroyRef: DestroyRef = inject(DestroyRef);
@@ -47,8 +50,6 @@ export class BaseComponent implements IBaseComponent {
   public control: any = { formAction: {} };
   public clonedOption;
   public obs: Subscriber<Subscription> = new Subscriber<Subscription>()
-  public componentRef!: ComponentRef<any>;
- 
 
   /************************************************************************************************************************************************************************ */
 
@@ -56,7 +57,7 @@ export class BaseComponent implements IBaseComponent {
   @Input() formGroupIndex: number = 0;
   @Input() group: any = null;
   public _allGroup: any;
-  private internalValue;
+  public internalValue;
 
   @Input() set allGroup(allGroup: any) {
     this._allGroup = allGroup;
@@ -64,27 +65,13 @@ export class BaseComponent implements IBaseComponent {
   }
 
   @Input() set question(config: Form) {
-    this.control = {
-      formAction: {
-        ...config,
-        resetButton: (config.formAction as FormActionGeneric)?.resetButton != null ? (config.formAction as FormActionGeneric)?.resetButton : true,
-        readonly: (config.formAction as FormActionDate)?.readonly != null ? (config.formAction as FormActionDate)?.readonly : true
-      }
-    };
+    this.control = { formAction: config };
     this.obsQuestions.next(this.control);
   };
 
-
+  public _autocomplete: MatAutocompleteTrigger = null;
   protected selectedItems: any[] = new Array<any>();
   /************************************************************************************************************************************************************************ */
-
-  
-  ngAfterViewInit() {
-    if (this.container && this.control?.formAction?.componentRef) {
-      this.createDynamicComponent();
-    }
-  }
-
 
   onSetOption = () => {
     this.internalValue = this.control?.formAction?.options;
@@ -101,7 +88,6 @@ export class BaseComponent implements IBaseComponent {
   }
   /************************************************************************************************************************************************************************ */
 
-
   ngOnInit() {
     let app: Subscription = null
     combineLatest({
@@ -109,47 +95,44 @@ export class BaseComponent implements IBaseComponent {
       allGroup: this.obsAllGroup
     }).pipe(
       autoUnsubscribe(this.obs),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(({ allGroup, control }) => {
-      if (app && !app.closed) app.unsubscribe();
-      control.formAction.type == TYPE_CONTROL_FORM.COMBO ? this.onSetOption() : null;
-      app = control.formAction?.formControl.valueChanges.pipe(
-        autoUnsubscribe(this.obs),
-        takeUntilDestroyed(this.destroyRef),
-        startWith(null),
-        pairwise()
-      ).subscribe(async ([prevValue, next]: [any, any]) => {
-        this.callOnhangeSubject.next({ prevValue, next })
-      });
+      takeUntilDestroyed(this.destroyRef)).subscribe(({ allGroup, control }) => {
 
-      (control.formAction.formControl.disabled) ? control.formAction.formControl.disable() : control.formAction.formControl.enable();
-      if (control?.formAction?.css?.class) {
-        control?.formAction?.css?.class.map((c: any) => {
-          this.element?.nativeElement?.classList?.add(c);
-        })
-      }
+        control.formAction.type == TYPE_CONTROL_FORM.COMBO ? this.onSetOption() : null;
 
-      if (control.formAction && control.formAction.onInitialize) {
-        control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup);
-      }
-    })
+
+        if (true) {
+          control.formAction?.formControl.valueChanges.pipe(
+            autoUnsubscribe(this.obs),
+            takeUntilDestroyed(this.destroyRef),
+            startWith(null),
+            pairwise()
+          ).subscribe(async ([prevValue, next]: [any, any]) => {
+            this.callOnhange(prevValue, next);
+          })
+        }
+
+        (control.formAction.formControl.disabled) ? control.formAction.formControl.disable() : control.formAction.formControl.enable();
+        if (control?.formAction?.css?.class) {
+          control?.formAction?.css?.class.map((c: any) => {
+            this.element?.nativeElement?.classList?.add(c);
+          })
+        }
+        if (control.formAction && control.formAction.onInitialize) {
+          control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup);
+        }
+
+      })
 
   }
   /************************************************************************************************************************************************************************ */
-  ngOnDestroy(): void {
-    this.destroyDynamicComponent()
-  }
+
+  ngOnDestroy(): void { }
   /************************************************************************************************************************************************************************ */
 
   constructor(protected injector: Injector, protected element: ElementRef) {
-    this.callOnhangeSubject.pipe(
-      autoUnsubscribe(this.obs),
-      takeUntilDestroyed(this.destroyRef),
-      bufferWithMaxAwaitTime((value, length) => ({ value, length }), 500),
-    ).subscribe(async ({ length, value }: any) => {
-      this.onChange(value);
-    })
+
   }
+
 
 
   /************************************************************************************************************************************************************************ */
@@ -167,10 +150,11 @@ export class BaseComponent implements IBaseComponent {
             return option
         }
       });
+
   }
   /************************************************************************************************************************************************************************ */
 
-  onChange(bufferedChange) {
+  callOnhange(prevValue, next) {
     if (this.control.formAction && this.control.formAction.onChange)
       this.control.formAction.onChange(
         this.formGroupIndex,
@@ -179,29 +163,41 @@ export class BaseComponent implements IBaseComponent {
         this.control.formAction.formName,
         this.group,
         this.control.formAction.type,
-        bufferedChange,
+        prevValue,
         this._allGroup);
   }
 
+  /************************************************************************************************************************************************************************ */
+  @ViewChild('dynamicContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
+  private componentRef = [];
+  /************************************************************************************************************************************************************************ */
+
+  ngAfterViewInit() {
+    if (this.container && this.control?.formAction?.componentRef) {
+      this.createDynamicComponent();
+    }
+  }
+  /************************************************************************************************************************************************************************ */
 
   createDynamicComponent() {
     this.container.clear();
+    this.componentRef = [];
     this.control?.formAction?.componentRef?.map(component => {
-      const componentRef  = this.container.createComponent<FormComponentTemplate>(component);
-      componentRef.instance.formControl  = this.control?.formAction?.formControl;
-      componentRef.instance.formConfig  = this.control?.formAction;
-      componentRef.instance.formParent  = this.control?.formAction?.formControl?.parent;
+      const componentRef = this.container.createComponent<FormComponentTemplate>(component);
+      componentRef.instance.getFormControl = () => this.control?.formAction?.formControl;
+      componentRef.instance.getFormConfig = () => this.control?.formAction;
+      componentRef.instance.getFormParent = () => this.control?.formAction?.formControl?.parent;
+      componentRef.instance.getQuestions = () => this._allGroup;
+      componentRef.instance.initialize();
+      this.componentRef.push(componentRef)
     })
 
   }
   /************************************************************************************************************************************************************************ */
-
   destroyDynamicComponent() {
     if (this.componentRef) {
-      this.componentRef.destroy();
+      this.componentRef.map(c => c.destroy());
     }
   }
-
-
   /************************************************************************************************************************************************************************ */
 }
