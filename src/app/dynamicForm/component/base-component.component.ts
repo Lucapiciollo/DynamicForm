@@ -78,7 +78,10 @@ export class BaseComponent implements IBaseComponent {
     Object.defineProperty(this.control.formAction, "options", {
       set: (newValue) => {
         this.internalValue = newValue;
-        this.filteredOptions.next(this._filter(this.control.formAction.formControl?.value))
+        // if (this.control?.formAction?.autocomplete)
+        //   this.filteredOptions.next(this._filter(this.control.formAction.formControl?.value))
+        // else
+        this.filteredOptions.next(this._filter(null))
       },
       get: () => {
         return this.internalValue;
