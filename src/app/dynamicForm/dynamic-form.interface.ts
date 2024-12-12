@@ -87,7 +87,7 @@ export declare type FormActionComboPaginate = {
   tipContent?: string,
   formGroup?: ConfigForm,
   info?: { msg: string, color: string },
-  paging: { count: number, page: number, totalCount:number  },
+  paging?: { count: number, page: number, totalCount:number  },
   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) => void,
   onInitialize: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, paging?: { count: number, page: number }) => void,
   onScrollEnd: (formControl: FormControl | FormArray | FormGroup, formGroup: Array<Form>, paging: { count: number, page: number, totalCount:number }) => Promise<boolean>

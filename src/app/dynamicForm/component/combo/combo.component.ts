@@ -163,15 +163,12 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
     const clientHeight = panel.clientHeight;
     if (scrollTop > this.previousScrollTop && !this.reachedEnd) {
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-      const threshold = 0;
+      const threshold = 50;
       if (distanceFromBottom <= threshold) {
         if (this.control.formAction && this.control.formAction.onScrollEnd) {
-          if (this.control.formAction.paging.page < this.getTotalPages()) {
-            this.control.formAction.paging = { ...this.control.formAction.paging, page: this.control.formAction.paging.page + 1 }
-            if (await this.control.formAction.onScrollEnd(this.control.formAction?.formControl, this.group, this.control.formAction.paging)) {
-              this.resetReachedEnd();
-              panel.scrollTop = 50
-            }
+          if (await this.control.formAction.onScrollEnd(this.control.formAction?.formControl, this.group, this.control.formAction.paging)) {
+            this.resetReachedEnd();
+            panel.scrollTop = this.previousScrollTop - 1
           }
         }
         this.reachedEnd = true;

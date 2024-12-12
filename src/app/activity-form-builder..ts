@@ -111,23 +111,34 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 },
                 onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging) {
-                    (allGroup[0].formGroup[4].formAction as any).options = context.options.slice(paging.page, paging.count)
+                    (allGroup[0].formGroup[4].formAction as any).paging = { count: 25, page: 1, totalCount: context.options.length };
+                    (allGroup[0].formGroup[4].formAction as any).options = context.options.slice((allGroup[0].formGroup[4].formAction as any).paging.page - 1, (allGroup[0].formGroup[4].formAction as any).paging.count)
                 },
+
                 async onScrollTop(formControl, formGroup, paging) {
-                    let range = ((paging.page-1) ) *paging.count;
-
-                    (formGroup[4].formAction as any).options = context.options.slice(range, paging.count*paging.page)
+                    // let range = ((paging.page - 1)) * paging.count;
+                    // (formGroup[4].formAction as any).options = context.options.slice(range, paging.count * paging.page)
                     return true;
                 },
+
                 async onScrollEnd(formControl, formGroup, paging) {
-                    let range = ((paging.page-1) ) *paging.count;
 
-                    (formGroup[4].formAction as any).options = context.options.slice(range, paging.count*paging.page)
-                    return true;
+                    function getTotalPages() {
+                        return Math.ceil( paging.totalCount /  paging.count);
+                    }
+
+                    if (paging.page < getTotalPages()) {
+                         ( formGroup[4].formAction as any).paging = { ... ( formGroup[4].formAction as any).paging,  page:  ( formGroup[4].formAction as any).paging.page+1 };
+                        let range = ((paging.page - 1)) * paging.count;
+                        (formGroup[4].formAction as any).options = [...(formGroup[4].formAction as any).options, ...context.options.slice(range, paging.count * paging.page)]
+                        return true;
+                    } else
+                        return false
+
+
                 },
 
-                autocomplete: true,
-                paging: { count: 25, page: 1, totalCount: context.options.length }
+                autocomplete: true
             }
         },
 
