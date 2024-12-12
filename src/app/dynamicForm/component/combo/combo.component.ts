@@ -10,7 +10,7 @@ import { BaseComponent } from '../base-component.component';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { FormControl } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
- @Component({
+@Component({
   selector: 'app-combo',
   templateUrl: './combo.component.html',
   styleUrls: ['../../dynamic-form.component.scss', './combo.component.css']
@@ -161,11 +161,12 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
       const threshold = 0;
       if (distanceFromBottom <= threshold) {
         if (this.control.formAction && this.control.formAction.onScrollEnd) {
-          if (await this.control.formAction.onScrollEnd(this.control.formAction?.formControl, this.group, this.control.formAction.paging)) {
-            this.resetReachedEnd();
-            panel.scrollTop = this.previousScrollTop
-            if (this.control.formAction.paging.page * this.control.formAction.paging.count < this.control.formAction.paging.totalCount)
-              this.control.formAction.paging = { ...this.control.formAction.paging, page: this.control.formAction.paging.page + 1 }
+          if ((this.control.formAction.paging.page + 1) * this.control.formAction.paging.count < this.control.formAction.paging.totalCount) {
+            this.control.formAction.paging = { ...this.control.formAction.paging, page: this.control.formAction.paging.page + 1 }
+            if (await this.control.formAction.onScrollEnd(this.control.formAction?.formControl, this.group, this.control.formAction.paging)) {
+              this.resetReachedEnd();
+              panel.scrollTop = this.previousScrollTop/2
+            }
           }
         }
         this.reachedEnd = true;
@@ -177,14 +178,13 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
       const threshold = 0;
       if (distanceFromTop <= threshold) {
         if (this.control.formAction && this.control.formAction.onScrollTop) {
-
-          if (await this.control.formAction.onScrollTop(this.control.formAction?.formControl, this.group, this.control.formAction.paging)) {
-            this.resetReachedTop();
-            panel.scrollTop = this.previousScrollTop;
-            if (this.control.formAction.paging.page > -1)
-              this.control.formAction.paging = { ...this.control.formAction.paging, page: this.control.formAction.paging.page - 1 }
+          if (this.control.formAction.paging.page > 1) {
+            this.control.formAction.paging = { ...this.control.formAction.paging, page: this.control.formAction.paging.page - 1 }
+            if (await this.control.formAction.onScrollTop(this.control.formAction?.formControl, this.group, this.control.formAction.paging)) {
+              this.resetReachedTop();
+              panel.scrollTop = this.previousScrollTop/2
+            }
           }
-
         }
         this.reachedTop = true;
       }

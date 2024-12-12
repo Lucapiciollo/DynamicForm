@@ -111,10 +111,12 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 },
                 onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging) {
-                    (allGroup[0].formGroup[4].formAction as any).options = context.options.slice(paging.page-1, paging.count)
+                    (allGroup[0].formGroup[4].formAction as any).options = context.options.slice(paging.page, paging.count)
                 },
                 async onScrollTop(formControl, formGroup, paging) {
-                    console.log(formControl, formGroup, paging)
+                    let range = ((paging.page-1) ) *paging.count;
+
+                    (formGroup[4].formAction as any).options = context.options.slice(range, paging.count*paging.page)
                     return true;
                 },
                 async onScrollEnd(formControl, formGroup, paging) {
