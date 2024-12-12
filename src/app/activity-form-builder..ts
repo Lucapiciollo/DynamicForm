@@ -3,7 +3,7 @@
 import { FormArray, FormControl, FormGroup, Validators } from "@angular/forms";
 
 import * as moment from "moment";
-import { ConfigForm, Form, FormActionCombo, FormActionComboPaginate, TYPE_CONTROL_FORM, TypeForm } from "./dynamicForm/dynamic-form.interface";
+import { ConfigForm, Form, TYPE_CONTROL_FORM, TypeForm } from "./dynamicForm/dynamic-form.interface";
 
 
 
@@ -127,7 +127,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 },
 
                 autocomplete: true,
-                paging: { count: 25, page: 1, totalCount: 80 }
+                paging: { count: 25, page: 1, totalCount: context.options.length }
             }
         },
 

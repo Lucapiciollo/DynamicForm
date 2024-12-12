@@ -150,6 +150,11 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
   }
   /************************************************************************************************************************************************************************ */
 
+
+  getTotalPages() {
+    return Math.ceil(this.control.formAction.paging.totalCount / this.control.formAction.paging.count);
+  }
+
   @ViewChild('selectRef') selectRef: MatSelect;
   async onScroll(event: any) {
     const panel = event.target;
@@ -161,11 +166,11 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
       const threshold = 0;
       if (distanceFromBottom <= threshold) {
         if (this.control.formAction && this.control.formAction.onScrollEnd) {
-          if ((this.control.formAction.paging.page + 1) * this.control.formAction.paging.count < this.control.formAction.paging.totalCount) {
+          if (this.control.formAction.paging.page < this.getTotalPages()) {
             this.control.formAction.paging = { ...this.control.formAction.paging, page: this.control.formAction.paging.page + 1 }
             if (await this.control.formAction.onScrollEnd(this.control.formAction?.formControl, this.group, this.control.formAction.paging)) {
               this.resetReachedEnd();
-              panel.scrollTop = this.previousScrollTop/2
+              panel.scrollTop = 50
             }
           }
         }
@@ -182,7 +187,7 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
             this.control.formAction.paging = { ...this.control.formAction.paging, page: this.control.formAction.paging.page - 1 }
             if (await this.control.formAction.onScrollTop(this.control.formAction?.formControl, this.group, this.control.formAction.paging)) {
               this.resetReachedTop();
-              panel.scrollTop = this.previousScrollTop/2
+              panel.scrollTop = 50
             }
           }
         }

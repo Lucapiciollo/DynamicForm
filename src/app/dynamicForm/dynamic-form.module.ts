@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { InjectionToken, NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { Camera } from "@ionic-native/camera/ngx";
+// import { Camera } from "@ionic-native/camera/ngx";
 import { InputTextComponent } from "./component/base-component.module";
 import { CheckboxComponent } from "./component/checkbox/checkbox.component";
 import { ComboComponent } from "./component/combo/combo.component";
@@ -37,7 +37,7 @@ export const DATE_PIPE_TIME = new InjectionToken<any>("Default date pipe time");
 
 @NgModule({
   providers: [
-    Camera,
+    // Camera,
     { provide: DATE_PIPE, useValue: { dateFormat: 'yyyy-MM-dd' } },
     { provide: DATE_PIPE_TIME, useValue: { dateFormat: 'yyyy-MM-ddTHH:mm:ss' } }
   ],
