@@ -5,7 +5,7 @@
               <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
             </mat-label>
             <mat-select
-
+                          #selectRef
                           [formControl]="this.control.formAction.formControl"
                           [multiple]="control.formAction.multiple"
                           (opened)="onOpened()"
@@ -50,7 +50,7 @@
           <div #dynamicContainer class ="px-1"></div>
 
     </div>
- 
+
 
 
 </ng-container>

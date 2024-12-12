@@ -15,21 +15,25 @@ import moment from 'moment';
   styleUrls: ['../../dynamic-form.component.scss']
 })
 export class InputTimeComponent extends BaseComponent {
-  /************************************************************************************************************************************************************************ */
-  public hours = [];
-  /************************************************************************************************************************************************************************ */
 
+  public hours = [];
 
   /************************************************************************************************************************************************************************ */
 
   constructor(protected override injector: Injector, protected override element: ElementRef) {
     super(injector, element);
-    Array.from({ length: 24 }, (_, i) => this.hours.push( moment().hour(i).minute(0).format("HH:00")))
+    Array.from({ length: 24 }, (_, i) => this.hours.push(moment().hour(i).minute(0).format("HH:00")))
 
   }
+
   /************************************************************************************************************************************************************************ */
 
-
+  ngAfterViewInit(): void {
+    if (this.control?.formAction?.optionsTime?.min)
+      this.hours = this.hours.filter(f => (moment(f, 'HH:mm').hour()) >= (moment(this.control?.formAction?.optionsTime?.min, 'HH:mm:ss').hour()));
+    if (this.control?.formAction?.optionsTime?.max)
+      this.hours = this.hours.filter(f => (moment(f, 'HH:mm').hour()) <= (moment(this.control?.formAction?.optionsTime?.max, 'HH:mm:ss').hour()));
+  }
 
 }
 

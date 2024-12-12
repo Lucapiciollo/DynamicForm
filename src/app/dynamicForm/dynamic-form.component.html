@@ -62,6 +62,8 @@
         <ng-container [ngSwitch]="formAction.type" *ngIf="!formAction?.css?.hide">
           <app-combo *ngSwitchCase="TYPE_CONTROL_FORM.COMBO" [question]="formAction" [formActionIndex]="formActionIndex"
             [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-combo>
+          <app-combo *ngSwitchCase="TYPE_CONTROL_FORM.COMBOPAGINATE" [question]="formAction" [formActionIndex]="formActionIndex"
+            [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-combo>
           <app-checkbox *ngSwitchCase="TYPE_CONTROL_FORM.CHECKBOX" [question]="formAction"
             [formActionIndex]="formActionIndex" [formGroupIndex]="formGroupIndex" [group]="group"
             [allGroup]="_questions"></app-checkbox>

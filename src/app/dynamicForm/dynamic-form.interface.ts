@@ -15,7 +15,7 @@ export type TypeOption = { date?: TypeOptionDate, css?: TypeCss, inputText?: Typ
 
 
 export enum TYPE_CONTROL_FORM {
-  SEPARATOR, BUTTON, DATETIME, LABEL, ACTIONREPORT, LINK, RADIOGROUP, TEXT, TEXTAREA, CHECKBOX, FILE, CURRENCY, NUMBER, COMBO, DATA, DATARANGE, EMAIL, TIME, GROUP, SORTACTION
+  COMBOPAGINATE, SEPARATOR, BUTTON, DATETIME, LABEL, ACTIONREPORT, LINK, RADIOGROUP, TEXT, TEXTAREA, CHECKBOX, FILE, CURRENCY, NUMBER, COMBO, DATA, DATARANGE, EMAIL, TIME, GROUP, SORTACTION
 }
 
 export type Form = {
@@ -37,7 +37,7 @@ export type Group = {
 
 export type ConfigForm = Array<Group>;
 
- 
+
 export type TypeRadioOption = Array<
   {
     id: any,
@@ -56,7 +56,7 @@ export type TypeComboOption = Array<{
 
 
 
-export declare type FormAction = FormActionGeneric | FormActionTextArea | FormActionQuestion | FormActionNumber | FormActionText | FormActionCombo | FormActionCurrency | FormActionCheckbox | FormActionDateRange | FormActionDate | FormActionDateRange | FormActionDateTime | FormActionFile;
+export declare type FormAction = FormActionComboPaginate | FormActionGeneric | FormActionTextArea | FormActionQuestion | FormActionNumber | FormActionText | FormActionCombo | FormActionCurrency | FormActionCheckbox | FormActionDateRange | FormActionDate | FormActionDateRange | FormActionDateTime | FormActionFile;
 export declare type FormActionCombo = {
   autocomplete?: boolean,
   disabled?: boolean,
@@ -74,6 +74,27 @@ export declare type FormActionCombo = {
   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm) => void,
   action?: (formControl: FormControl | FormArray | FormGroup,) => void
 };
+
+export declare type FormActionComboPaginate = {
+  autocomplete?: boolean,
+  disabled?: boolean,
+  multiple?: boolean,
+  formName?: string,
+  title?: string,
+  formControl: FormControl | FormArray | FormGroup,
+  css?: TypeCss,
+  type: TYPE_CONTROL_FORM.COMBOPAGINATE,
+  tipContent?: string,
+  formGroup?: ConfigForm,
+  info?: { msg: string, color: string },
+  paging: { count: number, page: number, totalCount:number  },
+  onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) => void,
+  onInitialize: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, paging?: { count: number, page: number }) => void,
+  onScrollEnd: (formControl: FormControl | FormArray | FormGroup, formGroup: Array<Form>, paging: { count: number, page: number, totalCount:number }) => Promise<boolean>
+  onScrollTop: (formControl: FormControl | FormArray | FormGroup, formGroup: Array<Form>, paging: { count: number, page: number, totalCount:number  }) => Promise<boolean>
+};
+
+
 
 export declare type FormActionCheckbox = {
   formName?: string,

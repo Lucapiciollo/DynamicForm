@@ -35,10 +35,6 @@ import { autoUnsubscribe } from '../custom.operator';
 
 export class BaseComponent implements IBaseComponent {
 
-
-
-
-
   @Output() onCaptureCam: EventEmitter<File> = new EventEmitter<File>();
   @Output() instance: EventEmitter<{ instance: BaseComponent, name: string }> = new EventEmitter<{ instance: BaseComponent, name: string }>();
   public filteredOptions: ReplaySubject<any> = new ReplaySubject(1);
@@ -81,7 +77,7 @@ export class BaseComponent implements IBaseComponent {
         // if (this.control?.formAction?.autocomplete)
         //   this.filteredOptions.next(this._filter(this.control.formAction.formControl?.value))
         // else
-        this.filteredOptions.next(this._filter(null))
+         this.filteredOptions.next(this._filter(null));
       },
       get: () => {
         return this.internalValue;
@@ -101,6 +97,7 @@ export class BaseComponent implements IBaseComponent {
       takeUntilDestroyed(this.destroyRef)).subscribe(({ allGroup, control }) => {
 
         control.formAction.type == TYPE_CONTROL_FORM.COMBO ? this.onSetOption() : null;
+        control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE ? this.onSetOption() : null;
 
 
         if (true) {
@@ -121,7 +118,10 @@ export class BaseComponent implements IBaseComponent {
           })
         }
         if (control.formAction && control.formAction.onInitialize) {
-          control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup);
+          if( control.formAction.type as TYPE_CONTROL_FORM == TYPE_CONTROL_FORM.COMBOPAGINATE)
+            control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup,(control.formAction as any).paging);
+          else
+            control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup);
         }
 
       })
@@ -135,7 +135,6 @@ export class BaseComponent implements IBaseComponent {
   constructor(protected injector: Injector, protected element: ElementRef) {
 
   }
-
 
 
   /************************************************************************************************************************************************************************ */

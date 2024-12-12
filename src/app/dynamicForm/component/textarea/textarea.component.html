@@ -22,8 +22,8 @@
                      <button *ngIf="control.formAction?.resetButton"  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
                       <mat-icon>close</mat-icon>
                     </button>
-             </mat-form-field>
-             <mat-hint *ngIf="control.formAction?.optionInputText?.maxlength" [attr.align]="'start'">{{inputs.value.length}}/{{control.formAction?.optionInputText?.maxlength}}</mat-hint>
-     <div #dynamicContainer class ="px-1"></div>
-  </div>
+                  </mat-form-field>
+                  <div #dynamicContainer class ="px-1"></div>
+                </div>
+                <mat-hint  *ngIf="control.formAction?.optionInputText?.maxlength" [attr.align]="'start'">{{inputs.value.length}}/{{control.formAction?.optionInputText?.maxlength}}</mat-hint>
 </ng-container>

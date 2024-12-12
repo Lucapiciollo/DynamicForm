@@ -15,6 +15,7 @@ export class AppComponent {
   questions$: Observable<ConfigForm>;
 
   componentRef = DynamicComponent;
+  options=this.generateUniqueItems(300);
 
   constructor() {
     this.questions$ = of(activityForm({}, this));
@@ -33,6 +34,31 @@ export class AppComponent {
 
     // formGroup.enable()
   }
+
+  generateRandomString(length) {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  }
+
+  // Funzione per creare una lista di item univoci
+  generateUniqueItems(count) {
+    const items = new Set();
+
+    while (items.size < count) {
+      const id = this.generateRandomString(4); // ID univoco di 4 caratteri
+      const description = `Descrizione ${this.generateRandomString(6)}`; // Descrizione casuale
+
+      items.add(JSON.stringify({ id, description })); // Usa JSON.stringify per mantenere l'unicità
+    }
+
+    return Array.from(items).map((item: any) => JSON.parse(item));
+  }
+
+
 }
 
 @Component({
@@ -46,20 +72,24 @@ export class DynamicComponent extends FormComponentTemplate {
 
 
 
-  questions: ConfigForm ;
+  questions: ConfigForm;
   formParent: FormControl<any> | FormGroup<any> | FormArray<any>;
   formControl: FormControl<any>;
   formConfig: FormAction;
 
   setConfig(formConfig: FormAction) {
-     (this.questions[0].formGroup[7].formAction as any).options = [...[{ id: 1, description: "test" }]];
-    console.log(this.formParent, this.formConfig, this.formControl, this.questions); 
+    (this.questions[0].formGroup[7].formAction as any).options = [...[{ id: 1, description: "test" }]];
+    console.log(this.formParent, this.formConfig, this.formControl, this.questions);
 
   }
 
-   public initialize(): void {
-      this.questions=this.getQuestions();
-    }
+  public initialize(): void {
+    this.questions = this.getQuestions();
+  }
 
- 
+
+
+
+
+
 }

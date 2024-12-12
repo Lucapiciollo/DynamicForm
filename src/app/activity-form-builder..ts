@@ -3,7 +3,7 @@
 import { FormArray, FormControl, FormGroup, Validators } from "@angular/forms";
 
 import * as moment from "moment";
-import { ConfigForm, Form, FormActionCombo, TYPE_CONTROL_FORM, TypeForm } from "./dynamicForm/dynamic-form.interface";
+import { ConfigForm, Form, FormActionCombo, FormActionComboPaginate, TYPE_CONTROL_FORM, TypeForm } from "./dynamicForm/dynamic-form.interface";
 
 
 
@@ -38,6 +38,8 @@ export function activityForm(registry: any, context: any): ConfigForm {
 }
 
 
+
+
 type FormControlType = FormControl | FormArray | FormGroup
 
 export function createRegistry(object: any, context: any): TypeForm {
@@ -49,7 +51,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formControl: new FormControl(object?.registryId),
                 formName: "registryId",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value)
+
 
 
                 }
@@ -64,7 +66,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formControl: new FormControl(object?.registryId),
                 formName: "domicile",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value)
+
 
                 }
             }
@@ -100,17 +102,30 @@ export function createRegistry(object: any, context: any): TypeForm {
             formAction: {
 
                 title: "SESSO",
-                componentRef: [context.componentRef],
-                type: TYPE_CONTROL_FORM.COMBO,
+                type: TYPE_CONTROL_FORM.COMBOPAGINATE,
                 css: { class: ["col-12"] },
                 formControl: new FormControl(object?.gender, { updateOn: "change", validators: [] }),
                 formName: "gender",
                 multiple: true,
                 onChange(idGroup: number, idForm: number, formControl: FormControlType, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) {
-                 
-                 },
-                options: [{ id: "M", description: "Maschio" }, { id: "F", description: "Femmina" }],
-                autocomplete: true
+
+                },
+                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging) {
+                    (allGroup[0].formGroup[4].formAction as any).options = context.options.slice(paging.page-1, paging.count)
+                },
+                async onScrollTop(formControl, formGroup, paging) {
+                    console.log(formControl, formGroup, paging)
+                    return true;
+                },
+                async onScrollEnd(formControl, formGroup, paging) {
+                    let range = ((paging.page-1) ) *paging.count;
+
+                    (formGroup[4].formAction as any).options = context.options.slice(range, paging.count*paging.page)
+                    return true;
+                },
+
+                autocomplete: true,
+                paging: { count: 25, page: 1, totalCount: 80 }
             }
         },
 
@@ -123,7 +138,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formControl: new FormControl(object?.birthDate, [Validators.required]),
                 formName: "birthDate",
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value)
+
                 }
             }
         },
@@ -137,7 +152,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formControl: new FormControl(object?.province, [Validators.required]),
                 formName: "province",
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value)
+
 
                 }
 
@@ -151,7 +166,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formControl: new FormControl(object?.townHall, []),
                 formName: "townHall",
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value)
+
 
 
                 },
@@ -167,7 +182,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formControl: new FormControl(object?.fiscalCode, { updateOn: "blur", validators: [Validators.required] }),
                 formName: "fiscalCode",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value)
+
 
 
                 }
@@ -182,7 +197,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formControl: new FormControl(object?.citizenship, { updateOn: "blur", validators: [] }),
                 formName: "citizenship",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value)
+
 
 
                 },
@@ -201,7 +216,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formControl: new FormControl(object?.phone, { updateOn: "blur", validators: [] }),
                 formName: "phone",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value)
+
 
 
                 }
@@ -217,7 +232,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formControl: new FormControl(object?.mobile, { updateOn: "blur", validators: [Validators.maxLength(10)] }),
                 formName: "mobile",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value)
+
 
 
                 }
@@ -233,7 +248,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formControl: new FormControl(object?.email, { updateOn: "blur", validators: [Validators.email] }),
                 formName: "email",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value)
+
 
 
                 }
@@ -248,7 +263,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formControl: new FormControl(object?.pec, { updateOn: "blur", validators: [Validators.email] }),
                 formName: "pec",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value)
+
 
 
                 }
