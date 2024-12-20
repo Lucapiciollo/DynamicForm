@@ -24,6 +24,7 @@ import { DynamicFormComponent } from "./dynamic-form.component";
 import { LanguagePipe } from "./pipe/form.pipe";
 import { MaterialModule } from "./material.module";
 import { SeparatorComponent } from "./component/separator/separator.component";
+import { StickyDirective } from "./directive/sticky.directive";
 /**
 * @author luca.piciollo
 * @email lucapiciollo@gmail.com
@@ -63,7 +64,8 @@ export const DATE_PIPE_TIME = new InjectionToken<any>("Default date pipe time");
     TextareaComponent,
     LinkComponent,
     SpeechDirective,
-    SortActionComponent
+    SortActionComponent,
+    StickyDirective
   ],
   imports: [
     CommonModule,
@@ -73,6 +75,7 @@ export const DATE_PIPE_TIME = new InjectionToken<any>("Default date pipe time");
 
   ],
   exports: [
+    StickyDirective,
     SeparatorComponent,
     LanguagePipe,
     LoadChildDirective,

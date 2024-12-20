@@ -1,10 +1,10 @@
 <ng-container *ngIf=" !control.formAction.css?.hide">
     <div class="  d-flex w-100 ">
-          <mat-form-field class="w-100 customMY" >
+          <mat-form-field class="w-100 customMY " >
             <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
               <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
             </mat-label>
-            <mat-select
+            <mat-select   class="py-0 my-0"
                           #selectRef
                           [formControl]="this.control.formAction.formControl"
                           [multiple]="control.formAction.multiple"
@@ -18,11 +18,11 @@
             </mat-select-trigger>
 
 
-                  <div class="search-container border-bottom"  *ngIf="control.formAction.autocomplete">
+                  <div class="search-container border-bottom  my-0 py-0" [applySticky]="true" [appStickyOffset]="'-10px'"  *ngIf="control.formAction.autocomplete">
                     <span class="search-icon">
                       <mat-icon class="m-auto" >search</mat-icon>
-                   </span>
-                    <input   matInput  class="mat-mdc-option ps-5"
+                    </span>
+                    <input   matInput  class="mat-mdc-option ps-5  py-0"
                             [matTooltip]="control.formAction?.tipContent || null"
                             #filterInput
                             (input)="search(filterInput.value)"
@@ -31,14 +31,14 @@
                   </div>
 
 
-              <mat-option *ngFor="let option of filteredOptions | async"
-                            (click)="toggleOption(option, $event)"
-                           [value]="option.id"
-                           [disabled]="option.disabled"
-                           [class.d-none]="option.hide"
-                           [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'" >
-                           {{ option.description }}
-              </mat-option>
+                  <mat-option *ngFor="let option of filteredOptions | async"
+                                (click)="toggleOption(option, $event)"
+                              [value]="option.id"
+                              [disabled]="option.disabled"
+                              [class.d-none]="option.hide"
+                              [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'" >
+                              {{ option.description }}
+                  </mat-option>
 
             </mat-select>
             <button *ngIf="control.formAction?.resetButton"  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >

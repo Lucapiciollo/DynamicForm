@@ -151,9 +151,7 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
   /************************************************************************************************************************************************************************ */
 
 
-  getTotalPages() {
-    return Math.ceil(this.control.formAction.paging.totalCount / this.control.formAction.paging.count);
-  }
+ 
 
   @ViewChild('selectRef') selectRef: MatSelect;
   async onScroll(event: any) {
