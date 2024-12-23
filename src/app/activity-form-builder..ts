@@ -4,6 +4,7 @@ import { FormArray, FormControl, FormGroup, Validators } from "@angular/forms";
 
 import * as moment from "moment";
 import { ConfigForm, Form, TYPE_CONTROL_FORM, TypeForm } from "./dynamicForm/dynamic-form.interface";
+import { ReplaySubject, Subject } from "rxjs";
 
 
 
@@ -43,6 +44,8 @@ export function activityForm(registry: any, context: any): ConfigForm {
 type FormControlType = FormControl | FormArray | FormGroup
 
 export function createRegistry(object: any, context: any): TypeForm {
+
+    let obs: ReplaySubject<any> = new ReplaySubject(1)
     return [
         {
             formAction: {
@@ -110,6 +113,9 @@ export function createRegistry(object: any, context: any): TypeForm {
                 onChange(idGroup: number, idForm: number, formControl: FormControlType, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) {
 
                 },
+                async opened(idGroup, idForm, formControl, formName, formGroup, allGroup) {
+
+                },
                 onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging) {
                     (allGroup[0].formGroup[4].formAction as any).paging = { count: 25, page: 1, totalCount: context.options.length };
                     (allGroup[0].formGroup[4].formAction as any).options = context.options.slice((allGroup[0].formGroup[4].formAction as any).paging.page - 1, (allGroup[0].formGroup[4].formAction as any).paging.count)
@@ -124,20 +130,25 @@ export function createRegistry(object: any, context: any): TypeForm {
                 async onScrollEnd(formControl, formGroup, paging) {
 
                     function getTotalPages() {
-                        return Math.ceil( paging.totalCount /  paging.count);
+                        return Math.ceil(paging.totalCount / paging.count);
                     }
 
                     if (paging.page < getTotalPages()) {
-                         ( formGroup[4].formAction as any).paging = { ... ( formGroup[4].formAction as any).paging,  page:  ( formGroup[4].formAction as any).paging.page+1 };
+                        (formGroup[4].formAction as any).paging = { ... (formGroup[4].formAction as any).paging, page: (formGroup[4].formAction as any).paging.page + 1 };
                         let range = ((paging.page - 1)) * paging.count;
-                        (formGroup[4].formAction as any).options = [...(formGroup[4].formAction as any).options, ...context.options.slice(range, paging.count * paging.page)]
+                        // (formGroup[4].formAction as any).options = [...(formGroup[4].formAction as any).options, ...context.options.slice(range, paging.count * paging.page)]
+                        obs.next([...(formGroup[4].formAction as any).options, ...context.options.slice(range, paging.count * paging.page)])
                         return true;
                     } else
                         return false
 
 
                 },
+                async onSearch(formGroup, paging, filteredOptions, value) {
+                    return
 
+                },
+                optionObs: obs,
                 autocomplete: true
             }
         },

@@ -12,3 +12,27 @@
   background-color: #f5f5f5; /* Colore della riga */
   margin: 20px 0; /* Spazio sopra e sotto */
 }
+
+
+.svgSort {
+  width: 2.5rem !important;
+}
+
+
+
+.scroll-down-indicator {
+  min-height: 100px;
+  height: 100px;
+  opacity: 0.2; /* Più visibile */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
+  position: relative;
+  overflow: hidden;
+}
+.scroll-top-indicator {
+  min-height: 100px;
+  height: 100px;
+  opacity: 0.3; /* Più visibile */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
+  position: relative;
+  overflow: hidden;
+}

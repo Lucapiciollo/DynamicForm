@@ -10,6 +10,7 @@ import { BaseComponent } from '../base-component.component';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { FormControl } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
+import { distinctUntilChanged, fromEvent, Subject, takeUntil } from 'rxjs';
 @Component({
   selector: 'app-combo',
   templateUrl: './combo.component.html',
@@ -21,6 +22,9 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
   private maxElementShow = 3;
   private scrollListener: (event: any) => void;
   private previousScrollTop: number = 0;
+  private reachedEnd: boolean = false;
+  private reachedTop: boolean = false;
+  public onPanelCloseObs = new Subject<void>();
 
   /************************************************************************************************************************************************************************ */
   override toString(num: any): string {
@@ -29,15 +33,21 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
   /************************************************************************************************************************************************************************ */
   constructor(protected override injector: Injector, protected override element: ElementRef, private cf: ChangeDetectorRef) {
     super(injector, element);
-    this.scrollListener = (event: any) => this.onScroll(event);
+    // this.scrollListener = (event: any) => this.onScroll(event);
   }
   /************************************************************************************************************************************************************************ */
   ngOnChanges(changes) {
-    this.filteredOptions.next(this._filter(this.control.formAction.formControl?.value));
+    if (this.control.formAction.onSearch)
+      this._filter(this.control.formAction.formControl?.value)
+    else
+      this.filteredOptions.next(this._filter(this.control.formAction.formControl?.value));
   }
   /************************************************************************************************************************************************************************ */
-  search(value) {
-    this.filteredOptions.next(this._filter(value));
+  async search(value) {
+    if (this.control.formAction.onSearch)
+      this._filter(value)
+    else
+      this.filteredOptions.next(this._filter(value));
   }
   /************************************************************************************************************************************************************************ */
   ngAfterViewInit(): void {
@@ -83,10 +93,49 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
     if (this._filterInput) {
       this._filterInput.nativeElement.focus()
     }
+    /**
+        * se spasso un osservatore come sorgente per le option, mi registro e resto in ascolto finche il pannello non si chiude,
+        * in caso si riapra, mi registro nuovamente
+        */
+    if ((this.control.formAction as any).optionObs) {
+
+      (this.control.formAction as any).optionObs.pipe(takeUntil(this.onPanelCloseObs)).subscribe(async response => {
+        this.control.formAction.options = response.items;
+        this.control.formAction.paging = { ...this.control.formAction.paging, totalCount: response.totalCount }
+        this.filteredOptions.next(response.items)
+        if (this.direction == "UP") {
+          setTimeout(() => {
+            const lastOption = this.selectRef?.panel?.nativeElement.children[this.selectRef?.panel?.nativeElement.children.length - 2];
+            lastOption.scrollIntoView({ block: 'end' });
+          }, 100);
+        }
+        if (this.direction == "DOWN") {
+          const lastOption = this.selectRef?.panel?.nativeElement.children[2];
+          lastOption.scrollIntoView({ block: 'start' });
+        }
+      }, error => { }, () => {
+        /**
+          * alla chiusura del pannello, libero le risorse come gli eventi e gli osservatori delle option
+          */
+        // this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE ? this.control.formAction.options = [{ id: null, description: null }] : null;
+        this.removeEventScroll();
+      });
+    }
+
+    /**
+     * registro l'evento di scroll, sulla combo, quindi verranno lanciati gli eventi di scrollUp e scrolDown demandando alle funzioni registrate
+     * l'eventuale paginazione
+     */
     this.addEventScroll()
 
   }
   /************************************************************************************************************************************************************************ */
+
+
+  onPanelClose() {
+    this.onPanelCloseObs.next();
+  }
+
 
   event() {
     if (this.control.formAction.event?.onClick) {
@@ -117,23 +166,77 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
     if (this.control.formAction.multiple) {
       if (this.isSelected(item)) {
         this.selectedValues = this.selectedValues.filter((f: any) => f.id != item.id);
+        this.control.formAction.options.find(f => f.id == item.id)["selected"] = false;
       } else {
         this.selectedValues.push(item);
+        this.control.formAction.options.find(f => f.id == item.id)["selected"] = true;
       }
       this.control.formAction.formControl.setValue([...this.selectedValues.map((m: any) => m.id)])
       event.stopPropagation();
     }
+    else
+      this.control.formAction.options.map(f => f.id == item.id ? f.selected = true : f.selected = false)
   }
   /************************************************************************************************************************************************************************ */
   isSelected(item: any): boolean {
     return this.selectedValues.find((f: any) => f.id == item.id) != null;
   }
   /************************************************************************************************************************************************************************ */
+  public showDivDown = false;
+  public showDivTop = false;
+  public direction: "UP" | "DOWN" = null;
+
 
   addEventScroll() {
     try {
-      const dropdownPanel = this.selectRef?.panel?.nativeElement;
-      dropdownPanel?.addEventListener('scroll', this.scrollListener);
+      fromEvent(this.selectRef?.panel?.nativeElement, 'scroll')
+        .pipe(
+          takeUntil(this.onPanelCloseObs),
+          distinctUntilChanged(),
+
+        )
+        .subscribe(async () => {
+          const panel = this.selectRef?.panel?.nativeElement;
+          const scrollTop = panel.scrollTop;
+          const scrollHeight = panel.scrollHeight;
+          const clientHeight = panel.clientHeight;
+          let distanceFromBottom;
+          if (scrollTop > this.previousScrollTop && !this.reachedEnd) {
+            distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+            const threshold = 50;
+            if (distanceFromBottom <= threshold && this.control.formAction.paging.page < Math.ceil(this.control.formAction.paging.totalCount / this.control.formAction.paging.count)) {
+              if (this.control.formAction && this.control.formAction.onScrollEnd) {
+                if (await this.control.formAction.onScrollEnd(this.control.formAction?.formControl, this.group, this.control.formAction.paging, this.control.formAction.options.filter(f => f.selected == true))) {
+                  this.control.formAction.paging = { ...  this.control.formAction.paging, page: this.control.formAction.paging.page + 1 };
+                  this.resetReachedEnd();
+                  this.direction = "DOWN";
+                }
+              }
+              this.reachedEnd = true;
+            }
+            this.resetReachedTop();
+          }
+          if (scrollTop < this.previousScrollTop && !this.reachedTop) {
+            const distanceFromTop = scrollTop;
+            const threshold = 70;
+            if (distanceFromTop <= threshold) {
+              if (this.control.formAction && this.control.formAction.onScrollTop) {
+                if (this.control.formAction.paging.page > 1) {
+                  this.control.formAction.paging = { ...this.control.formAction.paging, page: this.control.formAction.paging.page - 1 };
+                  if (await this.control.formAction.onScrollTop(this.control.formAction?.formControl, this.group, this.control.formAction.paging, this.control.formAction.options.filter(f => f.selected == true))) {
+                    this.resetReachedTop();
+                    this.direction = "UP";
+                  }
+                }
+              }
+              this.reachedTop = true;
+            }
+            this.resetReachedEnd()
+          }
+          this.showDivDown = this.control.formAction.paging.page < Math.ceil(this.control.formAction.paging.totalCount / this.control.formAction.paging.count);
+          this.showDivTop = this.control.formAction.paging.page > 1;
+          this.previousScrollTop = scrollTop;
+        });
     } catch (e) {
       throw new Error(e)
     }
@@ -142,61 +245,15 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
 
   removeEventScroll() {
     try {
-      const dropdownPanel = this.selectRef?.panel?.nativeElement;
-      dropdownPanel?.removeEventListener('scroll', this.scrollListener);
+
     } catch (e) {
       throw new Error(e)
     }
   }
   /************************************************************************************************************************************************************************ */
 
-
- 
-
   @ViewChild('selectRef') selectRef: MatSelect;
-  async onScroll(event: any) {
-    const panel = event.target;
-    const scrollTop = panel.scrollTop;
-    const scrollHeight = panel.scrollHeight;
-    const clientHeight = panel.clientHeight;
-    if (scrollTop > this.previousScrollTop && !this.reachedEnd) {
-      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-      const threshold = 50;
-      if (distanceFromBottom <= threshold) {
-        if (this.control.formAction && this.control.formAction.onScrollEnd) {
-          if (await this.control.formAction.onScrollEnd(this.control.formAction?.formControl, this.group, this.control.formAction.paging)) {
-            this.resetReachedEnd();
-            panel.scrollTop = this.previousScrollTop - 1
-          }
-        }
-        this.reachedEnd = true;
-      }
-      this.resetReachedTop();
-    }
-    if (scrollTop < this.previousScrollTop && !this.reachedTop) {
-      const distanceFromTop = scrollTop;
-      const threshold = 0;
-      if (distanceFromTop <= threshold) {
-        if (this.control.formAction && this.control.formAction.onScrollTop) {
-          if (this.control.formAction.paging.page > 1) {
-            this.control.formAction.paging = { ...this.control.formAction.paging, page: this.control.formAction.paging.page - 1 }
-            if (await this.control.formAction.onScrollTop(this.control.formAction?.formControl, this.group, this.control.formAction.paging)) {
-              this.resetReachedTop();
-              panel.scrollTop = 50
-            }
-          }
-        }
-        this.reachedTop = true;
-      }
-      this.resetReachedEnd()
-    }
 
-    this.previousScrollTop = scrollTop;
-  }
-
-  /************************************************************************************************************************************************************************ */
-  public reachedEnd: boolean = false;
-  public reachedTop: boolean = false;
   /************************************************************************************************************************************************************************ */
   resetReachedEnd() {
     this.reachedEnd = false;
@@ -206,5 +263,6 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
   resetReachedTop() {
     this.reachedTop = false;
   }
+  /************************************************************************************************************************************************************************ */
 
 }

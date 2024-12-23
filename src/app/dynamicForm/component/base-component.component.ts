@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ReplaySubject, Subscriber, Subscription, combineLatest, pairwise, startWith } from 'rxjs';
+import { ReplaySubject, Subject, Subscriber, Subscription, combineLatest, pairwise, startWith, switchMap, takeUntil } from 'rxjs';
 import { IBaseComponent } from './base-component-interface';
 import { GetErrorForm, GetErrorFormControl } from './error-message-utils';
 
@@ -77,7 +77,7 @@ export class BaseComponent implements IBaseComponent {
         // if (this.control?.formAction?.autocomplete)
         //   this.filteredOptions.next(this._filter(this.control.formAction.formControl?.value))
         // else
-         this.filteredOptions.next(this._filter(null));
+        this.filteredOptions.next(this._filter(null));
       },
       get: () => {
         return this.internalValue;
@@ -96,8 +96,14 @@ export class BaseComponent implements IBaseComponent {
       autoUnsubscribe(this.obs),
       takeUntilDestroyed(this.destroyRef)).subscribe(({ allGroup, control }) => {
 
-        control.formAction.type == TYPE_CONTROL_FORM.COMBO ? this.onSetOption() : null;
-        control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE ? this.onSetOption() : null;
+        (control.formAction.type == TYPE_CONTROL_FORM.COMBO && !(this.control.formAction as any).optionObs)? this.onSetOption() : null;
+        (control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE  && !(this.control.formAction as any).optionObs)? this.onSetOption() : null;
+        control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE ? this.control.formAction.options = [{ id: null, description: null }] : null;
+
+        if(this.control.formAction.onSearch){
+          this._filter= (control.formAction as any).onSearch.bind(this,this.group,(control.formAction as any).paging,this.filteredOptions)
+        }
+
 
 
         if (true) {
@@ -118,8 +124,8 @@ export class BaseComponent implements IBaseComponent {
           })
         }
         if (control.formAction && control.formAction.onInitialize) {
-          if( control.formAction.type as TYPE_CONTROL_FORM == TYPE_CONTROL_FORM.COMBOPAGINATE)
-            control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup,(control.formAction as any)?.paging);
+          if (control.formAction.type as TYPE_CONTROL_FORM == TYPE_CONTROL_FORM.COMBOPAGINATE)
+            control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, (control.formAction as any)?.paging);
           else
             control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup);
         }

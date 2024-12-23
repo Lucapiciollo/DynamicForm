@@ -4,6 +4,7 @@
 import { ComponentRef } from "@angular/core";
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { FormComponentTemplate } from "./component/FormComponentTemplate";
+import { Observable, ReplaySubject } from "rxjs";
 
 /*********************************************************************************************************************************** */
 
@@ -87,11 +88,16 @@ export declare type FormActionComboPaginate = {
   tipContent?: string,
   formGroup?: ConfigForm,
   info?: { msg: string, color: string },
-  paging?: { count: number, page: number, totalCount:number  },
+  paging?: { count: number, page: number, totalCount: number },
   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) => void,
   onInitialize: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, paging?: { count: number, page: number }) => void,
-  onScrollEnd: (formControl: FormControl | FormArray | FormGroup, formGroup: Array<Form>, paging: { count: number, page: number, totalCount:number }) => Promise<boolean>
-  onScrollTop: (formControl: FormControl | FormArray | FormGroup, formGroup: Array<Form>, paging: { count: number, page: number, totalCount:number  }) => Promise<boolean>
+  onScrollEnd: (formControl: FormControl | FormArray | FormGroup, formGroup: Array<Form>, paging: { count: number, page: number, totalCount: number }, currentOptions: TypeComboOption) => Promise<boolean>
+  onScrollTop: (formControl: FormControl | FormArray | FormGroup, formGroup: Array<Form>, paging: { count: number, page: number, totalCount: number }, currentOptions: TypeComboOption) => Promise<boolean>
+  onSearch?: (formGroup: Array<Form>, paging: { count: number, page: number, totalCount: number }, filteredOptions: ReplaySubject<any>, value: string) => Promise<void>
+  opened?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm) => void,
+  closed?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm) => void,
+  optionObs?: ReplaySubject<{ totalCount: number, items: TypeComboOption }>,
+
 };
 
 
