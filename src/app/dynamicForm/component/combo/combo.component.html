@@ -1,63 +1,68 @@
-<ng-container *ngIf=" !control.formAction.css?.hide">
-    <div class="  d-flex w-100 ">
-          <mat-form-field class="w-100 customMY " >
-            <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
-              <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
-            </mat-label>
-            <mat-select   class="py-0 my-0"
-                          #selectRef
-                          [formControl]="this.control.formAction.formControl"
-                          [multiple]="control.formAction.multiple"
-                          (opened)="onOpened()"
-                          (closed)=" clearInput();onPanelClose()"
-                        
-                        
-            >
-
-            <mat-select-trigger>
-              <span class="example-additional-selection"> {{getValueCombo(control.formAction.formControl,true)}} </span>
-            </mat-select-trigger>
+@if (!control.formAction.css?.hide) {
+<ng-container>
+  <div class="  d-flex w-100 ">
+    <mat-form-field class="w-100 customMY ">
 
 
-                  <div class="search-container border-bottom  my-0 py-0" [applySticky]="true" [appStickyOffset]="'-10px'"  *ngIf="control.formAction.autocomplete">
-                    <span class="search-icon">
-                      <mat-icon class="m-auto" >search</mat-icon>
-                    </span>
-                    <input   matInput  class="mat-mdc-option ps-5  py-0"
-                            [matTooltip]="control.formAction?.tipContent || null"
-                            #filterInput
-                            (input)="search(filterInput.value)"
-                            [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
-                            [placeholder]="control.formAction.placeholder" />
-                  </div>
+      <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
+        @if (control.formAction?.info) {
+        <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large">info_outline</mat-icon>
+        }
+      </mat-label>
+      <mat-select class="py-0 my-0" #selectRef [formControl]="this.control.formAction.formControl" [multiple]="control.formAction.multiple" (opened)="onOpened()" (closed)=" clearInput();onPanelClose()">
+
+        <mat-select-trigger>
+          <span class="example-additional-selection"> {{getValueCombo(control.formAction.formControl,true)}}</span>
+        </mat-select-trigger>
 
 
-                  <div *ngIf="showDivTop" class="scroll-top-indicator">
+       
+          <div class="search-container border-bottom  my-auto py-0" [fixSearchBox]="true" [appStickyOffset]="'-7px'">
+            @if(control.formAction.autocomplete  ){
+              <span class="search-icon my-auto">
+                <mat-icon class="m-auto">search</mat-icon>
+              </span>
+              <input matInput class="mat-mdc-option ps-5  py-0" [matTooltip]="control.formAction?.tipContent || null" #filterInput (input)="onInputChange(filterInput.value)" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" [placeholder]="control.formAction.placeholder" />
+             }
+             @if(loader()){
+                <div class="loading-bar-container">
+                  <div class="loading-bar"></div>
+                </div>
+              }
+          </div>
+    
 
-                  </div>
-                  <mat-option *ngFor="let option of filteredOptions | async"
-                                (click)="toggleOption(option, $event)"
-                              [value]="option.id"
-                              [disabled]="option.disabled"
-                              [class.d-none]="option.hide"
-                              [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'" >
-                              {{ option.description }}
-                  </mat-option>
-                  <mat-option >  </mat-option>
-  
-                <div *ngIf="showDivDown" class="scroll-down-indicator" ></div>
+        @for (option of filteredOptions | async; track option.id) {
+          <mat-option (click)="toggleOption(option, $event)" [value]="option.id" [disabled]="option.disabled" [class.d-none]="option.hide" [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'">
+            {{ option.description }}
+          </mat-option>
+        }
 
-            </mat-select>
-            <button *ngIf="control.formAction?.resetButton"  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
-              <mat-icon>close</mat-icon>
-            </button>
-            <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
-          </mat-form-field>
+        @if(showOptionDefault){
+         <mat-option   class="d-none"> </mat-option>
+        }
 
-          <div #dynamicContainer class ="px-1"></div>
+ 
+      </mat-select>
 
-    </div>
+      @if(control.formAction?.resetButton){
+      <button matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()">
+        <mat-icon>close</mat-icon>
+      </button>
+      }
+
+
+    </mat-form-field>
+
+    <div #dynamicContainer class="px-1"></div>
+
+  </div>
+
+  @for (error of getErrorFormControl( control.formAction?.formControl ); track $index) {
+  <mat-error>{{error}} </mat-error>
+  }
 
 
 
 </ng-container>
+}

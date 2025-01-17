@@ -4,8 +4,9 @@ import { FormArray, FormControl, FormGroup, Validators } from "@angular/forms";
 
 import * as moment from "moment";
 import { ConfigForm, Form, TYPE_CONTROL_FORM, TypeForm } from "./dynamicForm/dynamic-form.interface";
-import { ReplaySubject, Subject } from "rxjs";
-
+import { map, of, pipe, ReplaySubject, Subject, switchMap, tap } from "rxjs";
+import { effect, WritableSignal } from "@angular/core";
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
 
 
@@ -113,42 +114,24 @@ export function createRegistry(object: any, context: any): TypeForm {
                 onChange(idGroup: number, idForm: number, formControl: FormControlType, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) {
 
                 },
-                async opened(idGroup, idForm, formControl, formName, formGroup, allGroup) {
+                opened(idGroup, idForm, formControl, formName, formGroup, allGroup) {
 
                 },
-                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging) {
+                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging,sn) {
                     (allGroup[0].formGroup[4].formAction as any).paging = { count: 25, page: 1, totalCount: context.options.length };
                     (allGroup[0].formGroup[4].formAction as any).options = context.options.slice((allGroup[0].formGroup[4].formAction as any).paging.page - 1, (allGroup[0].formGroup[4].formAction as any).paging.count)
-                },
 
-                async onScrollTop(formControl, formGroup, paging) {
-                    // let range = ((paging.page - 1)) * paging.count;
-                    // (formGroup[4].formAction as any).options = context.options.slice(range, paging.count * paging.page)
-                    return true;
-                },
-
-                async onScrollEnd(formControl, formGroup, paging) {
-
-                    function getTotalPages() {
-                        return Math.ceil(paging.totalCount / paging.count);
-                    }
-
-                    if (paging.page < getTotalPages()) {
-                        (formGroup[4].formAction as any).paging = { ... (formGroup[4].formAction as any).paging, page: (formGroup[4].formAction as any).paging.page + 1 };
-                        let range = ((paging.page - 1)) * paging.count;
-                        // (formGroup[4].formAction as any).options = [...(formGroup[4].formAction as any).options, ...context.options.slice(range, paging.count * paging.page)]
-                        obs.next([...(formGroup[4].formAction as any).options, ...context.options.slice(range, paging.count * paging.page)])
-                        return true;
-                    } else
-                        return false
-
+                    effect(() => {
+                        console.log(sn())
+                    },{injector:context.injector})
 
                 },
-                async onSearch(formGroup, paging, filteredOptions, value) {
-                    return
-
-                },
-                optionObs: obs,
+                disabledOption: [],
+                remoteData:  rxMethod<{ param: any, externalStore: WritableSignal<any> }>(pipe(
+                    map(({externalStore,param})=> externalStore.set({items:context.generateUniqueItems(25), totalCount:1000})),
+                )),
+                     
+                keyCombo:  {keyDescription:["description"],keyId: "id" },
                 autocomplete: true
             }
         },

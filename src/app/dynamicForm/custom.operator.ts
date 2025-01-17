@@ -1,7 +1,6 @@
 import { buffer, debounceTime, filter, OperatorFunction, pairwise, Subject, Subscriber } from "rxjs";
 import { Observable } from "rxjs/internal/Observable";
 
-
 export function bufferWithMaxAwaitTime<T, R>(project: (value: Array<T>, length: number) => R, maxAwaitTime: number = 0, minOccurrence: number | null = 0): OperatorFunction<T, R> {
   return (source) =>
     new Observable((destination) => {
@@ -31,6 +30,7 @@ export function bufferWithMaxAwaitTime<T, R>(project: (value: Array<T>, length: 
       return () => destination.unsubscribe();
     });
 }
+
 
 export function autoUnsubscribe<T>(subscriber: Subscriber<any>) {
   return (source: Observable<T>) =>

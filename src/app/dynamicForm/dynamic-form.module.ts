@@ -1,8 +1,9 @@
 import { CommonModule } from "@angular/common";
 import { InjectionToken, NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-// import { Camera } from "@ionic-native/camera/ngx";
+import { Camera } from "@ionic-native/camera/ngx";
 import { InputTextComponent } from "./component/base-component.module";
+import { ArrayStringComponent } from "./component/arraystring/arraystring.component";
 import { CheckboxComponent } from "./component/checkbox/checkbox.component";
 import { ComboComponent } from "./component/combo/combo.component";
 import { CurrencyComponent } from "./component/currency/currency.component";
@@ -24,7 +25,7 @@ import { DynamicFormComponent } from "./dynamic-form.component";
 import { LanguagePipe } from "./pipe/form.pipe";
 import { MaterialModule } from "./material.module";
 import { SeparatorComponent } from "./component/separator/separator.component";
-import { StickyDirective } from "./directive/sticky.directive";
+import { FixSearchBox } from "./directive/fixSearchBox.directive";
 /**
 * @author luca.piciollo
 * @email lucapiciollo@gmail.com
@@ -35,15 +36,17 @@ import { StickyDirective } from "./directive/sticky.directive";
 
 export const DATE_PIPE = new InjectionToken<any>("Default date pipe");
 export const DATE_PIPE_TIME = new InjectionToken<any>("Default date pipe time");
+export const COMBO_PAING_INIT = new InjectionToken<{ count: number, page: number }>("Inizializzazione paginazione combo");
 
 @NgModule({
   providers: [
-    // Camera,
+    Camera,
     { provide: DATE_PIPE, useValue: { dateFormat: 'yyyy-MM-dd' } },
-    { provide: DATE_PIPE_TIME, useValue: { dateFormat: 'yyyy-MM-ddTHH:mm:ss' } }
+    { provide: DATE_PIPE_TIME, useValue: { dateFormat: 'yyyy-MM-ddTHH:mm:ss' } },
+    { provide: COMBO_PAING_INIT, useValue: { count: 50, page: 1 } },
   ],
   declarations: [
-
+    ArrayStringComponent,
     SeparatorComponent,
     LanguagePipe,
     CamScanDirective,
@@ -65,7 +68,7 @@ export const DATE_PIPE_TIME = new InjectionToken<any>("Default date pipe time");
     LinkComponent,
     SpeechDirective,
     SortActionComponent,
-    StickyDirective
+    FixSearchBox
   ],
   imports: [
     CommonModule,
@@ -75,7 +78,7 @@ export const DATE_PIPE_TIME = new InjectionToken<any>("Default date pipe time");
 
   ],
   exports: [
-    StickyDirective,
+    ArrayStringComponent,
     SeparatorComponent,
     LanguagePipe,
     LoadChildDirective,
@@ -99,7 +102,8 @@ export const DATE_PIPE_TIME = new InjectionToken<any>("Default date pipe time");
     QuestionRadioButtonComponent,
     TextareaComponent,
     LinkComponent,
-    MaterialModule
+    MaterialModule,
+    FixSearchBox
   ]
 
 })

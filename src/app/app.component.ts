@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Injector, Input } from '@angular/core';
 import { Observable, debounce, exhaustMap, merge, mergeAll, of, timer, toArray } from 'rxjs';
 import { ConfigForm, FormAction } from './dynamicForm/dynamic-form.interface';
 import { activityForm, createRegistry } from './activity-form-builder.';
@@ -17,7 +17,7 @@ export class AppComponent {
   componentRef = DynamicComponent;
   options=this.generateUniqueItems(300);
 
-  constructor() {
+  constructor(public injector:Injector) {
     this.questions$ = of(activityForm({}, this));
 
 

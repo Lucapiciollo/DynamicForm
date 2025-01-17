@@ -13,9 +13,8 @@ label {
     color: #666;
 }
 
-.mat-error {
+.mat-mdc-error {
     color: #f44336;
     font-style: italic;
     font-size: 0.6rem;
 }
-

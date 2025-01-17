@@ -2,9 +2,14 @@
 //   color: rgb(var(--error-color)) !important;
 // }
 
-:host {
+:host:not(.filters) {
   padding: 0.2rem !important; /* 0px to rem */
- }
+}
+
+mat-error{
+font-size: 13px !important;
+
+}
 
 .separator {
   width: 100%; /* Larghezza della riga */
@@ -13,26 +18,69 @@
   margin: 20px 0; /* Spazio sopra e sotto */
 }
 
+@media (min-width: 1400px) {
+  .svgSort {
+    width: 3.5rem !important;
+  }
+}
 
 .svgSort {
   width: 2.5rem !important;
 }
 
-
-
 .scroll-down-indicator {
-  min-height: 100px;
-  height: 100px;
+  min-height: 150px;
+  height: 150px;
   opacity: 0.2; /* Più visibile */
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
   position: relative;
   overflow: hidden;
 }
 .scroll-top-indicator {
-  min-height: 100px;
-  height: 100px;
-  opacity: 0.3; /* Più visibile */
+  min-height: 150px;
+  height: 150px;
+  opacity: 0.2; /* Più visibile */
   background: linear-gradient(to top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
   position: relative;
   overflow: hidden;
+}
+
+::ng-deep span.mdc-list-item__primary-text {
+  font-size: 13px !important;
+}
+
+.loading-bar-container {
+  position: relative;
+  width: 100%; /* Puoi modificare la larghezza */
+  height: 4px; /* Altezza della barra */
+  background-color: #e0e0e0; /* Colore dello sfondo */
+  overflow: hidden;
+}
+
+/* Barra di caricamento */
+.loading-bar {
+  position: absolute;
+  width: 30%; /* Larghezza del segmento visibile */
+  height: 100%;
+  background-color: rgb(64,64,64); /* Colore della barra di caricamento */
+  border-radius: 1px; /* Smussatura degli angoli */
+  animation: move-infinity 0.5s linear infinite;
+}
+
+/* Animazione per il movimento infinito */
+@keyframes move-infinity {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(50%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+
+.example-chip-list {
+  width: 100%;
 }

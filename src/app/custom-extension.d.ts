@@ -7,9 +7,9 @@
  * utile per risalire alle funzionalità messe a disposizione dal sistema core e evita che il compilatore vada in errore
  * per funzionalità non trovate.]
  */
-
 declare function alert(message?: any, body?: any): void;
 
+/************************************************************************************************************************************************************************ */
 
 interface String {
   format: (...params: Array<string>) => string;
@@ -17,6 +17,8 @@ interface String {
   truncateUrlIfNoParams: (val: any) => string;
   truncateUrlCache: (val: any) => string;
 }
+
+/************************************************************************************************************************************************************************ */
 
 interface Array<T> {
   moveDown: (from: any) => void;
@@ -28,19 +30,22 @@ interface Array<T> {
   insert: (index: number, item: any) => void;
 }
 
+/************************************************************************************************************************************************************************ */
+
 interface JSON {
-  changeValues: (json: any, previousValue: any, nextValue: any) => any;
-  changeValuesByKey: (json: any, key: any, nextValue: any ,ignore:Array<string>) => any;
-  findByValue: (json: any, value: any,ignore:Array<string>) => any;
-  json2flat: (json: any,ignore:Array<string>) => any;
-  json2array: (json: any,ignore:Array<string>) => any;
-  json2flatObj: (json: any,ignore:Array<string>) => any;
-  findKey: (json: any, keyFind: any,ignore:Array<string>) => any;
-  findByKeyAndValue: (json, keyFind, valueFind ,ignore:Array<string>) => any;
+  changeValues: (json: any, previousValue: any, nextValue: any, ignore?: Array<string>) => any;
+  changeValuesByKey: (json: any, key: any, nextValue: any, ignore?: Array<string>) => any;
+  findByValue: (json: any, value: any, ignore?: Array<string>) => any;
+  json2flat: (json: any, ignore?: Array<string>) => any;
+  json2array: (json: any, ignore?: Array<string>) => any;
+  json2flatObj: (json: any, ignore?: Array<string>) => any;
+  findKey: (json: any, keyFind: any, ignore?: Array<string>) => any;
+  findByKeyAndValue: (json, keyFind, valueFind, ignore?: Array<string>) => any;
   deleteKey: <T>(json: T, keys: Array<string>) => T;
-  deleteByValue:any;
 }
 
-
-
-
+interface Object {
+  PROXY: <T>(replaceWith: any, proxy: any, ignore: Array<string>) => T;
+  clone: <T>() => T;
+  changeValues: (previousValue: Array<any>, nextValue: any, ignore?: Array<string>) => any;
+}

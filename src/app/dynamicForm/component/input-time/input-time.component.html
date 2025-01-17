@@ -1,30 +1,17 @@
 
 
 
-<ng-container *ngIf="   !control.formAction?.css?.hide"  >
+@if(!control.formAction?.css?.hide) {
+  <ng-container  >
 
-                 <!-- <mat-form-field  class="w-100" >
-                        <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
-                          <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
-                        </mat-label>
-                        <input id="timeInput" type ="time"  [matTooltip]="control.formAction?.tipContent || null"
-                                [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
-                                matInput
-
-                                [formControl]="control.formAction?.formControl"
-                                [class.disabled]="control.formAction.formControl.disabled"
-                                [placeholder]="control.formAction.placeholder||''"
-                                [maxlength]="control.formAction?.inputText?.maxlength">
-
-                                <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}} </mat-error>
-                 </mat-form-field> -->
-
-    <div class="  d-flex w-100 ">
+     <div class="  d-flex w-100 ">
 
         <mat-form-field class="w-100 customMY" >
           <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
-            <mat-icon *ngIf="control.formAction?.info" [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large" >info_outline</mat-icon>
-          </mat-label>
+            @if (control.formAction?.info) {
+              <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large">info_outline</mat-icon>
+            }         
+           </mat-label>
           <mat-select   [matTooltip]="control.formAction?.tipContent || null"
                         [formControl]="control.formAction?.formControl"
                         [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
@@ -35,13 +22,18 @@
               </mat-option>
           </mat-select>
           <mat-icon matPrefix>access_time</mat-icon>
-          <mat-error *ngFor="let error of getErrorFormControl( control.formAction?.formControl )">{{error}}</mat-error>
-          <button *ngIf="control.formAction?.resetButton"  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
-            <mat-icon>close</mat-icon>
-          </button>
-      </mat-form-field>
-      <div #dynamicContainer class ="px-1"></div>
-    </div>
+          @if(control.formAction?.resetButton){
+            <button  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
+             <mat-icon>close</mat-icon>
+           </button>
+         }
+        </mat-form-field>
+        <div #dynamicContainer class ="px-1"></div>
+      </div>
+      @for (error of getErrorFormControl( control.formAction?.formControl ) ; track error ) {
+        <mat-error>{{error}} </mat-error>
+     }
 
 </ng-container>
 
+}

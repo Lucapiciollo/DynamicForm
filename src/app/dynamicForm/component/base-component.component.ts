@@ -13,27 +13,30 @@ import {
   EventEmitter,
   Injector,
   Input,
-  Output, ViewChild, ViewContainerRef, inject
+  Output, Signal, ViewChild, ViewContainerRef, WritableSignal, inject,
+  signal
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ReplaySubject, Subject, Subscriber, Subscription, combineLatest, pairwise, startWith, switchMap, takeUntil } from 'rxjs';
+import { ReplaySubject, Subscriber, Subscription, combineLatest, pairwise, startWith } from 'rxjs';
 import { IBaseComponent } from './base-component-interface';
 import { GetErrorForm, GetErrorFormControl } from './error-message-utils';
-
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { FormComponentTemplate } from './FormComponentTemplate';
-import { Form, TYPE_CONTROL_FORM } from '../dynamic-form.interface';
+import { Form, TYPE_CONTROL_FORM, TypeComboOption } from '../dynamic-form.interface';
 import { autoUnsubscribe } from '../custom.operator';
+import { COMBO_PAING_INIT } from '../dynamic-form.module';
+import { Store } from './combo/store';
 
 
 @Component({
   selector: '',
   template: ``,
-  providers: [DatePipe]
+
 })
 
 export class BaseComponent implements IBaseComponent {
+
 
   @Output() onCaptureCam: EventEmitter<File> = new EventEmitter<File>();
   @Output() instance: EventEmitter<{ instance: BaseComponent, name: string }> = new EventEmitter<{ instance: BaseComponent, name: string }>();
@@ -46,7 +49,9 @@ export class BaseComponent implements IBaseComponent {
   public control: any = { formAction: {} };
   public clonedOption;
   public obs: Subscriber<Subscription> = new Subscriber<Subscription>()
-
+  public initPagination: { count: number, page: number } = inject(COMBO_PAING_INIT);
+  public mySignal: WritableSignal<{ items: Array<any>, totalCount: number }> = signal(null);
+  public onOptionSetted: Signal<any> = signal(null);
   /************************************************************************************************************************************************************************ */
 
   @Input() formActionIndex: number = 0;
@@ -54,6 +59,8 @@ export class BaseComponent implements IBaseComponent {
   @Input() group: any = null;
   public _allGroup: any;
   public internalValue;
+
+
 
   @Input() set allGroup(allGroup: any) {
     this._allGroup = allGroup;
@@ -69,15 +76,31 @@ export class BaseComponent implements IBaseComponent {
   protected selectedItems: any[] = new Array<any>();
   /************************************************************************************************************************************************************************ */
 
-  onSetOption = () => {
-    this.internalValue = this.control?.formAction?.options;
+  constructor(protected injector: Injector, protected element: ElementRef) { }
+
+  /************************************************************************************************************************************************************************ */
+
+  onSetOptionWithSearch = () => {
+    this.internalValue = this.control?.formAction?.options || [];
     Object.defineProperty(this.control.formAction, "options", {
       set: (newValue) => {
         this.internalValue = newValue;
-        // if (this.control?.formAction?.autocomplete)
-        //   this.filteredOptions.next(this._filter(this.control.formAction.formControl?.value))
-        // else
-        this.filteredOptions.next(this._filter(null));
+        this.filteredOptions.next(this._filter(null))
+      },
+      get: () => {
+        return this.internalValue;
+      },
+      configurable: true
+    });
+  }
+  /************************************************************************************************************************************************************************ */
+
+  onSetOption = () => {
+    this.internalValue = this.control?.formAction?.options || [];
+    Object.defineProperty(this.control.formAction, "options", {
+      set: (newValue) => {
+        this.internalValue = newValue;
+        this.filteredOptions.next(newValue);
       },
       get: () => {
         return this.internalValue;
@@ -95,18 +118,24 @@ export class BaseComponent implements IBaseComponent {
     }).pipe(
       autoUnsubscribe(this.obs),
       takeUntilDestroyed(this.destroyRef)).subscribe(({ allGroup, control }) => {
+        (control.formAction.type == TYPE_CONTROL_FORM.COMBO) ? this.onSetOptionWithSearch() : null;
+        (control.formAction.type == TYPE_CONTROL_FORM.ARRAYSTRING) ? this.onSetOptionWithSearch() : null;
+        (control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) ? this.onSetOption() : null;
+        control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE ? this.control.formAction.paging = this.initPagination : null;
+        (control.formAction.formControl.disabled) ? control.formAction.formControl.disable() : control.formAction.formControl.enable();
 
-        (control.formAction.type == TYPE_CONTROL_FORM.COMBO && !(this.control.formAction as any).optionObs)? this.onSetOption() : null;
-        (control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE  && !(this.control.formAction as any).optionObs)? this.onSetOption() : null;
-        control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE ? this.control.formAction.options = [{ id: null, description: null }] : null;
-
-        if(this.control.formAction.onSearch){
-          this._filter= (control.formAction as any).onSearch.bind(this,this.group,(control.formAction as any).paging,this.filteredOptions)
+        if (control?.formAction?.css?.class) {
+          control?.formAction?.css?.class.map((c: any) => {
+            this.element?.nativeElement?.classList?.add(c);
+          })
         }
+        if (control.formAction) {
+          if (control.formAction.type as TYPE_CONTROL_FORM == TYPE_CONTROL_FORM.COMBOPAGINATE) {
+            if (control.formAction.onInitialize)
+              control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, this.initPagination, this.onOptionSetted);
+          } else if (control.formAction.onInitialize)
+            control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup);
 
-
-
-        if (true) {
           control.formAction?.formControl.valueChanges.pipe(
             autoUnsubscribe(this.obs),
             takeUntilDestroyed(this.destroyRef),
@@ -115,33 +144,13 @@ export class BaseComponent implements IBaseComponent {
           ).subscribe(async ([prevValue, next]: [any, any]) => {
             this.callOnhange(prevValue, next);
           })
-        }
 
-        (control.formAction.formControl.disabled) ? control.formAction.formControl.disable() : control.formAction.formControl.enable();
-        if (control?.formAction?.css?.class) {
-          control?.formAction?.css?.class.map((c: any) => {
-            this.element?.nativeElement?.classList?.add(c);
-          })
         }
-        if (control.formAction && control.formAction.onInitialize) {
-          if (control.formAction.type as TYPE_CONTROL_FORM == TYPE_CONTROL_FORM.COMBOPAGINATE)
-            control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, (control.formAction as any)?.paging);
-          else
-            control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup);
-        }
-
       })
-
   }
   /************************************************************************************************************************************************************************ */
 
   ngOnDestroy(): void { }
-  /************************************************************************************************************************************************************************ */
-
-  constructor(protected injector: Injector, protected element: ElementRef) {
-
-  }
-
 
   /************************************************************************************************************************************************************************ */
 
@@ -158,21 +167,12 @@ export class BaseComponent implements IBaseComponent {
             return option
         }
       });
-
   }
   /************************************************************************************************************************************************************************ */
 
   callOnhange(prevValue, next) {
     if (this.control.formAction && this.control.formAction.onChange)
-      this.control.formAction.onChange(
-        this.formGroupIndex,
-        this.formActionIndex,
-        this.control.formAction?.formControl,
-        this.control.formAction.formName,
-        this.group,
-        this.control.formAction.type,
-        prevValue,
-        this._allGroup);
+      this.control.formAction.onChange(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this.control.formAction.type, prevValue, this._allGroup, this.onOptionSetted);
   }
 
   /************************************************************************************************************************************************************************ */
@@ -208,4 +208,14 @@ export class BaseComponent implements IBaseComponent {
     }
   }
   /************************************************************************************************************************************************************************ */
+
+
+
+
+
+
+
+
+
+
 }
