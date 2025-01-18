@@ -101,7 +101,7 @@ export declare type FormActionComboPaginate = {
   info?: { msg: string, color: string },
   paging?: { count: number, page: number, totalCount: number },
   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) => void,
-  onInitialize: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, paging: { count: number, page: number }, onOptionSetted: Signal<Array<any>>, disabledOption: WritableSignal<Array<string>>) => void,
+  onInitialize: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, paging: { count: number, page: number }, onOptionSetted: Signal<Array<any>>, disabledOption: WritableSignal<Array<string>>, initialOption: WritableSignal<TypeComboOption>) => void,
   opened?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm) => void,
   closed?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm) => void,
   options?: TypeComboOption,

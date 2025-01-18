@@ -67,19 +67,16 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
 
     (effect(() => { this.searchTermSignal(); this.search(this.searchTermSignal()); }, { allowSignalWrites: true }));
 
-    // effect(() => {
-    //      let disabledOption= this.control.formAction?.disabledOptions;
-    // }, { allowSignalWrites: true });
+    effect(() => {
+      let disabledOption = this.initialOption();
+      this.signalStoreBase.setSelectedOption(disabledOption.filter(f => f.selected))
+      this.control.formAction.options= (disabledOption.filter(f => f.selected))
+    }, { allowSignalWrites: true });
 
   }
 
   /************************************************************************************************************************************************************************ */
-  ngOnChanges(changes) {
-    // if (this.control.formAction.onSearch)
-    //   this._filter(this.control.formAction.formControl?.value)
-    // else
-    //   this.signalStore.updateFilterOption(this._filter(this.control.formAction.formControl?.value))
-  }
+  ngOnChanges(changes) { }
   /************************************************************************************************************************************************************************ */
   search(value) {
     this.resetOption = value != null && value.trim() != "";
@@ -108,7 +105,7 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
   }
   /************************************************************************************************************************************************************************ */
   getValueCombo(formControl: FormControl, smal) {
-    let opt= this.signalStoreBase.getTotalOptions() || this.control.formAction.options
+    let opt = this.signalStoreBase.getTotalOptions() || this.control.formAction.options
     if (opt != null) {
       if (formControl?.value instanceof Array) {
         let description = formControl?.value?.map(id => opt?.find(f => f.id == id)?.description);
@@ -140,21 +137,15 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
     this.showOptionDefault = false;
     if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) this.search(null);
     if (this.control?.formAction?.opened)
-      this.control.formAction.opened(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this._allGroup );
-
-
+      this.control.formAction.opened(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this._allGroup);
     let oldremotedata = (this.control.formAction as any).remoteData;
-
     this._filter = oldremotedata != null ? (...args) => { this.signalStore.setIsLoading(true); oldremotedata(...args) } : this._filter;
-
     this.effectStore.push(effect(() => {
       const input = this.filterInput();
       if (input != null) {
         queueMicrotask(() => { input?.nativeElement?.focus(); });
       }
     }, { injector: this.injector }));
-
-
 
 
     // /**
@@ -173,7 +164,7 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
         } else {
           distinctArray = this.distinctArray([...untracked(() => this.signalStore.getSelectedOptions() || []).filter(f => f.selected), ...value.items]);
         }
-        distinctArray = this.distinctArray([...untracked(() => this.signalStore.getTotalOptions() || []), ...distinctArray || []]);
+        distinctArray = this.distinctArray([...untracked(() => this.control.formAction.options || []), ...distinctArray || []]);
         untracked(() => this.signalStore.updateTotalOptions(distinctArray));
         (this.onOptionSetted as any).set(untracked(() => distinctArray));
         this.control.formAction.paging = { ...this.control.formAction.paging, totalCount: value?.totalCount || 0 };
@@ -183,7 +174,7 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
 
       }, { injector: this.injector, allowSignalWrites: true }));
       this.addEventScroll()
-    }else{
+    } else {
       this.signalStore.setIsLoading(false)
 
     }
@@ -193,7 +184,7 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
     this.effectStore.map(m => m.destroy());
 
     if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
-      let selected=this.signalStore.getSelectedOptions();
+      let selected = this.signalStore.getSelectedOptions();
       this.signalStore.resetStore();
       this.signalStoreBase.updateTotalOptions(selected);
       this.control.formAction.paging = { ...this.initPagination };

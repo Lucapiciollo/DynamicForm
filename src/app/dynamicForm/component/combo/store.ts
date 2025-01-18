@@ -67,11 +67,15 @@ export const Store = signalStore({ protectedState: false },
   withMethods((store) => ({
     /**************************************************************************************************************************************************/
     updateTotalOptions(newElement: Partial<TypeComboOption>): void {
-      patchState(store, (state) => ({ ...state, totalOptions: [...state?.totalOptions||[], ...newElement] }));
+      patchState(store, (state) => ({ ...state, totalOptions: [...state?.totalOptions || [], ...newElement] }));
     },
     /**************************************************************************************************************************************************/
     updateFilterOption(filterd: TypeComboOption): void {
       patchState(store, (state) => ({ ...state, filteredOptions: filterd }));
+    },
+    /**************************************************************************************************************************************************/
+    setSelectedOption(filterd: TypeComboOption): void {
+      patchState(store, (state) => ({ ...state, selectedOptions: [...state.selectedOptions, ...filterd] }));
     },
     /**************************************************************************************************************************************************/
     updateStoreData(value, keys): void {
@@ -79,7 +83,7 @@ export const Store = signalStore({ protectedState: false },
     },
     /**************************************************************************************************************************************************/
     resetStore(): void {
-      patchState(store, (state) => ({ ...state,totalOptions:[],filteredOptions: [...(state?.selectedOptions||[])], isLoading: false, storeData: { items: [], totalCount: 0 } }));
+      patchState(store, (state) => ({ ...state, totalOptions: [], filteredOptions: [...(state?.selectedOptions || [])], isLoading: false, storeData: { items: [], totalCount: 0 } }));
     },
     /**************************************************************************************************************************************************/
     setIsLoading(value: boolean): void {
@@ -88,20 +92,19 @@ export const Store = signalStore({ protectedState: false },
     /**************************************************************************************************************************************************/
     updateOptionSelected(optionId: string, isSelected: boolean, isMultiple: boolean): void {
       let selectedOptions = (store.selectedOptions() || []).clone<TypeComboOption>();
-      if (isSelected) {
-        if (isMultiple) {
-          if (selectedOptions.find((f: any) => f.id == optionId) != null) {
-            selectedOptions = selectedOptions.filter(f => f.id != optionId);
-          } else {
-            let items = (store.filteredOptions() || [])?.clone<TypeComboOption>().find(f => f.id == optionId);
-            items["selected"] = true;
-            selectedOptions.push(items);
-          }
-          patchState(store, (state) => ({ ...state, selectedOptions: selectedOptions }));
+
+      if (isMultiple) {
+        if (selectedOptions.find((f: any) => f.id == optionId) != null) {
+          selectedOptions = selectedOptions.filter(f => f.id != optionId);
         } else {
           let items = (store.filteredOptions() || [])?.clone<TypeComboOption>().find(f => f.id == optionId);
-          patchState(store, (state) => ({ ...state, selectedOptions: [items] }));
+          items["selected"] = true;
+          selectedOptions.push(items);
         }
+        patchState(store, (state) => ({ ...state, selectedOptions: selectedOptions }));
+      } else {
+        let items = (store.filteredOptions() || [])?.clone<TypeComboOption>().find(f => f.id == optionId);
+        patchState(store, (state) => ({ ...state, selectedOptions: [items] }));
       }
     },
     /**************************************************************************************************************************************************/

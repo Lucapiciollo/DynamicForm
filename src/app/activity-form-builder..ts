@@ -21,7 +21,7 @@ export function activityForm(registry: any, context: any): ConfigForm {
                 cssClassIcon: ["fa", "fa-plus", "mx-2"],
                 label: "Add residenza",
                 action(questions, idForm, formGroup) {
-                    (questions[0] as any).formGroup.push(createResidenza(registry, context))
+                    (questions[0] as any).formGroup.push(createResidenza(registry, context));
 
 
                 }
@@ -30,11 +30,12 @@ export function activityForm(registry: any, context: any): ConfigForm {
                 cssClassIcon: ["fa", "fa-plus", "mx-2"],
                 label: "Add Documento",
                 action(questions, idForm, formGroup) {
-                    (questions[0] as any).formGroup.push(createDocument(registry, context))
+                    (questions[0] as any).formGroup.push(createDocument(registry, context));
 
 
                 }
-            }]
+            }] 
+            
         }
     ];
 }
@@ -51,7 +52,7 @@ export function createRegistry(object: any, context: any): TypeForm {
         {
             formAction: {
 
-                css: { hide: true },
+                css: { hide: true }, 
                 formControl: new FormControl(object?.registryId),
                 formName: "registryId",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
@@ -99,7 +100,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formName: "surname",
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
 
-                }
+                },
             }
         },
         {
@@ -108,28 +109,27 @@ export function createRegistry(object: any, context: any): TypeForm {
                 title: "SESSO",
                 type: TYPE_CONTROL_FORM.COMBOPAGINATE,
                 css: { class: ["col-12"] },
-                formControl: new FormControl(object?.gender, { updateOn: "change", validators: [] }),
+                formControl: new FormControl(["M", "F"], { updateOn: "change", validators: [] }),
                 formName: "gender",
 
-                onChange(idGroup: number, idForm: number, formControl: FormControlType, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) {
+                onChange(idGroup, idForm, formControl, formName, formGroup, type, prevValue, allGroup) {
                     console.log(formControl.value);
+                    (formGroup[idForm + 2] as any).formAction.options = [{ id: "M", description: "Maschio", selected: true }, { id: "F", description: "Femmina", selected: true }]
+                },
 
-                    (formGroup[idForm+2] as any).formAction.options = [{ id: "M", description: "Maschio" }, { id: "F", description: "Femmina" }]
+                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, onOptionSetted, disabledOption, initialOption) {
+                    initialOption.set([{ id: "M", description: "Maschio", selected: true }, { id: "F", description: "Femmina", selected: true }])
+                    effect(() => {
+                        console.log(onOptionSetted())
+                    }, { injector: context.injector })
 
                 },
                 opened(idGroup, idForm, formControl, formName, formGroup, allGroup) {
 
                 },
-                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, sn) {
-                    // (allGroup[0].formGroup[4].formAction as any).paging = { count: 25, page: 1, totalCount: context.options.length };
-                    // (allGroup[0].formGroup[4].formAction as any).options = context.options.slice((allGroup[0].formGroup[4].formAction as any).paging.page - 1, (allGroup[0].formGroup[4].formAction as any).paging.count)
-
-                    effect(() => {
-                        console.log(sn())
-                    }, { injector: context.injector })
+                closed(idGroup, idForm, formControl, formName, formGroup, allGroup) {
 
                 },
-                // disabledOption: [],
                 remoteData: rxMethod<{ param: any, externalStore: WritableSignal<any> }>(pipe(
                     map(({ externalStore, param }) => externalStore.set({ items: context.generateUniqueItems(10), totalCount: 30 })),
                 )),
@@ -151,6 +151,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
 
                 }
+             
             }
         },
 
@@ -160,14 +161,20 @@ export function createRegistry(object: any, context: any): TypeForm {
                 title: "PROVINCIA DI NASCITA",
                 type: TYPE_CONTROL_FORM.COMBO,
                 css: { class: ["col-12"] },
-                formControl: new FormControl(object?.province, [Validators.required]),
+                formControl: new FormControl("M", [Validators.required]),
                 formName: "province",
-                async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+                onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
 
 
-                } ,
+                },
+
+                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup) {
+                    (formGroup[idForm].formAction as any).options = [{ id: "M", description: "Maschio", selected: true }, { id: "F", description: "Femmina", selected: false }]
+
+                },
+
                 autocomplete: true,
-                options:  context.generateUniqueItems(10000),
+                options: context.generateUniqueItems(10000),
 
 
             }
@@ -309,14 +316,13 @@ export function createResidenza(object: any, context: any): Form {
 
                     {
                         formAction: {
-
                             title: "VIA/PIAZZA",
                             type: TYPE_CONTROL_FORM.TEXT,
                             css: { class: ["col-12"] },
                             formControl: new FormControl(object.street, { updateOn: "blur", validators: [Validators.required] }),
                             formName: "street"
 
-                        }
+                        } 
                     },
                     {
                         formAction: {
