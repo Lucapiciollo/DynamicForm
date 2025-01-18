@@ -24,7 +24,7 @@
               </span>
               <input matInput class="mat-mdc-option ps-5  py-0" [matTooltip]="control.formAction?.tipContent || null" #filterInput (input)="onInputChange(filterInput.value)" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'" [placeholder]="control.formAction.placeholder" />
              }
-             @if(loader()){
+             @if(signalStore.getIsLoading()){
                 <div class="loading-bar-container">
                   <div class="loading-bar"></div>
                 </div>
@@ -32,7 +32,7 @@
           </div>
     
 
-        @for (option of filteredOptions | async; track option.id) {
+        @for (option of signalStore.onFilterOption() ; track option.id) {
           <mat-option (click)="toggleOption(option, $event)" [value]="option.id" [disabled]="option.disabled" [class.d-none]="option.hide" [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'">
             {{ option.description }}
           </mat-option>

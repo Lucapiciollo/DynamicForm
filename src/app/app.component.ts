@@ -15,7 +15,7 @@ export class AppComponent {
   questions$: Observable<ConfigForm>;
 
   componentRef = DynamicComponent;
-  options=this.generateUniqueItems(300);
+  options=this.generateUniqueItems(1);
 
   constructor(public injector:Injector) {
     this.questions$ = of(activityForm({}, this));
@@ -39,7 +39,7 @@ export class AppComponent {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let result = "";
     for (let i = 0; i < length; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
+      result += chars.charAt(Math.floor(Math.random() * chars.length)) ;
     }
     return result;
   }
@@ -50,7 +50,7 @@ export class AppComponent {
 
     while (items.size < count) {
       const id = this.generateRandomString(4); // ID univoco di 4 caratteri
-      const description = `Descrizione ${this.generateRandomString(6)}`; // Descrizione casuale
+      const description = `Descrizione ${this.generateRandomString(6)} - ${items.size}`; // Descrizione casuale
 
       items.add(JSON.stringify({ id, description })); // Usa JSON.stringify per mantenere l'unicità
     }

@@ -110,29 +110,33 @@ export function createRegistry(object: any, context: any): TypeForm {
                 css: { class: ["col-12"] },
                 formControl: new FormControl(object?.gender, { updateOn: "change", validators: [] }),
                 formName: "gender",
-                multiple: true,
+
                 onChange(idGroup: number, idForm: number, formControl: FormControlType, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) {
+                    console.log(formControl.value);
+
+                    (formGroup[idForm+2] as any).formAction.options = [{ id: "M", description: "Maschio" }, { id: "F", description: "Femmina" }]
 
                 },
                 opened(idGroup, idForm, formControl, formName, formGroup, allGroup) {
 
                 },
-                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging,sn) {
+                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, sn) {
                     (allGroup[0].formGroup[4].formAction as any).paging = { count: 25, page: 1, totalCount: context.options.length };
                     (allGroup[0].formGroup[4].formAction as any).options = context.options.slice((allGroup[0].formGroup[4].formAction as any).paging.page - 1, (allGroup[0].formGroup[4].formAction as any).paging.count)
 
                     effect(() => {
                         console.log(sn())
-                    },{injector:context.injector})
+                    }, { injector: context.injector })
 
                 },
                 disabledOption: [],
-                remoteData:  rxMethod<{ param: any, externalStore: WritableSignal<any> }>(pipe(
-                    map(({externalStore,param})=> externalStore.set({items:context.generateUniqueItems(25), totalCount:1000})),
+                remoteData: rxMethod<{ param: any, externalStore: WritableSignal<any> }>(pipe(
+                    map(({ externalStore, param }) => externalStore.set({ items: context.generateUniqueItems(10), totalCount: 30 })),
                 )),
-                     
-                keyCombo:  {keyDescription:["description"],keyId: "id" },
-                autocomplete: true
+
+                keyCombo: { keyDescription: ["description"], keyId: "id" },
+                autocomplete: true,
+                multiple: true,
             }
         },
 

@@ -30,62 +30,61 @@ import { Store } from './combo/store';
 
 
 @Component({
-  selector: '',
-  template: ``,
-
+  selector: '', template: ``
 })
-
 export class BaseComponent implements IBaseComponent {
 
 
   @Output() onCaptureCam: EventEmitter<File> = new EventEmitter<File>();
   @Output() instance: EventEmitter<{ instance: BaseComponent, name: string }> = new EventEmitter<{ instance: BaseComponent, name: string }>();
-  public filteredOptions: ReplaySubject<any> = new ReplaySubject(1);
-  public getErrorForm: (formGroup: FormGroup, formName: string) => Array<string> = GetErrorForm;
-  public getErrorFormControl: (formControl: FormControl) => Array<string> = GetErrorFormControl;
-  public destroyRef: DestroyRef = inject(DestroyRef);
   private obsQuestions: ReplaySubject<Form> = new ReplaySubject(1);
   private obsAllGroup: ReplaySubject<any> = new ReplaySubject(1);
-  public control: any = { formAction: {} };
-  public clonedOption;
-  public obs: Subscriber<Subscription> = new Subscriber<Subscription>()
   public initPagination: { count: number, page: number } = inject(COMBO_PAING_INIT);
   public mySignal: WritableSignal<{ items: Array<any>, totalCount: number }> = signal(null);
   public onOptionSetted: Signal<any> = signal(null);
+  public destroyRef: DestroyRef = inject(DestroyRef);
+  public getErrorForm: (formGroup: FormGroup, formName: string) => Array<string> = GetErrorForm;
+  public getErrorFormControl: (formControl: FormControl) => Array<string> = GetErrorFormControl;
+  public control: any = { formAction: {} };
+  public obs: Subscriber<Subscription> = new Subscriber<Subscription>()
+  /************************************************************************************************************************************************************************ */
+  public _autocomplete: MatAutocompleteTrigger = null;
+  protected selectedItems: any[] = new Array<any>();
+  public _allGroup: any;
+  public internalValue;
   /************************************************************************************************************************************************************************ */
 
   @Input() formActionIndex: number = 0;
   @Input() formGroupIndex: number = 0;
   @Input() group: any = null;
-  public _allGroup: any;
-  public internalValue;
-
-
-
   @Input() set allGroup(allGroup: any) {
     this._allGroup = allGroup;
     this.obsAllGroup.next(this._allGroup)
   }
+  /************************************************************************************************************************************************************************ */
 
   @Input() set question(config: Form) {
     this.control = { formAction: config };
     this.obsQuestions.next(this.control);
   };
 
-  public _autocomplete: MatAutocompleteTrigger = null;
-  protected selectedItems: any[] = new Array<any>();
+
+  /************************************************************************************************************************************************************************ */
+  public signalStoreBase;
+  public set signalStoreValue(value) {
+    this.signalStoreBase = value;
+  }
   /************************************************************************************************************************************************************************ */
 
   constructor(protected injector: Injector, protected element: ElementRef) { }
 
   /************************************************************************************************************************************************************************ */
-
   onSetOptionWithSearch = () => {
     this.internalValue = this.control?.formAction?.options || [];
     Object.defineProperty(this.control.formAction, "options", {
       set: (newValue) => {
         this.internalValue = newValue;
-        this.filteredOptions.next(this._filter(null))
+        this.signalStoreBase.updateFilterOption(this._filter(null));
       },
       get: () => {
         return this.internalValue;
@@ -94,13 +93,12 @@ export class BaseComponent implements IBaseComponent {
     });
   }
   /************************************************************************************************************************************************************************ */
-
   onSetOption = () => {
     this.internalValue = this.control?.formAction?.options || [];
     Object.defineProperty(this.control.formAction, "options", {
       set: (newValue) => {
         this.internalValue = newValue;
-        this.filteredOptions.next(newValue);
+        this.signalStoreBase.updateFilterOption(newValue);
       },
       get: () => {
         return this.internalValue;
@@ -149,11 +147,8 @@ export class BaseComponent implements IBaseComponent {
       })
   }
   /************************************************************************************************************************************************************************ */
-
   ngOnDestroy(): void { }
-
   /************************************************************************************************************************************************************************ */
-
   public _filter(value: string = ""): any {
     let cloned = JSON.parse(JSON.stringify(this.internalValue || []));
     const filterValue = value?.toString()?.toLowerCase() || null;
@@ -169,24 +164,20 @@ export class BaseComponent implements IBaseComponent {
       });
   }
   /************************************************************************************************************************************************************************ */
-
   callOnhange(prevValue, next) {
     if (this.control.formAction && this.control.formAction.onChange)
       this.control.formAction.onChange(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this.control.formAction.type, prevValue, this._allGroup, this.onOptionSetted);
   }
-
   /************************************************************************************************************************************************************************ */
   @ViewChild('dynamicContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
   private componentRef = [];
   /************************************************************************************************************************************************************************ */
-
   ngAfterViewInit() {
     if (this.container && this.control?.formAction?.componentRef) {
       this.createDynamicComponent();
     }
   }
   /************************************************************************************************************************************************************************ */
-
   createDynamicComponent() {
     this.container.clear();
     this.componentRef = [];
@@ -199,7 +190,6 @@ export class BaseComponent implements IBaseComponent {
       componentRef.instance.initialize();
       this.componentRef.push(componentRef)
     })
-
   }
   /************************************************************************************************************************************************************************ */
   destroyDynamicComponent() {
@@ -208,14 +198,5 @@ export class BaseComponent implements IBaseComponent {
     }
   }
   /************************************************************************************************************************************************************************ */
-
-
-
-
-
-
-
-
-
 
 }
