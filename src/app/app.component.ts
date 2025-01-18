@@ -78,7 +78,7 @@ export class DynamicComponent extends FormComponentTemplate {
   formConfig: FormAction;
 
   setConfig(formConfig: FormAction) {
-    (this.questions[0].formGroup[7].formAction as any).options = [...[{ id: 1, description: "test" }]];
+    // (this.questions[0].formGroup[7].formAction as any).options = [...[{ id: 1, description: "test" }]];
     console.log(this.formParent, this.formConfig, this.formControl, this.questions);
 
   }

@@ -121,8 +121,8 @@ export function createRegistry(object: any, context: any): TypeForm {
 
                 },
                 onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, sn) {
-                    (allGroup[0].formGroup[4].formAction as any).paging = { count: 25, page: 1, totalCount: context.options.length };
-                    (allGroup[0].formGroup[4].formAction as any).options = context.options.slice((allGroup[0].formGroup[4].formAction as any).paging.page - 1, (allGroup[0].formGroup[4].formAction as any).paging.count)
+                    // (allGroup[0].formGroup[4].formAction as any).paging = { count: 25, page: 1, totalCount: context.options.length };
+                    // (allGroup[0].formGroup[4].formAction as any).options = context.options.slice((allGroup[0].formGroup[4].formAction as any).paging.page - 1, (allGroup[0].formGroup[4].formAction as any).paging.count)
 
                     effect(() => {
                         console.log(sn())

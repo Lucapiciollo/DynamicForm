@@ -43,7 +43,7 @@ export const COMBO_PAING_INIT = new InjectionToken<{ count: number, page: number
     Camera,
     { provide: DATE_PIPE, useValue: { dateFormat: 'yyyy-MM-dd' } },
     { provide: DATE_PIPE_TIME, useValue: { dateFormat: 'yyyy-MM-ddTHH:mm:ss' } },
-    { provide: COMBO_PAING_INIT, useValue: { count: 50, page: 1 } },
+    { provide: COMBO_PAING_INIT, useValue: { count: 10, page: 1 } },
   ],
   declarations: [
     ArrayStringComponent,
