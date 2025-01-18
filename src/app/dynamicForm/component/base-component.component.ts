@@ -5,7 +5,6 @@
  * @modify date 2024-11-24 11:29:45
  * @desc [description]
  */
-import { DatePipe } from '@angular/common';
 import {
   Component,
   DestroyRef,
@@ -23,10 +22,9 @@ import { IBaseComponent } from './base-component-interface';
 import { GetErrorForm, GetErrorFormControl } from './error-message-utils';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { FormComponentTemplate } from './FormComponentTemplate';
-import { Form, TYPE_CONTROL_FORM, TypeComboOption } from '../dynamic-form.interface';
+import { Form, TYPE_CONTROL_FORM } from '../dynamic-form.interface';
 import { autoUnsubscribe } from '../custom.operator';
 import { COMBO_PAING_INIT, MAX_ELEMENT_COMBO_SHOW } from '../dynamic-form.module';
-import { Store } from './combo/store';
 
 
 @Component({
@@ -48,6 +46,7 @@ export class BaseComponent implements IBaseComponent {
   public getErrorFormControl: (formControl: FormControl) => Array<string> = GetErrorFormControl;
   public control: any = { formAction: {} };
   public obs: Subscriber<Subscription> = new Subscriber<Subscription>()
+  public disabledOption: WritableSignal<Array<string>> = signal([]);
   /************************************************************************************************************************************************************************ */
   public _autocomplete: MatAutocompleteTrigger = null;
   protected selectedItems: any[] = new Array<any>();
@@ -111,7 +110,6 @@ export class BaseComponent implements IBaseComponent {
   /************************************************************************************************************************************************************************ */
 
   ngOnInit() {
-    let app: Subscription = null
     combineLatest({
       control: this.obsQuestions,
       allGroup: this.obsAllGroup
@@ -132,9 +130,9 @@ export class BaseComponent implements IBaseComponent {
         if (control.formAction) {
           if (control.formAction.type as TYPE_CONTROL_FORM == TYPE_CONTROL_FORM.COMBOPAGINATE) {
             if (control.formAction.onInitialize)
-              control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, this.initPagination, this.onOptionSetted);
+              control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, this.initPagination, this.onOptionSetted,this.disabledOption);
           } else if (control.formAction.onInitialize)
-            control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup);
+            control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, null, null,this.disabledOption);
 
           control.formAction?.formControl.valueChanges.pipe(
             autoUnsubscribe(this.obs),
@@ -168,7 +166,7 @@ export class BaseComponent implements IBaseComponent {
   /************************************************************************************************************************************************************************ */
   callOnhange(prevValue, next) {
     if (this.control.formAction && this.control.formAction.onChange)
-      this.control.formAction.onChange(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this.control.formAction.type, prevValue, this._allGroup, this.onOptionSetted);
+      this.control.formAction.onChange(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this.control.formAction.type, prevValue, this._allGroup);
   }
   /************************************************************************************************************************************************************************ */
   @ViewChild('dynamicContainer', { read: ViewContainerRef }) container!: ViewContainerRef;

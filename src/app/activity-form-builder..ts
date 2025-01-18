@@ -4,7 +4,7 @@ import { FormArray, FormControl, FormGroup, Validators } from "@angular/forms";
 
 import * as moment from "moment";
 import { ConfigForm, Form, TYPE_CONTROL_FORM, TypeForm } from "./dynamicForm/dynamic-form.interface";
-import { map, of, pipe, ReplaySubject, Subject, switchMap, tap } from "rxjs";
+import { map, pipe, ReplaySubject } from "rxjs";
 import { effect, WritableSignal } from "@angular/core";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
@@ -129,7 +129,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                     }, { injector: context.injector })
 
                 },
-                disabledOption: [],
+                // disabledOption: [],
                 remoteData: rxMethod<{ param: any, externalStore: WritableSignal<any> }>(pipe(
                     map(({ externalStore, param }) => externalStore.set({ items: context.generateUniqueItems(10), totalCount: 30 })),
                 )),
@@ -166,9 +166,9 @@ export function createRegistry(object: any, context: any): TypeForm {
 
 
                 } ,
-                autocomplete: true, 
+                autocomplete: true,
                 options:  context.generateUniqueItems(10000),
- 
+
 
             }
         }, {

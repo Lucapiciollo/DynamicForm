@@ -7,13 +7,12 @@
  */
 import { AfterViewInit, ChangeDetectionStrategy, Component, effect, EffectRef, ElementRef, inject, Injector, OnChanges, Signal, signal, untracked, viewChild, ViewChild } from '@angular/core';
 import { BaseComponent } from '../base-component.component';
-import { C, COMMA, ENTER } from '@angular/cdk/keycodes';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { FormControl } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
 import { debounceTime, distinctUntilChanged, fromEvent, Subject, takeUntil } from 'rxjs';
 import { TYPE_CONTROL_FORM } from '../../dynamic-form.interface';
 import { Store } from './store';
-import { patchState } from '@ngrx/signals';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -26,7 +25,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 export class ComboComponent extends BaseComponent implements AfterViewInit, OnChanges {
   private selectedValues: string[] = [];
   readonly separatorKeysCodes = [ENTER, COMMA] as const
- 
+
   private scrollListener: (event: any) => void;
   private reachedEnd: boolean = false;
   public onPanelCloseObs = new Subject<void>();
@@ -67,6 +66,10 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
 
 
     (effect(() => { this.searchTermSignal(); this.search(this.searchTermSignal()); }, { allowSignalWrites: true }));
+
+    // effect(() => {
+    //      let disabledOption= this.control.formAction?.disabledOptions;
+    // }, { allowSignalWrites: true });
 
   }
 
@@ -137,7 +140,7 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
     this.showOptionDefault = false;
     if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) this.search(null);
     if (this.control?.formAction?.opened)
-      this.control.formAction.opened(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this._allGroup, this.onOptionSetted);
+      this.control.formAction.opened(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this._allGroup );
 
 
     let oldremotedata = (this.control.formAction as any).remoteData;
@@ -188,7 +191,7 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
   /************************************************************************************************************************************************************************ */
   onPanelClose() {
     this.effectStore.map(m => m.destroy());
-    
+
     if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
       let selected=this.signalStore.getSelectedOptions();
       this.signalStore.resetStore();
@@ -201,7 +204,7 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
     if (this.control?.formAction?.closed) {
       this.control.formAction.closed(
         this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl,
-        this.control.formAction.formName, this.group, this._allGroup, this.onOptionSetted
+        this.control.formAction.formName, this.group, this._allGroup
       );
     }
   }

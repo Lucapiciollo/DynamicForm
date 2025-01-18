@@ -1,7 +1,7 @@
 
 
 
-import { ComponentRef, Injector, Input, Signal, WritableSignal } from "@angular/core";
+import { ComponentRef, Injector, Signal, WritableSignal } from "@angular/core";
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { FormComponentTemplate } from "./component/FormComponentTemplate";
 import { Observable } from "rxjs";
@@ -100,14 +100,12 @@ export declare type FormActionComboPaginate = {
   formGroup?: ConfigForm,
   info?: { msg: string, color: string },
   paging?: { count: number, page: number, totalCount: number },
-  onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, onOptionSetted?: Signal<Array<any>>) => void,
-  onInitialize: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, paging?: { count: number, page: number }, onOptionSetted?: Signal<Array<any>>) => void,
-  opened?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm, onOptionSetted?: Signal<TypeComboOption>) => void,
-  closed?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm , onOptionSetted?: Signal<Array<any>>) => void,
+  onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) => void,
+  onInitialize: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, paging: { count: number, page: number }, onOptionSetted: Signal<Array<any>>, disabledOption: WritableSignal<Array<string>>) => void,
+  opened?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm) => void,
+  closed?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm) => void,
   options?: TypeComboOption,
-  disabledOption: TypeComboOption,
   remoteData: RxMethod<{ param: any, externalStore: WritableSignal<any> }> | RxMethodRef,
-  // storeData?: Signal<Input>
   keyCombo: { keyId: string, keyDescription: string | Array<string> }
 };
 
