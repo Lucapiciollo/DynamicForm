@@ -25,7 +25,7 @@ import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { FormComponentTemplate } from './FormComponentTemplate';
 import { Form, TYPE_CONTROL_FORM, TypeComboOption } from '../dynamic-form.interface';
 import { autoUnsubscribe } from '../custom.operator';
-import { COMBO_PAING_INIT } from '../dynamic-form.module';
+import { COMBO_PAING_INIT, MAX_ELEMENT_COMBO_SHOW } from '../dynamic-form.module';
 import { Store } from './combo/store';
 
 
@@ -40,6 +40,7 @@ export class BaseComponent implements IBaseComponent {
   private obsQuestions: ReplaySubject<Form> = new ReplaySubject(1);
   private obsAllGroup: ReplaySubject<any> = new ReplaySubject(1);
   public initPagination: { count: number, page: number } = inject(COMBO_PAING_INIT);
+  public combotext: { maxElementShow: number } = inject(MAX_ELEMENT_COMBO_SHOW);
   public mySignal: WritableSignal<{ items: Array<any>, totalCount: number }> = signal(null);
   public onOptionSetted: Signal<any> = signal(null);
   public destroyRef: DestroyRef = inject(DestroyRef);
@@ -80,7 +81,8 @@ export class BaseComponent implements IBaseComponent {
 
   /************************************************************************************************************************************************************************ */
   onSetOptionWithSearch = () => {
-    this.internalValue = this.control?.formAction?.options || [];
+    this.internalValue = this.control.formAction.options || [];
+    // this.signalStoreBase.updateFilterOption(this._filter(null));
     Object.defineProperty(this.control.formAction, "options", {
       set: (newValue) => {
         this.internalValue = newValue;
@@ -94,7 +96,7 @@ export class BaseComponent implements IBaseComponent {
   }
   /************************************************************************************************************************************************************************ */
   onSetOption = () => {
-    this.internalValue = this.control?.formAction?.options || [];
+    this.internalValue = this.signalStoreBase.getTotalOptions() || [];
     Object.defineProperty(this.control.formAction, "options", {
       set: (newValue) => {
         this.internalValue = newValue;

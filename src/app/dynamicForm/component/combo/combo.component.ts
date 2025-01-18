@@ -5,9 +5,9 @@
  * @modify date 2022-03-29 19:47:50
  * @desc [description]
  */
-import { AfterViewInit, Component, effect, EffectRef, ElementRef, inject, Injector, OnChanges, Signal, signal, untracked, viewChild, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, effect, EffectRef, ElementRef, inject, Injector, OnChanges, Signal, signal, untracked, viewChild, ViewChild } from '@angular/core';
 import { BaseComponent } from '../base-component.component';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { C, COMMA, ENTER } from '@angular/cdk/keycodes';
 import { FormControl } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
 import { debounceTime, distinctUntilChanged, fromEvent, Subject, takeUntil } from 'rxjs';
@@ -20,12 +20,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
   selector: 'app-combo',
   templateUrl: './combo.component.html',
   styleUrls: ['../../dynamic-form.component.scss', './combo.component.css'],
-  providers: [Store]
+  providers: [Store],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ComboComponent extends BaseComponent implements AfterViewInit, OnChanges {
   private selectedValues: string[] = [];
   readonly separatorKeysCodes = [ENTER, COMMA] as const
-  private maxElementShow = 3;
+ 
   private scrollListener: (event: any) => void;
   private reachedEnd: boolean = false;
   public onPanelCloseObs = new Subject<void>();
@@ -98,21 +99,22 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
       this.search(null);
     if (this.control?.formAction?.multiple && this.control?.formAction?.autocomplete) {
       this.control.formAction?.formControl?.value?.map(m => {
-        this.selectedItems = this.control?.formAction?.options?.filter(f => f.id == m)
+        this.selectedItems = this.signalStoreBase.getTotalOptions()?.filter(f => f.id == m)
       })
     }
   }
   /************************************************************************************************************************************************************************ */
   getValueCombo(formControl: FormControl, smal) {
-    if (this.control.formAction?.options != null) {
+    let opt= this.signalStoreBase.getTotalOptions() || this.control.formAction.options
+    if (opt != null) {
       if (formControl?.value instanceof Array) {
-        let description = formControl?.value?.map(id => this.control.formAction?.options?.find(f => f.id == id)?.description);
+        let description = formControl?.value?.map(id => opt?.find(f => f.id == id)?.description);
         if (smal)
-          return description?.length < this.maxElementShow ? `${description?.join("; ")}` : description?.length > this.maxElementShow ? `${description?.slice(0, this.maxElementShow)?.join("; ")}  + ${description?.length - this.maxElementShow}` : `${description?.slice(0, this.maxElementShow)?.join("; ")}`
+          return description?.length < this.combotext.maxElementShow ? `${description?.join("; ")}` : description?.length > this.combotext.maxElementShow ? `${description?.slice(0, this.combotext.maxElementShow)?.join("; ")}  + ${description?.length - this.combotext.maxElementShow}` : `${description?.slice(0, this.combotext.maxElementShow)?.join("; ")}`
         else
           return `${description?.join("; ")}`
       }
-      return this.control.formAction?.options?.find(f => f.id == formControl?.value)?.description || null
+      return opt?.find(f => f.id == formControl?.value)?.description || null
     }
     return null
   }
@@ -163,30 +165,36 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
       this.effectStore.push(effect(() => {
         let value = this.signalStore.getStoreData();
         let distinctArray = [];
-        if (!this.resetOption) {  
-          distinctArray = this.distinctArray([...untracked(() =>  this.signalStore.getSelectedOptions()|| []), ...value?.items || []]);
+        if (!this.resetOption) {
+          distinctArray = this.distinctArray([...untracked(() => this.signalStore.getSelectedOptions() || []), ...value?.items || []]);
         } else {
-          distinctArray = this.distinctArray([...untracked(() =>  this.signalStore.getSelectedOptions()|| []).filter(f => f.selected), ...value.items]);
+          distinctArray = this.distinctArray([...untracked(() => this.signalStore.getSelectedOptions() || []).filter(f => f.selected), ...value.items]);
         }
-       
-        this.control.formAction.options = [...this.control.formAction.options, ...distinctArray.clone<Array<any>>()];
-        (this.onOptionSetted as any).set(this.control.formAction.options);
+        distinctArray = this.distinctArray([...untracked(() => this.signalStore.getTotalOptions() || []), ...distinctArray || []]);
+        untracked(() => this.signalStore.updateTotalOptions(distinctArray));
+        (this.onOptionSetted as any).set(untracked(() => distinctArray));
         this.control.formAction.paging = { ...this.control.formAction.paging, totalCount: value?.totalCount || 0 };
+        this.control.formAction.options = distinctArray;
         this.signalStore.setIsLoading(false)
 
 
       }, { injector: this.injector, allowSignalWrites: true }));
       this.addEventScroll()
+    }else{
+      this.signalStore.setIsLoading(false)
+
     }
   }
   /************************************************************************************************************************************************************************ */
   onPanelClose() {
     this.effectStore.map(m => m.destroy());
-  
+    
     if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
-      this.control.formAction.paging = { ...this.initPagination };
+      let selected=this.signalStore.getSelectedOptions();
       this.signalStore.resetStore();
-      this.control.formAction.options = this.signalStore.getSelectedOptions();
+      this.signalStoreBase.updateTotalOptions(selected);
+      this.control.formAction.paging = { ...this.initPagination };
+      this.control.formAction.options = selected;
     }
     this.showOptionDefault = true;
     this.onPanelCloseObs.next();

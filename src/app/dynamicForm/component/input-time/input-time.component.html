@@ -17,9 +17,12 @@
                         [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
                         [multiple]="control.formAction?.multiple"
                         (click)="control?.formAction?.event?.onClick(control.formAction)">
-              <mat-option *ngFor="let hour of hours" class="" [value]="hour"  >
-                  <span > {{hour}} </span>
-              </mat-option>
+              @for ( hour of hours; track $index) {
+                   <mat-option   class="" [value]="hour"  >
+                      <span > {{hour}} </span>
+                   </mat-option>
+              }          
+
           </mat-select>
           <mat-icon matPrefix>access_time</mat-icon>
           @if(control.formAction?.resetButton){

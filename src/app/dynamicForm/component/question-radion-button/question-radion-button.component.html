@@ -9,9 +9,12 @@
                         </mat-label>
 
                     <mat-radio-group [formControl]="control.formAction?.formControl" class="row" [matTooltip]="control.formAction?.tipContent || null">
-                        <mat-radio-button  *ngFor="let secondElement of control.formAction.options" [value]=" secondElement.id " [class]="control?.formAction?.css?.classRadio" [disabled]="secondElement.disabled">
-                            <img [src]="secondElement.img" *ngIf="secondElement.img"> {{secondElement.description}}
-                        </mat-radio-button>
+                        @for (secondElement of control.formAction.options; track $index) {
+                            <mat-radio-button    [value]=" secondElement.id " [class]="control?.formAction?.css?.classRadio" [disabled]="secondElement.disabled">
+                                @if(secondElement.img){ <img [src]="secondElement.img" > {{secondElement.description}}}
+                            </mat-radio-button>
+                        }
+ 
                         @if(control.formAction?.resetButton){
                             <button  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
                              <mat-icon>close</mat-icon>

@@ -3,7 +3,9 @@
         <div class="  d-flex w-100 ">
 
                 <mat-form-field class="w-100 customMY" >
-                        <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}} <span *ngIf="getRequired()">*</span>
+                        <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}   @if (getRequired()) { <span  >*</span>}
+                          
+                            
                           @if (control.formAction?.info) {
                             <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large">info_outline</mat-icon>
                           }                        

@@ -6,6 +6,7 @@ import { TypeComboOption } from '../../dynamic-form.interface';
 /**************************************************************************************************************************************************/
 /**************************************************************************************************************************************************/
 interface IState {
+  totalOptions: TypeComboOption,
   storeData: { items: Array<any>, totalCount: number },
   filteredOptions: TypeComboOption,
   selectedOptions: TypeComboOption,
@@ -19,6 +20,7 @@ const initialState = {
   filteredOptions: null,
   selectedOptions: null,
   isLoading: false,
+  totalOptions: null
 };
 /**************************************************************************************************************************************************/
 /**************************************************************************************************************************************************/
@@ -41,19 +43,20 @@ export const Store = signalStore({ protectedState: false },
       return store.filteredOptions();
     }),
     /**************************************************************************************************************************************************/
-
     getIsLoading: computed(() => {
       return store.isLoading();
     }),
     /**************************************************************************************************************************************************/
-
     getStoreData: computed(() => {
       return store.storeData();
     }),
     /**************************************************************************************************************************************************/
-
     getSelectedOptions: computed(() => {
       return store.selectedOptions();
+    }),
+    /**************************************************************************************************************************************************/
+    getTotalOptions: computed(() => {
+      return store.totalOptions();
     }),
   })),
 
@@ -62,6 +65,11 @@ export const Store = signalStore({ protectedState: false },
   /**************************************************************************************************************************************************/
 
   withMethods((store) => ({
+    /**************************************************************************************************************************************************/
+    updateTotalOptions(newElement: Partial<TypeComboOption>): void {
+      patchState(store, (state) => ({ ...state, totalOptions: [...state?.totalOptions||[], ...newElement] }));
+    },
+    /**************************************************************************************************************************************************/
     updateFilterOption(filterd: TypeComboOption): void {
       patchState(store, (state) => ({ ...state, filteredOptions: filterd }));
     },
@@ -71,11 +79,8 @@ export const Store = signalStore({ protectedState: false },
     },
     /**************************************************************************************************************************************************/
     resetStore(): void {
-
-      patchState(store, (state) => ({ ...state, filteredOptions: [...state.selectedOptions], isLoading: false, storeData: { items: [], totalCount: 0 } }));
-
+      patchState(store, (state) => ({ ...state,totalOptions:[],filteredOptions: [...(state?.selectedOptions||[])], isLoading: false, storeData: { items: [], totalCount: 0 } }));
     },
-
     /**************************************************************************************************************************************************/
     setIsLoading(value: boolean): void {
       patchState(store, (state) => ({ ...state, isLoading: value }));

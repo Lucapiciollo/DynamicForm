@@ -1,4 +1,7 @@
-<ng-container *ngIf="   !control.formAction?.css?.hide"  >
+@if(!control.formAction?.css?.hide){
+
+
+<ng-container  >
    <div class="  d-flex w-100 ">
             <mat-form-field class="w-100 customMY"  >
               <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
@@ -19,7 +22,8 @@
                         (change)=" control.formAction?.formControl.setValue($any($event).target.value)"
                         >
                     </textarea>
-                     <img   speech [e]="inputs" matSuffix src="assets/img/mic.svg" class="text-center " *ngIf="!control.formAction.formControl.disabled  && !control?.formAction?.disableSpeech">
+                     @if(!control.formAction.formControl.disabled  && !control?.formAction?.disableSpeech){<img   speech [e]="inputs" matSuffix src="assets/img/mic.svg" class="text-center "  >}
+                     
                      @if(control.formAction?.resetButton){
                       <button  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
                        <mat-icon>close</mat-icon>
@@ -31,5 +35,9 @@
                   @for (error of getErrorFormControl( control.formAction?.formControl ) ; track error ) {
                     <mat-error>{{error}} </mat-error>
                  }
-                <mat-hint *ngIf="control.formAction?.optionInputText?.maxlength || control?.formAction?.hint" [attr.align]="'start'">{{inputs.value.length}}/{{control.formAction?.optionInputText?.maxlength}}</mat-hint>
+                 @if(control.formAction?.optionInputText?.maxlength || control?.formAction?.hint){
+                  <mat-hint   [attr.align]="'start'">{{inputs.value.length}}/{{control.formAction?.optionInputText?.maxlength}}</mat-hint>
+
+                 }
 </ng-container>
+}

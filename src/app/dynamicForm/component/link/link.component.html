@@ -1,4 +1,5 @@
-<ng-container *ngIf=" !control.formAction?.css?.hide">
+@if ( !control.formAction?.css?.hide) {
+<ng-container *ngIf="">
   <div class="w-100 customMY">
     <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
       @if (control.formAction?.info) {
@@ -11,3 +12,4 @@
 
   </div>
 </ng-container>
+}

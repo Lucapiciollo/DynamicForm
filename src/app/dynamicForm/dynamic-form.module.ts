@@ -37,6 +37,7 @@ import { FixSearchBox } from "./directive/fixSearchBox.directive";
 export const DATE_PIPE = new InjectionToken<any>("Default date pipe");
 export const DATE_PIPE_TIME = new InjectionToken<any>("Default date pipe time");
 export const COMBO_PAING_INIT = new InjectionToken<{ count: number, page: number }>("Inizializzazione paginazione combo");
+export const MAX_ELEMENT_COMBO_SHOW = new InjectionToken<{ maxElementShow: number }>("Massimo elementi visibile nella descrizione della combo selezionata");
 
 @NgModule({
   providers: [
@@ -44,6 +45,7 @@ export const COMBO_PAING_INIT = new InjectionToken<{ count: number, page: number
     { provide: DATE_PIPE, useValue: { dateFormat: 'yyyy-MM-dd' } },
     { provide: DATE_PIPE_TIME, useValue: { dateFormat: 'yyyy-MM-ddTHH:mm:ss' } },
     { provide: COMBO_PAING_INIT, useValue: { count: 10, page: 1 } },
+    { provide: MAX_ELEMENT_COMBO_SHOW, useValue: { maxElementShow: 3 } },
   ],
   declarations: [
     ArrayStringComponent,

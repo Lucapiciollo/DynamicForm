@@ -165,7 +165,10 @@ export function createRegistry(object: any, context: any): TypeForm {
                 async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
 
 
-                }
+                } ,
+                autocomplete: true, 
+                options:  context.generateUniqueItems(10000),
+ 
 
             }
         }, {

@@ -21,9 +21,12 @@
               }         
                </mat-label>
             <mat-select   [matTooltip]="control.formAction?.tipContent || null" [formControl]="control.formAction?.formControl" [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"  >
-                <mat-option *ngFor="let secondElement of control.formAction.options" class="" [value]=" secondElement.id " >
-                    <span [class.disabled]="control.formAction.formControl.disabled"> {{secondElement.description}} </span>
-                </mat-option>
+              @for (secondElement of control.formAction.options; track $index) {
+                <mat-option  [value]=" secondElement.id " >
+                  <span [class.disabled]="control.formAction.formControl.disabled"> {{secondElement.description}} </span>
+              </mat-option>
+              } 
+
             </mat-select>
             @if(control.formAction?.resetButton){
               <button  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
