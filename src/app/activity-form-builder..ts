@@ -34,8 +34,8 @@ export function activityForm(registry: any, context: any): ConfigForm {
 
 
                 }
-            }] 
-            
+            }]
+
         }
     ];
 }
@@ -49,111 +49,108 @@ export function createRegistry(object: any, context: any): TypeForm {
 
     let obs: ReplaySubject<any> = new ReplaySubject(1)
     return [
-        {
-            formAction: {
+        // {
+        //     formAction: {
 
-                css: { hide: true }, 
-                formControl: new FormControl(object?.registryId),
-                formName: "registryId",
-                onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-
-
-
-                }
-            }
-        },
-
-        {
-
-            formAction: {
-
-                css: { hide: true },
-                formControl: new FormControl(object?.registryId),
-                formName: "domicile",
-                onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+        //         css: { hide: true },
+        //         formControl: new FormControl(object?.registryId),
+        //         formName: "registryId",
+        //         onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
 
 
-                }
-            }
-        },
 
-        {
-            formAction: {
-                title: "NOME",
-                type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12"] },
-                formControl: new FormControl(object?.name, { updateOn: "change", validators: [Validators.required, Validators.maxLength(20)] }),
-                formName: "name",
+        //         }
+        //     }
+        // },
 
-                async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-                    console.log(formCOntrol.parent.value, prevValue)
-                }
-            }
-        },
-        {
-            formAction: {
+        // {
 
-                title: "COGNOME",
-                type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12"] },
-                formControl: new FormControl(object?.surname, { updateOn: "blur", validators: [Validators.required, Validators.maxLength(20)] }),
-                formName: "surname",
-                async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+        //     formAction: {
 
-                },
-            }
-        },
-        {
-            formAction: {
-
-                title: "SESSO",
-                type: TYPE_CONTROL_FORM.COMBOPAGINATE,
-                css: { class: ["col-12"] },
-                formControl: new FormControl(["M", "F"], { updateOn: "change", validators: [] }),
-                formName: "gender",
-
-                onChange(idGroup, idForm, formControl, formName, formGroup, type, prevValue, allGroup) {
-                    console.log(formControl.value);
-                    (formGroup[idForm + 2] as any).formAction.options = [{ id: "M", description: "Maschio", selected: true }, { id: "F", description: "Femmina", selected: true }]
-                },
-
-                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, onOptionSetted, disabledOption, initialOption) {
-                    initialOption.set([{ id: "M", description: "Maschio", selected: true }, { id: "F", description: "Femmina", selected: true }])
-                    effect(() => {
-                        console.log(onOptionSetted())
-                    }, { injector: context.injector })
-
-                },
-                opened(idGroup, idForm, formControl, formName, formGroup, allGroup) {
-
-                },
-                closed(idGroup, idForm, formControl, formName, formGroup, allGroup) {
-
-                },
-                remoteData: rxMethod<{ param: any, externalStore: WritableSignal<any> }>(pipe(
-                    map(({ externalStore, param }) => externalStore.set({ items: context.generateUniqueItems(10), totalCount: 30 })),
-                )),
-
-                keyCombo: { keyDescription: ["description"], keyId: "id" },
-                autocomplete: true,
-                multiple: true,
-            }
-        },
+        //         css: { hide: true },
+        //         formControl: new FormControl(object?.registryId),
+        //         formName: "domicile",
+        //         onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
 
 
-        {
-            formAction: {
-                title: "DATA DI ASCITA",
-                type: TYPE_CONTROL_FORM.DATA,
-                css: { class: ["col-12"] },
-                formControl: new FormControl(object?.birthDate, [Validators.required]),
-                formName: "birthDate",
-                async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+        //         }
+        //     }
+        // },
 
-                }
-             
-            }
-        },
+        // {
+        //     formAction: {
+        //         title: "NOME",
+        //         type: TYPE_CONTROL_FORM.TEXT,
+        //         css: { class: ["col-12"] },
+        //         formControl: new FormControl(object?.name, { updateOn: "change", validators: [Validators.required, Validators.maxLength(20)] }),
+        //         formName: "name",
+
+        //         async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+        //             console.log(formCOntrol.parent.value, prevValue)
+        //         }
+        //     }
+        // },
+        // {
+        //     formAction: {
+
+        //         title: "COGNOME",
+        //         type: TYPE_CONTROL_FORM.TEXT,
+        //         css: { class: ["col-12"] },
+        //         formControl: new FormControl(object?.surname, { updateOn: "blur", validators: [Validators.required, Validators.maxLength(20)] }),
+        //         formName: "surname",
+        //         async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+
+        //         },
+        //     }
+        // },
+        // {
+        //     formAction: {
+
+        //         title: "SESSO",
+        //         type: TYPE_CONTROL_FORM.COMBOPAGINATE,
+        //         css: { class: ["col-12"] },
+        //         formControl: new FormControl(["M", "F"], { updateOn: "change", validators: [] }),
+        //         formName: "gender",
+
+        //         onChange(idGroup, idForm, formControl, formName, formGroup, type, prevValue, allGroup) {
+        //             let option = context.generateUniqueItems(10);
+        //             (formGroup[idForm + 1] as any).formAction.options.set(option.items.map(m => ({ id: m.id, description: m.description })));
+        //             (formGroup[idForm + 1] as any).formAction.formControl.setValue([option.items[0].id]);
+
+        //         },
+
+        //         onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, onOptionSetted, setDisabledOption, setInitialOption) {
+        //             let option = context.generateUniqueItems(10);
+        //             setInitialOption.set(option.items.map(m => ({ id: m.id, description: m.description })));
+        //             (formGroup[idForm] as any).formAction.formControl.setValue([option.items[0].id, option.items[1].id]);
+        //         },
+        //         opened(idGroup, idForm, formControl, formName, formGroup, allGroup) { },
+        //         closed(idGroup, idForm, formControl, formName, formGroup, allGroup) { },
+
+        //         remoteData: rxMethod<{ param: any, externalStore: WritableSignal<any> }>(pipe(
+        //             map(({ externalStore, param }) => externalStore.set(context.generateUniqueItems(100))),
+        //         )),
+
+        //         keyCombo: { keyDescription: ["description"], keyId: "id" },
+        //         autocomplete: true,
+        //         multiple: true,
+        //     }
+        // },
+
+
+        // {
+        //     formAction: {
+        //         title: "DATA DI ASCITA",
+        //         type: TYPE_CONTROL_FORM.DATA,
+        //         css: { class: ["col-12"] },
+        //         formControl: new FormControl(object?.birthDate, [Validators.required]),
+        //         formName: "birthDate",
+        //         async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+
+        //         }
+
+        //     }
+        // },
 
         {
             formAction: {
@@ -161,135 +158,137 @@ export function createRegistry(object: any, context: any): TypeForm {
                 title: "PROVINCIA DI NASCITA",
                 type: TYPE_CONTROL_FORM.COMBO,
                 css: { class: ["col-12"] },
-                formControl: new FormControl("M", [Validators.required]),
+                formControl: new FormControl(null, [Validators.required]),
                 formName: "province",
-                onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+                onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { },
 
+                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, onOptionSetted, setDisabledOption, setInitialOption) {
+                    let option = context.generateUniqueItems(1000);
+                    setInitialOption.set(option.items.map(m => ({ id: m.id, description: m.description })));
+                    (formGroup[idForm] as any).formAction.formControl.setValue([option.items[0].id, option.items[1].id]);
 
+                    setDisabledOption.set([option.items[0].id]);
                 },
-
-                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup) {
-                    (formGroup[idForm].formAction as any).options = [{ id: "M", description: "Maschio", selected: true }, { id: "F", description: "Femmina", selected: false }]
-
-                },
-
-                autocomplete: true,
-                options: context.generateUniqueItems(10000),
-
-
-            }
-        }, {
-            formAction: {
-
-                title: "COMUNE",
-                type: TYPE_CONTROL_FORM.COMBO,
-                css: { class: ["col-12"] },
-                formControl: new FormControl(object?.townHall, []),
-                formName: "townHall",
-                async onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-
-
-
-                },
+                multiple: true,
                 autocomplete: true
-            }
-        },
-        {
-            formAction: {
-
-                title: "CODICE FISCALE",
-                type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12"] },
-                formControl: new FormControl(object?.fiscalCode, { updateOn: "blur", validators: [Validators.required] }),
-                formName: "fiscalCode",
-                onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
 
 
-
-                }
-            }
-        },
-        {
-            formAction: {
-
-                title: "CITTADINANZA",
-                type: TYPE_CONTROL_FORM.COMBO,
-                css: { class: ["col-12"] },
-                formControl: new FormControl(object?.citizenship, { updateOn: "blur", validators: [] }),
-                formName: "citizenship",
-                onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-
-
-
-                },
-                autocomplete: true,
-                options: []
-            }
-        },
-
-
-        {
-            formAction: {
-
-                title: "TELEFONO",
-                type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12"] },
-                formControl: new FormControl(object?.phone, { updateOn: "blur", validators: [] }),
-                formName: "phone",
-                onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-
-
-
-                }
 
             }
         },
-        {
-            formAction: {
+        // {
+        //     formAction: {
 
-                title: "MOBILE",
-                type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12"] },
-                formControl: new FormControl(object?.mobile, { updateOn: "blur", validators: [Validators.maxLength(10)] }),
-                formName: "mobile",
-                onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+        //         title: "COMUNE",
+        //         type: TYPE_CONTROL_FORM.COMBO,
+        //         css: { class: ["col-12"] },
+        //         formControl: new FormControl(object?.townHall, []),
+        //         formName: "townHall",
+        //         multiple: false,
+        //         onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, onOptionSetted, setDisabledOption, setInitialOption) {
+        //             let option = context.generateUniqueItems(1000);
+        //             setInitialOption.set(option.items.map(m => ({ id: m.id, description: m.description })));
+        //             (formGroup[idForm] as any).formAction.formControl.setValue([option.items[0].id, option.items[1].id]);
+        //         },
+        //         autocomplete: true
+        //     }
+        // },
+        // {
+        //     formAction: {
 
-
-
-                }
-            }
-        },
-
-        {
-            formAction: {
-
-                title: "EMAIL",
-                type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12"] },
-                formControl: new FormControl(object?.email, { updateOn: "blur", validators: [Validators.email] }),
-                formName: "email",
-                onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
-
-
-
-                }
-            }
-        },
-        {
-            formAction: {
-
-                title: "PEC",
-                type: TYPE_CONTROL_FORM.TEXT,
-                css: { class: ["col-12"] },
-                formControl: new FormControl(object?.pec, { updateOn: "blur", validators: [Validators.email] }),
-                formName: "pec",
-                onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+        //         title: "CODICE FISCALE",
+        //         type: TYPE_CONTROL_FORM.TEXT,
+        //         css: { class: ["col-12"] },
+        //         formControl: new FormControl(object?.fiscalCode, { updateOn: "blur", validators: [Validators.required] }),
+        //         formName: "fiscalCode",
+        //         onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
 
 
 
-                }
-            }
-        }
+        //         }
+        //     }
+        // },
+        // {
+        //     formAction: {
+
+        //         title: "CITTADINANZA",
+        //         type: TYPE_CONTROL_FORM.COMBO,
+        //         css: { class: ["col-12"] },
+        //         formControl: new FormControl(object?.citizenship, { updateOn: "blur", validators: [] }),
+        //         formName: "citizenship",
+        //         onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+
+
+
+        //         },
+        //         autocomplete: true,
+        //         options: []
+        //     }
+        // },
+
+
+        // {
+        //     formAction: {
+
+        //         title: "TELEFONO",
+        //         type: TYPE_CONTROL_FORM.TEXT,
+        //         css: { class: ["col-12"] },
+        //         formControl: new FormControl(object?.phone, { updateOn: "blur", validators: [] }),
+        //         formName: "phone",
+        //         onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+
+
+
+        //         }
+
+        //     }
+        // },
+        // {
+        //     formAction: {
+
+        //         title: "MOBILE",
+        //         type: TYPE_CONTROL_FORM.TEXT,
+        //         css: { class: ["col-12"] },
+        //         formControl: new FormControl(object?.mobile, { updateOn: "blur", validators: [Validators.maxLength(10)] }),
+        //         formName: "mobile",
+        //         onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+
+
+
+        //         }
+        //     }
+        // },
+
+        // {
+        //     formAction: {
+
+        //         title: "EMAIL",
+        //         type: TYPE_CONTROL_FORM.TEXT,
+        //         css: { class: ["col-12"] },
+        //         formControl: new FormControl(object?.email, { updateOn: "blur", validators: [Validators.email] }),
+        //         formName: "email",
+        //         onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+
+
+
+        //         }
+        //     }
+        // },
+        // {
+        //     formAction: {
+
+        //         title: "PEC",
+        //         type: TYPE_CONTROL_FORM.TEXT,
+        //         css: { class: ["col-12"] },
+        //         formControl: new FormControl(object?.pec, { updateOn: "blur", validators: [Validators.email] }),
+        //         formName: "pec",
+        //         onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) {
+
+
+
+        //         }
+        //     }
+        // }
     ]
 
 
@@ -322,7 +321,7 @@ export function createResidenza(object: any, context: any): Form {
                             formControl: new FormControl(object.street, { updateOn: "blur", validators: [Validators.required] }),
                             formName: "street"
 
-                        } 
+                        }
                     },
                     {
                         formAction: {

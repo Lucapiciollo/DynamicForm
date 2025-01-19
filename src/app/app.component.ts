@@ -55,7 +55,7 @@ export class AppComponent {
       items.add(JSON.stringify({ id, description })); // Usa JSON.stringify per mantenere l'unicità
     }
 
-    return Array.from(items).map((item: any) => JSON.parse(item));
+    return {items:Array.from(items).map((item: any) => JSON.parse(item)), totalCount: 10};
   }
 
 

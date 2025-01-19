@@ -76,7 +76,6 @@ export declare type FormActionCombo = {
   formControl?: FormControl | FormArray | FormGroup,
   css?: TypeCss,
   type?: TYPE_CONTROL_FORM.COMBO,
-  options?: TypeComboOption,
   tipContent?: string,
   formGroup?: ConfigForm,
   info?: { msg: string, color: string },
@@ -84,7 +83,9 @@ export declare type FormActionCombo = {
   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) => void,
   opened?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm) => void,
   closed?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm) => void,
-  onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm) => void,
+  onInitialize: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, paging: { count: number, page: number }, onOptionSetted: Signal<Array<any>>, setDisabledOption: WritableSignal<Array<string>>, setInitialOption: WritableSignal<TypeComboOption | { items: Array<any>, totalCount: number }>) => void,
+  keyCombo?: { keyId: string, keyDescription: string | Array<string> }
+
 };
 
 export declare type FormActionComboPaginate = {
@@ -101,12 +102,11 @@ export declare type FormActionComboPaginate = {
   info?: { msg: string, color: string },
   paging?: { count: number, page: number, totalCount: number },
   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm) => void,
-  onInitialize: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, paging: { count: number, page: number }, onOptionSetted: Signal<Array<any>>, disabledOption: WritableSignal<Array<string>>, initialOption: WritableSignal<TypeComboOption>) => void,
+  onInitialize: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, paging: { count: number, page: number }, onOptionSetted: Signal<Array<any>>, setDisabledOption: WritableSignal<Array<string>>, setInitialOption: WritableSignal<TypeComboOption | { items: Array<any>, totalCount: number }>) => void,
   opened?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm) => void,
   closed?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm) => void,
-  options?: TypeComboOption,
   remoteData: RxMethod<{ param: any, externalStore: WritableSignal<any> }> | RxMethodRef,
-  keyCombo: { keyId: string, keyDescription: string | Array<string> }
+  keyCombo?: { keyId: string, keyDescription: string | Array<string> }
 };
 
 

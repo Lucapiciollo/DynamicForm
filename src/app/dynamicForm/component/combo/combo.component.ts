@@ -5,7 +5,7 @@
  * @modify date 2022-03-29 19:47:50
  * @desc [description]
  */
-import { AfterViewInit, ChangeDetectionStrategy, Component, effect, EffectRef, ElementRef, inject, Injector, OnChanges, Signal, signal, untracked, viewChild, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, effect, EffectRef, ElementRef, inject, Injector, OnChanges, Signal, signal, SimpleChanges, untracked, viewChild, ViewChild } from '@angular/core';
 import { BaseComponent } from '../base-component.component';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { FormControl } from '@angular/forms';
@@ -22,7 +22,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
   providers: [Store],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ComboComponent extends BaseComponent implements AfterViewInit, OnChanges {
+export class ComboComponent extends BaseComponent implements AfterViewInit {
+
   private selectedValues: string[] = [];
   readonly separatorKeysCodes = [ENTER, COMMA] as const
 
@@ -42,187 +43,173 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
   public signalStore = inject(Store);
   public loaderss = signal(false);
 
-  /************************************************************************************************************************************************************************ */
-  override toString(num: any): string {
-    return String(num)
+
+  private distinctArray = (array) => {
+    const seenIds = new Set();
+    // const disabledOptions = (this.control.formAction?.disabledOptions || []).map(f => f.id);
+    return array.clone().filter(item => {
+      if (seenIds.has(item.id)) return false;
+      seenIds.add(item.id);
+      // if (disabledOptions.includes(item.id)) item.disabled = true;
+      return true;
+    });
   }
-  /************************************************************************************************************************************************************************ */
+
   constructor(protected override injector: Injector, protected override element: ElementRef) {
     super(injector, element);
     super.signalStoreValue = this.signalStore;
+    this.searchTermSignal = toSignal(this.inputSubject.pipe(debounceTime(500), distinctUntilChanged()));
 
 
-    this.searchTermSignal = toSignal(this.inputSubject.pipe(debounceTime(500), distinctUntilChanged(), takeUntil(this.onPanelCloseObs)));
+    effect(() => {
+      let initialOptions = this.setInitialOption();
+      if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBO) {
+        this.signalStore.setFilteredOptions(initialOptions, this.control.formAction.keyCombo, false);
+        this.signalStore.setTotalOptions(untracked(() => this.signalStore.getFilterOption()));
+        if (!this.areJsonEqual(initialOptions, untracked(() => this.signalStore.getTotalOptions())))
+          (this.onOptionSetted as any).set(untracked(() => this.signalStore.getTotalOptions()));
+      } if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
+        this.control.formAction.paging = { ...this.initPagination, totalCount: (initialOptions as { items: Array<any>; totalCount: number; })?.totalCount || 0 };
+        this.signalStore.setFilteredOptions(initialOptions, this.control.formAction.keyCombo, !this.resetOption);
+        this.signalStore.setTotalOptions(untracked(() => this.signalStore.getFilterOption()));
+        if (!this.areJsonEqual(initialOptions, untracked(() => this.signalStore.getTotalOptions())))
+          (this.onOptionSetted as any).set(untracked(() => this.signalStore.getTotalOptions()));
+      }
+      let selectedOptions = [];
+      let formValue = this.control.formAction.formControl.value;
+      if (formValue && formValue instanceof Array)
+        selectedOptions = untracked(() => this.signalStore.getFilterOption()).filter(f => formValue.includes(f.id));
+      else
+        selectedOptions = untracked(() => this.signalStore.getFilterOption()).filter(f => f.id == formValue);
+      this.signalStore.setSelectedOptions(selectedOptions);
+    }, { allowSignalWrites: true });
 
 
     (effect(() => {
-      let value = this.mySignal();
-      let keys = this.control?.formAction?.keyCombo;
-      (this.onOptionSetted as any).set(value);
-      if (value && keys) {
-        this.signalStore.updateStoreData(value, keys);
-      }
+      let valueSearch = this.searchTermSignal();
+      if (valueSearch != undefined && valueSearch != null)
+        this.search(valueSearch);
+    }, { allowSignalWrites: true }));
+
+    (effect(() => {
+      let disable = this.setDisabledOption();
+      this.signalStore.addDisabledOption(disable);
+      console.log(disable)
     }, { allowSignalWrites: true }));
 
 
-    (effect(() => { this.searchTermSignal(); this.search(this.searchTermSignal()); }, { allowSignalWrites: true }));
+    (effect(() => {
+      let disable =  this.signalStore.getDisabledOptions();
+      if(disable == null || disable.length==0) return;
+      let filtered= untracked(() => this.signalStore.getFilterOption());
+      let totalCount = untracked(() => this.signalStore.getTotalOptions());
+      let selected = untracked(() => this.signalStore.getSelectedOptions()); 
+      let distinct = this.distinctArray([...filtered, ...totalCount, ...selected]).map( m=> disable.includes(m.id) ? {...m, disabled:true} : m);  
+      this.signalStore.setFilteredOptions(distinct,this.control.formAction.keyCombo, false); 
+      console.log(disable)
+    }, { allowSignalWrites: true }));
 
-    effect(() => {
-      let disabledOption = this.initialOption();
-      this.signalStoreBase.setSelectedOption(disabledOption.filter(f => f.selected))
-      this.control.formAction.options= (disabledOption.filter(f => f.selected))
-    }, { allowSignalWrites: true });
 
-  }
 
-  /************************************************************************************************************************************************************************ */
-  ngOnChanges(changes) { }
-  /************************************************************************************************************************************************************************ */
-  search(value) {
-    this.resetOption = value != null && value.trim() != "";
-    if (this.control.formAction.remoteData)
-      this._filter({ param: Object({ ...this.initPagination, search: this.resetOption ? value : null }).changeValues([null], undefined), externalStore: this.mySignal } as any);
-    else
-      this.signalStore.updateFilterOption(this._filter(value))
+
 
   }
-  // /************************************************************************************************************************************************************************ */
 
-  onInputChange(value: string): void {
-    this.inputSubject.next(value);
-  }
-
-  /************************************************************************************************************************************************************************ */
-  ngAfterViewInit(): void {
-    super.ngAfterViewInit()
-    if (this.control.formAction.opened == null)
-      this.search(null);
-    if (this.control?.formAction?.multiple && this.control?.formAction?.autocomplete) {
-      this.control.formAction?.formControl?.value?.map(m => {
-        this.selectedItems = this.signalStoreBase.getTotalOptions()?.filter(f => f.id == m)
-      })
+  areJsonEqual(json1: any, json2: any): boolean {
+    if (typeof json1 !== typeof json2) return false;
+    // Controlla se entrambi sono array
+    if (Array.isArray(json1) && Array.isArray(json2)) {
+      if (json1.length !== json2.length) return false;
+      // Confronta gli elementi uno a uno
+      return json1.every((item, index) => this.areJsonEqual(item, json2[index]));
     }
+    // Controlla se sono oggetti
+    if (typeof json1 === 'object' && json1 !== null && json2 !== null) {
+      const keys1 = Object.keys(json1);
+      const keys2 = Object.keys(json2);
+      // Controlla che abbiano lo stesso numero di chiavi
+      if (keys1.length !== keys2.length) return false;
+      // Controlla ricorsivamente ogni chiave e valore
+      for (const key of keys1) {
+        if (!keys2.includes(key) || !this.areJsonEqual(json1[key], json2[key])) {
+          return false;
+        }
+      }
+      return true;
+    }
+    // Confronta valori primitivi
+    return json1 === json2;
   }
-  /************************************************************************************************************************************************************************ */
+
+
+
+  search(value) {
+    this.signalStore.setIsLoading(true);
+    this.resetOption = value != null && value.trim() != "";
+    if (this.control.formAction.remoteData && this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
+      this._filter({ param: Object({ ...this.initPagination, search: this.resetOption ? value : null }).changeValues([null], undefined), externalStore: this.setInitialOption } as any);
+    } else
+      if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBO) {
+        let filtered = this._filter(value);
+        this.signalStore.setFilteredOptions(filtered, this.control.formAction.keyCombo, !this.resetOption);
+      }
+  }
+
+
+
+
   getValueCombo(formControl: FormControl, smal) {
-    let opt = this.signalStoreBase.getTotalOptions() || this.control.formAction.options
-    if (opt != null) {
-      if (formControl?.value instanceof Array) {
-        let description = formControl?.value?.map(id => opt?.find(f => f.id == id)?.description);
+    let option = this.signalStoreBase.getTotalOptions();
+    let formValue = this.control.formAction.formControl.value;
+    if (option != null) {
+      if (formValue instanceof Array) {
+        let description = formValue?.map(id => option?.find(f => f.id == id)?.description);
         if (smal)
           return description?.length < this.combotext.maxElementShow ? `${description?.join("; ")}` : description?.length > this.combotext.maxElementShow ? `${description?.slice(0, this.combotext.maxElementShow)?.join("; ")}  + ${description?.length - this.combotext.maxElementShow}` : `${description?.slice(0, this.combotext.maxElementShow)?.join("; ")}`
         else
           return `${description?.join("; ")}`
       }
-      return opt?.find(f => f.id == formControl?.value)?.description || null
+      return option?.find(f => f.id == formValue)?.description || null
     }
     return null
   }
-  /************************************************************************************************************************************************************************ */
-
-  private distinctArray = (array) => {
-    const seenIds = new Set();
-    const disabledOptions = (this.control.formAction?.disabledOptions || []).map(f => f.id);
-    return array.clone().filter(item => {
-      if (seenIds.has(item.id)) return false;
-      seenIds.add(item.id);
-      if (disabledOptions.includes(item.id)) item.disabled = true;
-      return true;
-    });
-  }
-
-  /************************************************************************************************************************************************************************ */
-
-  onOpened = () => {
-    this.showOptionDefault = false;
-    if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) this.search(null);
-    if (this.control?.formAction?.opened)
-      this.control.formAction.opened(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this._allGroup);
-    let oldremotedata = (this.control.formAction as any).remoteData;
-    this._filter = oldremotedata != null ? (...args) => { this.signalStore.setIsLoading(true); oldremotedata(...args) } : this._filter;
-    this.effectStore.push(effect(() => {
-      const input = this.filterInput();
-      if (input != null) {
-        queueMicrotask(() => { input?.nativeElement?.focus(); });
-      }
-    }, { injector: this.injector }));
 
 
-    // /**
-    // * se spasso un osservatore come sorgente per le option, mi registro e resto in ascolto finche il pannello non si chiude,
-    // * in caso si riapra, mi registro nuovamente
-    // */
-    if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
-      if (this.control.formAction?.remoteData)
-        this.control.formAction?.remoteData({ param: { ...this.control.formAction.paging }, externalStore: this.mySignal });
-      this.control.formAction.paging = { ...this.control.formAction.paging, page: this.control.formAction.paging.page + 1, };
-      this.effectStore.push(effect(() => {
-        let value = this.signalStore.getStoreData();
-        let distinctArray = [];
-        if (!this.resetOption) {
-          distinctArray = this.distinctArray([...untracked(() => this.signalStore.getSelectedOptions() || []), ...value?.items || []]);
-        } else {
-          distinctArray = this.distinctArray([...untracked(() => this.signalStore.getSelectedOptions() || []).filter(f => f.selected), ...value.items]);
-        }
-        distinctArray = this.distinctArray([...untracked(() => this.control.formAction.options || []), ...distinctArray || []]);
-        untracked(() => this.signalStore.updateTotalOptions(distinctArray));
-        (this.onOptionSetted as any).set(untracked(() => distinctArray));
-        this.control.formAction.paging = { ...this.control.formAction.paging, totalCount: value?.totalCount || 0 };
-        this.control.formAction.options = distinctArray;
-        this.signalStore.setIsLoading(false)
-
-
-      }, { injector: this.injector, allowSignalWrites: true }));
-      this.addEventScroll()
-    } else {
-      this.signalStore.setIsLoading(false)
-
-    }
-  }
-  /************************************************************************************************************************************************************************ */
-  onPanelClose() {
-    this.effectStore.map(m => m.destroy());
-
-    if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
-      let selected = this.signalStore.getSelectedOptions();
-      this.signalStore.resetStore();
-      this.signalStoreBase.updateTotalOptions(selected);
-      this.control.formAction.paging = { ...this.initPagination };
-      this.control.formAction.options = selected;
-    }
-    this.showOptionDefault = true;
-    this.onPanelCloseObs.next();
-    if (this.control?.formAction?.closed) {
-      this.control.formAction.closed(
-        this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl,
-        this.control.formAction.formName, this.group, this._allGroup
-      );
-    }
-  }
-
-  /**************************************************************************************************************************************************/
-  event() {
-    if (this.control.formAction.event?.onClick) {
-      this.control.formAction.event?.onClick(this.control.formAction.formControl.parent)
-    }
-  }
-  /************************************************************************************************************************************************************************ */
-  clearInput = () => {
-    if (this.filterInput())
-      this.filterInput().nativeElement.value = "";
-  }
-  /************************************************************************************************************************************************************************ */
-
-  toggleOption(item: any, event: Event): void {
+  toggleOption(option: any, event: Event): void {
     if (this.control.formAction.multiple)
       event.stopPropagation();
-    this.signalStore.updateOptionSelected(item.id, !item.selected, this.control.formAction.multiple);
+    this.signalStore.updateOptionSelected(option.id, !option.selected, this.control.formAction.multiple);
   }
-  /************************************************************************************************************************************************************************ */
-  isSelected(item: any): boolean {
-    return this.selectedValues.find((f: any) => f.id == item.id) != null;
+
+  @ViewChild('selectRef') selectRef: MatSelect;
+  onPanelOpen() {
+    try {
+      // posiziono il cursore all'interno dell'input di ricerca
+      this.effectStore.push(effect(() => {
+        const input = this.filterInput();
+        if (input != null) {
+          queueMicrotask(() => { input?.nativeElement?.focus(); });
+        }
+      }, { injector: this.injector }));
+      // registrazine dei filter di ricerca
+      let oldremotedata = (this.control.formAction as any).remoteData;
+      this._filter = oldremotedata != null ? (...args) => { this.signalStore.setIsLoading(true); oldremotedata(...args) } : this._filter;
+      // lancio la ricerca per resettare i registri
+      if (this.control?.formAction?.opened)
+        this.control.formAction.opened(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this._allGroup);
+      if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
+        this.search("");
+        // this.effectStore.push(effect(() => {
+        //   let value = this.signalStore.getFilterOption();
+        //    this.signalStore.setIsLoading(false)
+        // }, { injector: this.injector, allowSignalWrites: true }));
+        this.addEventScroll()
+      } else {
+        this.signalStore.setIsLoading(false)
+      }
+    } catch (e) { throw new Error(e) }
   }
-  /************************************************************************************************************************************************************************ */
+
 
   addEventScroll() {
     try {
@@ -242,11 +229,12 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
           if (distanceFromBottom <= threshold && !this.reachedEnd) {
             const paging = this.control.formAction?.paging;
             const currentPage = (paging?.page ?? 1);
+            this.control.formAction.paging = { ...paging, page: currentPage + 1 };
             const totalPages = Math.ceil((paging?.totalCount ?? 0) / (paging?.count ?? 1));
             this.reachedEnd = true;
             if (currentPage <= totalPages && this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
               this.signalStore.setIsLoading(true)
-              this.control.formAction.remoteData({ param: Object({ ...this.control.formAction.paging, search: this.filterInput()?.nativeElement?.value?.trim() != "" ? this.filterInput()?.nativeElement?.value : null }).changeValues([null], undefined), externalStore: this.mySignal });
+              this.control.formAction.remoteData({ param: Object({ ...this.control.formAction.paging, search: this.filterInput()?.nativeElement?.value?.trim() != "" ? this.filterInput()?.nativeElement?.value : null }).changeValues([null], undefined), externalStore: this.setInitialOption });
               this.control.formAction.paging = { ...paging, page: currentPage + 1, };
             }
           } else {
@@ -258,12 +246,43 @@ export class ComboComponent extends BaseComponent implements AfterViewInit, OnCh
     }
   }
 
-  /************************************************************************************************************************************************************************ */
 
-  @ViewChild('selectRef') selectRef: MatSelect;
-
-  /************************************************************************************************************************************************************************ */
-  ngOnDestroy() {
-    this.effectStore.map(m => m.destroy());
+  clearInput = () => {
+    try {
+      if (this.filterInput())
+        this.filterInput().nativeElement.value = "";
+    } catch (e) { throw new Error(e) }
   }
+
+  onPanelClose() {
+    try {
+      this.signalStore.setIsLoading(false);
+      this.effectStore.map(m => m.destroy());
+      this.showOptionDefault = true;
+      this.onPanelCloseObs.next();
+      if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
+        let selected = this.signalStore.getSelectedOptions();
+        this.signalStore.setFilteredOptions([], this.control.formAction.keyCombo, false);
+        this.signalStore.setTotalOptions(untracked(() => this.signalStore.getSelectedOptions()));
+        this.control.formAction.paging = { ...this.initPagination };
+      }
+      if (this.control?.formAction?.closed) {
+        this.control.formAction.closed(
+          this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl,
+          this.control.formAction.formName, this.group, this._allGroup
+        );
+      }
+
+
+    } catch (e) { throw new Error(e) }
+  }
+
+
+
+  onInputChange(value: string): void {
+    this.inputSubject.next(value);
+  }
+
+
+
 }

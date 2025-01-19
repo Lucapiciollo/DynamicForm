@@ -12,7 +12,7 @@ import {
   EventEmitter,
   Injector,
   Input,
-  Output, Signal, ViewChild, ViewContainerRef, WritableSignal, inject,
+  Output, Signal, ViewChild, ViewContainerRef, WritableSignal, effect, inject,
   signal
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -45,9 +45,9 @@ export class BaseComponent implements IBaseComponent {
   public getErrorForm: (formGroup: FormGroup, formName: string) => Array<string> = GetErrorForm;
   public getErrorFormControl: (formControl: FormControl) => Array<string> = GetErrorFormControl;
   public control: any = { formAction: {} };
-  public obs: Subscriber<Subscription> = new Subscriber<Subscription>()
-  public disabledOption: WritableSignal<Array<string>> = signal([]);
-  public initialOption: WritableSignal<TypeComboOption> = signal([]);
+  public obs: Subscriber<Subscription> = new Subscriber<Subscription>();
+  public setDisabledOption: WritableSignal<Array<string>> = signal([]);
+  public setInitialOption: WritableSignal<TypeComboOption | { items: Array<any>, totalCount: number }> = signal([]);
   /************************************************************************************************************************************************************************ */
   public _autocomplete: MatAutocompleteTrigger = null;
   protected selectedItems: any[] = new Array<any>();
@@ -67,6 +67,7 @@ export class BaseComponent implements IBaseComponent {
   @Input() set question(config: Form) {
     this.control = { formAction: config };
     this.obsQuestions.next(this.control);
+    this.control.formAction.options = signal(null);
   };
 
 
@@ -77,36 +78,53 @@ export class BaseComponent implements IBaseComponent {
   }
   /************************************************************************************************************************************************************************ */
 
-  constructor(protected injector: Injector, protected element: ElementRef) { }
+  constructor(protected injector: Injector, protected element: ElementRef) {
+
+
+
+
+  }
+
 
   /************************************************************************************************************************************************************************ */
   onSetOptionWithSearch = () => {
-    this.internalValue = this.control.formAction.options || [];
-    Object.defineProperty(this.control.formAction, "options", {
-      set: (newValue) => {
-        this.internalValue = newValue;
-        this.signalStoreBase.updateFilterOption(this._filter(null));
-      },
-      get: () => {
-        return this.internalValue;
-      },
-      configurable: true
-    });
+
+
+    if (typeof this.control?.formAction?.options != "function") {
+      this.internalValue = this.control.formAction.options || [];
+      Object.defineProperty(this.control.formAction, "options", {
+        set: (newValue) => {
+          this.internalValue = newValue;
+          this.signalStoreBase.updateFilterOption(this._filter(null));
+        },
+        get: () => {
+          return this.internalValue;
+        },
+        configurable: true
+      });
+    } else {
+
+    }
   }
   /************************************************************************************************************************************************************************ */
   onSetOption = () => {
-    this.internalValue = this.control.formAction.options || [];
-    Object.defineProperty(this.control.formAction, "options", {
-      set: (newValue) => {
-        this.internalValue = newValue;
-        this.signalStoreBase.updateFilterOption(newValue);
 
-      },
-      get: () => {
-        return this.internalValue;
-      },
-      configurable: true
-    });
+    if (typeof this.control?.formAction?.options != "function") {
+      this.internalValue = this.control.formAction.options || [];
+      Object.defineProperty(this.control.formAction, "options", {
+        set: (newValue) => {
+          this.internalValue = newValue;
+          this.signalStoreBase.updateFilterOption(newValue);
+        },
+        get: () => {
+          return this.internalValue;
+        },
+        configurable: true
+      });
+    } else {
+
+
+    }
   }
   /************************************************************************************************************************************************************************ */
 
@@ -117,11 +135,20 @@ export class BaseComponent implements IBaseComponent {
     }).pipe(
       autoUnsubscribe(this.obs),
       takeUntilDestroyed(this.destroyRef)).subscribe(({ allGroup, control }) => {
-        (control.formAction.type == TYPE_CONTROL_FORM.COMBO) ? this.onSetOptionWithSearch() : null;
-        (control.formAction.type == TYPE_CONTROL_FORM.ARRAYSTRING) ? this.onSetOptionWithSearch() : null;
-        (control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) ? this.onSetOption() : null;
+        // (control.formAction.type == TYPE_CONTROL_FORM.COMBO) ? this.onSetOptionWithSearch() : null;
+        // (control.formAction.type == TYPE_CONTROL_FORM.ARRAYSTRING) ? this.onSetOptionWithSearch() : null;
+        // (control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) ? this.onSetOption() : null;
         control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE ? this.control.formAction.paging = this.initPagination : null;
         (control.formAction.formControl.disabled) ? control.formAction.formControl.disable() : control.formAction.formControl.enable();
+
+        effect(() => {
+          let opt = this.control.formAction.options();
+          if (opt != null) {
+            this.signalStoreBase.setSelectedOptions([]);
+            this.signalStoreBase.setFilteredOptions(opt);
+            this.signalStoreBase.setTotalOptions(opt);
+          }
+        }, { injector: this.injector, allowSignalWrites: true });
 
         if (control?.formAction?.css?.class) {
           control?.formAction?.css?.class.map((c: any) => {
@@ -131,9 +158,10 @@ export class BaseComponent implements IBaseComponent {
         if (control.formAction) {
           if (control.formAction.type as TYPE_CONTROL_FORM == TYPE_CONTROL_FORM.COMBOPAGINATE) {
             if (control.formAction.onInitialize)
-              control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, this.initPagination, this.onOptionSetted, this.disabledOption, this.initialOption);
+              control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, this.initPagination as any, this.signalStoreBase.totalOptions as any, this.setDisabledOption, this.setInitialOption);
+
           } else if (control.formAction.onInitialize)
-            control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, null, null, null, null);
+            control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, null, null, this.setDisabledOption, this.setInitialOption);
 
           control.formAction?.formControl.valueChanges.pipe(
             autoUnsubscribe(this.obs),
@@ -151,7 +179,7 @@ export class BaseComponent implements IBaseComponent {
   ngOnDestroy(): void { }
   /************************************************************************************************************************************************************************ */
   public _filter(value: string = ""): any {
-    let cloned = JSON.parse(JSON.stringify(this.internalValue || []));
+    let cloned = [...this.signalStoreBase.getTotalOptions() || []] // JSON.parse(JSON.stringify(this.internalValue || []));
     const filterValue = value?.toString()?.toLowerCase() || null;
     if (filterValue == null) {
       return cloned

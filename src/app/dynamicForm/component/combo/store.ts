@@ -7,20 +7,20 @@ import { TypeComboOption } from '../../dynamic-form.interface';
 /**************************************************************************************************************************************************/
 interface IState {
   totalOptions: TypeComboOption,
-  storeData: { items: Array<any>, totalCount: number },
   filteredOptions: TypeComboOption,
   selectedOptions: TypeComboOption,
   isLoading: boolean,
+  disabledOption: Array<string>
 };
 /**************************************************************************************************************************************************/
 /**************************************************************************************************************************************************/
 /**************************************************************************************************************************************************/
 const initialState = {
-  storeData: null,
+  isLoading: false,
   filteredOptions: null,
   selectedOptions: null,
-  isLoading: false,
-  totalOptions: null
+  totalOptions: null,
+  disabledOption: []
 };
 /**************************************************************************************************************************************************/
 /**************************************************************************************************************************************************/
@@ -39,17 +39,14 @@ export const Store = signalStore({ protectedState: false },
   /**************************************************************************************************************************************************/
 
   withComputed((store) => ({
-    onFilterOption: computed(() => {
+    getFilterOption: computed(() => {
       return store.filteredOptions();
     }),
     /**************************************************************************************************************************************************/
     getIsLoading: computed(() => {
       return store.isLoading();
     }),
-    /**************************************************************************************************************************************************/
-    getStoreData: computed(() => {
-      return store.storeData();
-    }),
+
     /**************************************************************************************************************************************************/
     getSelectedOptions: computed(() => {
       return store.selectedOptions();
@@ -58,6 +55,10 @@ export const Store = signalStore({ protectedState: false },
     getTotalOptions: computed(() => {
       return store.totalOptions();
     }),
+    /**************************************************************************************************************************************************/
+    getDisabledOptions: computed(() => {
+      return store.disabledOption();
+    }),
   })),
 
   /**************************************************************************************************************************************************/
@@ -65,34 +66,57 @@ export const Store = signalStore({ protectedState: false },
   /**************************************************************************************************************************************************/
 
   withMethods((store) => ({
-    /**************************************************************************************************************************************************/
-    updateTotalOptions(newElement: Partial<TypeComboOption>): void {
-      patchState(store, (state) => ({ ...state, totalOptions: [...state?.totalOptions || [], ...newElement] }));
+
+    distinctArray(array) {
+      const seenIds = new Set();
+      return array.clone().filter(item => {
+        if (seenIds.has(item.id)) return false;
+        seenIds.add(item.id);
+        return true;
+      });
     },
-    /**************************************************************************************************************************************************/
-    updateFilterOption(filterd: TypeComboOption): void {
-      patchState(store, (state) => ({ ...state, filteredOptions: filterd }));
+
+    setFilteredOptions(newElement: Partial<TypeComboOption | { items: Array<any>, totalCount: number }>, keyCombo: { keyId: string, keyDescription: string | Array<string> } = { keyId: "id", keyDescription: "description" }, append: boolean): void {
+      if (newElement.hasOwnProperty("items")) {
+        if (append) {
+          patchState(store, (state) => ({ isLoading: false, filteredOptions: this.distinctArray([...state.selectedOptions, ...state.filteredOptions, ...(newElement as { items: Array<any>, totalCount: number }).items?.map(m => ({ id: m[keyCombo?.keyId], description: keyCombo.keyDescription instanceof Array ? keyCombo.keyDescription.reduce((a, b) => a += ` ${m[b]}`, "") : m[keyCombo?.keyDescription] }))]) }));
+
+        } else {
+          patchState(store, (state) => ({ isLoading: false, filteredOptions: this.distinctArray([...state.selectedOptions, ...(newElement as { items: Array<any>, totalCount: number }).items?.map(m => ({ id: m[keyCombo?.keyId], description: keyCombo.keyDescription instanceof Array ? keyCombo.keyDescription.reduce((a, b) => a += ` ${m[b]}`, "") : m[keyCombo?.keyDescription] }))]) }));
+        }
+      }
+      else {
+        if (append) {
+
+          patchState(store, (state) => ({ filteredOptions: this.distinctArray([...state.selectedOptions, ...state.filteredOptions, ...(newElement as TypeComboOption).map(m => ({ id: m[keyCombo?.keyId], description: keyCombo.keyDescription instanceof Array ? keyCombo.keyDescription.reduce((a, b) => a += ` ${m[b]}`, "") : m[keyCombo?.keyDescription] }))]), isLoading: false }));
+        } else {
+          patchState(store, (state) => ({ filteredOptions: this.distinctArray([...state.selectedOptions, ...(newElement as TypeComboOption).map(m => ({ id: m[keyCombo?.keyId], description: keyCombo.keyDescription instanceof Array ? keyCombo.keyDescription.reduce((a, b) => a += ` ${m[b]}`, "") : m[keyCombo?.keyDescription] }))]), isLoading: false }));
+
+        }
+      }
     },
-    /**************************************************************************************************************************************************/
-    setSelectedOption(filterd: TypeComboOption): void {
-      patchState(store, (state) => ({ ...state, selectedOptions: [...state.selectedOptions, ...filterd] }));
+
+    setSelectedOptions(newElement: Partial<TypeComboOption>): void {
+      patchState(store, (state) => ({ selectedOptions: [...newElement] }));
     },
-    /**************************************************************************************************************************************************/
-    updateStoreData(value, keys): void {
-      patchState(store, (state) => ({ ...state, storeData: { ...value, items: value?.items?.map(m => ({ id: m[keys?.keyId], description: m[keys?.keyDescription] })) } }));
+
+    setTotalOptions(newElement: Partial<TypeComboOption>): void {
+      patchState(store, (state) => ({ totalOptions: [...newElement] }));
+
     },
-    /**************************************************************************************************************************************************/
-    resetStore(): void {
-      patchState(store, (state) => ({ ...state, totalOptions: [], filteredOptions: [...(state?.selectedOptions || [])], isLoading: false, storeData: { items: [], totalCount: 0 } }));
-    },
-    /**************************************************************************************************************************************************/
+
     setIsLoading(value: boolean): void {
-      patchState(store, (state) => ({ ...state, isLoading: value }));
+      patchState(store, (state) => ({ isLoading: value }));
     },
+
+    addDisabledOption(value: Array<string>): void {
+      patchState(store, (state) => ({ disabledOption: value }));
+    },
+
+
     /**************************************************************************************************************************************************/
     updateOptionSelected(optionId: string, isSelected: boolean, isMultiple: boolean): void {
       let selectedOptions = (store.selectedOptions() || []).clone<TypeComboOption>();
-
       if (isMultiple) {
         if (selectedOptions.find((f: any) => f.id == optionId) != null) {
           selectedOptions = selectedOptions.filter(f => f.id != optionId);
@@ -101,14 +125,15 @@ export const Store = signalStore({ protectedState: false },
           items["selected"] = true;
           selectedOptions.push(items);
         }
-        patchState(store, (state) => ({ ...state, selectedOptions: selectedOptions }));
+        patchState(store, (state) => ({ selectedOptions: selectedOptions }));
       } else {
         let items = (store.filteredOptions() || [])?.clone<TypeComboOption>().find(f => f.id == optionId);
-        patchState(store, (state) => ({ ...state, selectedOptions: [items] }));
+        patchState(store, (state) => ({ selectedOptions: [items] }));
       }
     },
     /**************************************************************************************************************************************************/
   })),
+
   /**************************************************************************************************************************************************/
   /**************************************************************************************************************************************************/
   /**************************************************************************************************************************************************/
@@ -116,7 +141,9 @@ export const Store = signalStore({ protectedState: false },
     onInit(store) {
       patchState(store, (state) => ({ ...state, filteredOptions: [], selectedOptions: [], storeData: { items: [], totalCount: 0 }, isLoading: true }));
     },
-    onDestroy(store) { }
+    onDestroy(store) {
+      patchState(store, (state) => ({ ...state, filteredOptions: [], selectedOptions: [], storeData: { items: [], totalCount: 0 }, isLoading: true }));
+    }
   }),
   /**************************************************************************************************************************************************/
 

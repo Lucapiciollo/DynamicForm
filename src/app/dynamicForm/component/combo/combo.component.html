@@ -9,7 +9,7 @@
         <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large">info_outline</mat-icon>
         }
       </mat-label>
-      <mat-select class="py-0 my-0" #selectRef [formControl]="this.control.formAction.formControl" [multiple]="control.formAction.multiple" (opened)="onOpened()" (closed)=" clearInput();onPanelClose()">
+      <mat-select class="py-0 my-0" #selectRef [formControl]="this.control.formAction.formControl" [multiple]="control.formAction.multiple" (opened)="onPanelOpen()" (closed)=" clearInput();onPanelClose()">
 
         <mat-select-trigger>
           <span class="example-additional-selection"> {{getValueCombo(control.formAction.formControl,true)}}</span>
@@ -32,7 +32,8 @@
           </div>
     
 
-        @for (option of signalStore.onFilterOption() ; track option.id) {
+        @for (option of signalStore.getFilterOption() ; track option.id) {
+          {{option|json}}
           <mat-option (click)="toggleOption(option, $event)" [value]="option.id" [disabled]="option.disabled" [class.d-none]="option.hide" [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'">
             {{ option.description }}
           </mat-option>
