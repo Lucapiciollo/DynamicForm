@@ -101,11 +101,12 @@ export class ComboComponent extends BaseComponent implements AfterViewInit {
     (effect(() => {
       let disable =  this.signalStore.getDisabledOptions();
       if(disable == null || disable.length==0) return;
-      let filtered= untracked(() => this.signalStore.getFilterOption());
-      let totalCount = untracked(() => this.signalStore.getTotalOptions());
-      let selected = untracked(() => this.signalStore.getSelectedOptions()); 
-      let distinct = this.distinctArray([...filtered, ...totalCount, ...selected]).map( m=> disable.includes(m.id) ? {...m, disabled:true} : m);  
-      this.signalStore.setFilteredOptions(distinct,this.control.formAction.keyCombo, false); 
+      let filtered= untracked(() => this.signalStore.getFilterOption()).map( m=> disable.includes(m.id) ? {...m, disabled:true} : m);  ;
+      let totalOption = untracked(() => this.signalStore.getTotalOptions()).map( m=> disable.includes(m.id) ? {...m, disabled:true} : m);  ;
+      let selected = untracked(() => this.signalStore.getSelectedOptions()).map( m=> disable.includes(m.id) ? {...m, disabled:true} : m);  ; 
+       this.signalStore.setSelectedOptions(selected); 
+      this.signalStore.setTotalOptions(totalOption); 
+      this.signalStore.setFilteredOptions(filtered,this.control.formAction.keyCombo, false); 
       console.log(disable)
     }, { allowSignalWrites: true }));
 
