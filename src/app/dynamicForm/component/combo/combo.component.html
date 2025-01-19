@@ -33,7 +33,8 @@
     
 
         @for (option of signalStore.getFilterOption() ; track option.id) {
-           <mat-option (click)="toggleOption(option, $event)" [value]="option.id" [disabled]="option.disabled" [class.d-none]="option.hide" [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'">
+          {{option|json}}
+          <mat-option (click)="toggleOption(option, $event)" [value]="option.id" [disabled]="option.disabled" [class.d-none]="option.hide" [style.color]="control.formAction.css?.font?.color ? control.formAction.css?.font?.color :'black'">
             {{ option.description }}
           </mat-option>
         }

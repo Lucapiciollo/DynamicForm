@@ -165,9 +165,9 @@ export function createRegistry(object: any, context: any): TypeForm {
                 onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, onOptionSetted, setDisabledOption, setInitialOption) {
                     let option = context.generateUniqueItems(1000);
                     setInitialOption.set(option.items.map(m => ({ id: m.id, description: m.description })));
-                    (formGroup[idForm] as any).formAction.formControl.setValue([option.items[0].id, option.items[1].id]);
+                    (formGroup[idForm] as any).formAction.formControl.setValue([option.items[0].id, option.items[2].id]);
 
-                    setDisabledOption.set([option.items[0].id]);
+                    setDisabledOption.set([option.items[2].id]);
                 },
                 multiple: true,
                 autocomplete: true
