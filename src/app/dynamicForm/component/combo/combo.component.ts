@@ -46,11 +46,9 @@ export class ComboComponent extends BaseComponent implements AfterViewInit {
 
   private distinctArray = (array) => {
     const seenIds = new Set();
-    // const disabledOptions = (this.control.formAction?.disabledOptions || []).map(f => f.id);
     return array.clone().filter(item => {
       if (seenIds.has(item.id)) return false;
       seenIds.add(item.id);
-      // if (disabledOptions.includes(item.id)) item.disabled = true;
       return true;
     });
   }
