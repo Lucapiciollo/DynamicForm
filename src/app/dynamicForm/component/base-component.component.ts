@@ -154,7 +154,7 @@ export class BaseComponent implements IBaseComponent {
 
         (effect(() => {
           let disable = this.control.formAction.optionsDisabled();
-          this.signalStoreBase.addDisabledOption(disable);
+          this.signalStoreBase?.addDisabledOption(disable);
         }, { injector: this.injector, allowSignalWrites: true }));
 
 

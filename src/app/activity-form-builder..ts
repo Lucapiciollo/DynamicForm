@@ -134,6 +134,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                 keyCombo: { keyDescription: ["description"], keyId: "id" },
                 autocomplete: true,
                 multiple: true,
+            
             }
         },
 
@@ -170,8 +171,7 @@ export function createRegistry(object: any, context: any): TypeForm {
                     (formGroup[idForm] as any).formAction.optionsDisabled.set([option.items[3].id]);
                 },
                 multiple: true,
-                autocomplete: true
-
+                autocomplete: true 
 
 
             }

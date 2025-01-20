@@ -59,6 +59,8 @@ export class ComboComponent extends BaseComponent implements AfterViewInit {
     super(injector, element);
     super.signalStoreValue = this.signalStore;
     this.searchTermSignal = toSignal(this.inputSubject.pipe(debounceTime(500), distinctUntilChanged()));
+    this.control.formAction.paging = { ...this.initPagination, totalCount: 0 };
+
 
 
     effect(() => {
@@ -69,7 +71,7 @@ export class ComboComponent extends BaseComponent implements AfterViewInit {
         if (!this.areJsonEqual(initialOptions, untracked(() => this.signalStore.getTotalOptions())))
           (this.onOptionSetted as any).set(untracked(() => this.signalStore.getTotalOptions()));
       } if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
-        this.control.formAction.paging = { ...this.initPagination, totalCount: (initialOptions as { items: Array<any>; totalCount: number; })?.totalCount || 0 };
+        this.control.formAction.paging = { ...this.control.formAction.paging, totalCount: (initialOptions as { items: Array<any>; totalCount: number; })?.totalCount || 0 };
         this.signalStore.setFilteredOptions(initialOptions, this.control.formAction.keyCombo, !this.resetOption);
         this.signalStore.setTotalOptions(untracked(() => this.signalStore.getFilterOption()));
         if (!this.areJsonEqual(initialOptions, untracked(() => this.signalStore.getTotalOptions())))
@@ -208,7 +210,7 @@ export class ComboComponent extends BaseComponent implements AfterViewInit {
             if (currentPage <= totalPages && this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
               this.signalStore.setIsLoading(true)
               this.control.formAction.remoteData({ param: Object({ ...this.control.formAction.paging, search: this.filterInput()?.nativeElement?.value?.trim() != "" ? this.filterInput()?.nativeElement?.value : null }).changeValues([null], undefined), externalStore: this.setInitialOption });
-              this.control.formAction.paging = { ...paging, page: currentPage + 1, };
+              this.control.formAction.paging = { ...   this.control.formAction.paging, page: currentPage + 1, };
             }
           } else {
             this.reachedEnd = false;
