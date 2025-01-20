@@ -91,26 +91,6 @@ export class ComboComponent extends BaseComponent implements AfterViewInit {
         this.search(valueSearch);
     }, { allowSignalWrites: true }));
 
-    (effect(() => {
-      let disable = this.setDisabledOption();
-      this.signalStore.addDisabledOption(disable);
-      console.log(disable)
-    }, { allowSignalWrites: true }));
-
-
-    (effect(() => {
-      let disable =  this.signalStore.getDisabledOptions();
-      if(disable == null || disable.length==0) return;
-      let filtered= untracked(() => this.signalStore.getFilterOption()).map( m=> disable.includes(m.id) ? {...m, disabled:true} : m);  ;
-      let totalOption = untracked(() => this.signalStore.getTotalOptions()).map( m=> disable.includes(m.id) ? {...m, disabled:true} : m);  ;
-      let selected = untracked(() => this.signalStore.getSelectedOptions()).map( m=> disable.includes(m.id) ? {...m, disabled:true} : m);  ; 
-       this.signalStore.setSelectedOptions(selected); 
-      this.signalStore.setTotalOptions(totalOption); 
-      this.signalStore.setFilteredOptions(filtered,this.control.formAction.keyCombo, false); 
-      console.log(disable)
-    }, { allowSignalWrites: true }));
-
-
 
 
 
@@ -118,19 +98,14 @@ export class ComboComponent extends BaseComponent implements AfterViewInit {
 
   areJsonEqual(json1: any, json2: any): boolean {
     if (typeof json1 !== typeof json2) return false;
-    // Controlla se entrambi sono array
     if (Array.isArray(json1) && Array.isArray(json2)) {
       if (json1.length !== json2.length) return false;
-      // Confronta gli elementi uno a uno
       return json1.every((item, index) => this.areJsonEqual(item, json2[index]));
     }
-    // Controlla se sono oggetti
     if (typeof json1 === 'object' && json1 !== null && json2 !== null) {
       const keys1 = Object.keys(json1);
       const keys2 = Object.keys(json2);
-      // Controlla che abbiano lo stesso numero di chiavi
       if (keys1.length !== keys2.length) return false;
-      // Controlla ricorsivamente ogni chiave e valore
       for (const key of keys1) {
         if (!keys2.includes(key) || !this.areJsonEqual(json1[key], json2[key])) {
           return false;
@@ -138,7 +113,6 @@ export class ComboComponent extends BaseComponent implements AfterViewInit {
       }
       return true;
     }
-    // Confronta valori primitivi
     return json1 === json2;
   }
 
@@ -185,25 +159,23 @@ export class ComboComponent extends BaseComponent implements AfterViewInit {
   @ViewChild('selectRef') selectRef: MatSelect;
   onPanelOpen() {
     try {
-      // posiziono il cursore all'interno dell'input di ricerca
+
       this.effectStore.push(effect(() => {
         const input = this.filterInput();
         if (input != null) {
           queueMicrotask(() => { input?.nativeElement?.focus(); });
         }
       }, { injector: this.injector }));
-      // registrazine dei filter di ricerca
+
       let oldremotedata = (this.control.formAction as any).remoteData;
       this._filter = oldremotedata != null ? (...args) => { this.signalStore.setIsLoading(true); oldremotedata(...args) } : this._filter;
-      // lancio la ricerca per resettare i registri
+
+
       if (this.control?.formAction?.opened)
         this.control.formAction.opened(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this._allGroup);
+
       if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
         this.search("");
-        // this.effectStore.push(effect(() => {
-        //   let value = this.signalStore.getFilterOption();
-        //    this.signalStore.setIsLoading(false)
-        // }, { injector: this.injector, allowSignalWrites: true }));
         this.addEventScroll()
       } else {
         this.signalStore.setIsLoading(false)

@@ -46,7 +46,7 @@ export class BaseComponent implements IBaseComponent {
   public getErrorFormControl: (formControl: FormControl) => Array<string> = GetErrorFormControl;
   public control: any = { formAction: {} };
   public obs: Subscriber<Subscription> = new Subscriber<Subscription>();
-  public setDisabledOption: WritableSignal<Array<string>> = signal([]);
+  // public setDisabledOption: WritableSignal<Array<string>> = signal([]);
   public setInitialOption: WritableSignal<TypeComboOption | { items: Array<any>, totalCount: number }> = signal([]);
   /************************************************************************************************************************************************************************ */
   public _autocomplete: MatAutocompleteTrigger = null;
@@ -68,6 +68,7 @@ export class BaseComponent implements IBaseComponent {
     this.control = { formAction: config };
     this.obsQuestions.next(this.control);
     this.control.formAction.options = signal(null);
+    this.control.formAction.optionsDisabled = signal(null);
   };
 
 
@@ -150,6 +151,14 @@ export class BaseComponent implements IBaseComponent {
           }
         }, { injector: this.injector, allowSignalWrites: true });
 
+
+        (effect(() => {
+          let disable = this.control.formAction.optionsDisabled();
+          this.signalStoreBase.addDisabledOption(disable);
+        }, { injector: this.injector, allowSignalWrites: true }));
+
+
+
         if (control?.formAction?.css?.class) {
           control?.formAction?.css?.class.map((c: any) => {
             this.element?.nativeElement?.classList?.add(c);
@@ -158,10 +167,10 @@ export class BaseComponent implements IBaseComponent {
         if (control.formAction) {
           if (control.formAction.type as TYPE_CONTROL_FORM == TYPE_CONTROL_FORM.COMBOPAGINATE) {
             if (control.formAction.onInitialize)
-              control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, this.initPagination as any, this.signalStoreBase.totalOptions as any, this.setDisabledOption, this.setInitialOption);
+              control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, this.initPagination as any, this.signalStoreBase.totalOptions as any);
 
           } else if (control.formAction.onInitialize)
-            control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, null, null, this.setDisabledOption, this.setInitialOption);
+            control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, null, null);
 
           control.formAction?.formControl.valueChanges.pipe(
             autoUnsubscribe(this.obs),

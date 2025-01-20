@@ -103,39 +103,39 @@ export function createRegistry(object: any, context: any): TypeForm {
         //         },
         //     }
         // },
-        // {
-        //     formAction: {
+        {
+            formAction: {
 
-        //         title: "SESSO",
-        //         type: TYPE_CONTROL_FORM.COMBOPAGINATE,
-        //         css: { class: ["col-12"] },
-        //         formControl: new FormControl(["M", "F"], { updateOn: "change", validators: [] }),
-        //         formName: "gender",
+                title: "SESSO",
+                type: TYPE_CONTROL_FORM.COMBOPAGINATE,
+                css: { class: ["col-12"] },
+                formControl: new FormControl(["M", "F"], { updateOn: "change", validators: [] }),
+                formName: "gender",
 
-        //         onChange(idGroup, idForm, formControl, formName, formGroup, type, prevValue, allGroup) {
-        //             let option = context.generateUniqueItems(10);
-        //             (formGroup[idForm + 1] as any).formAction.options.set(option.items.map(m => ({ id: m.id, description: m.description })));
-        //             (formGroup[idForm + 1] as any).formAction.formControl.setValue([option.items[0].id]);
+                onChange(idGroup, idForm, formControl, formName, formGroup, type, prevValue, allGroup) {
+                    let option = context.generateUniqueItems(10);
+                    (formGroup[idForm + 1] as any).formAction.options.set(option.items.map(m => ({ id: m.id, description: m.description })));
+                    (formGroup[idForm + 1] as any).formAction.formControl.setValue([option.items[0].id]);
 
-        //         },
+                },
 
-        //         onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, onOptionSetted, setDisabledOption, setInitialOption) {
-        //             let option = context.generateUniqueItems(10);
-        //             setInitialOption.set(option.items.map(m => ({ id: m.id, description: m.description })));
-        //             (formGroup[idForm] as any).formAction.formControl.setValue([option.items[0].id, option.items[1].id]);
-        //         },
-        //         opened(idGroup, idForm, formControl, formName, formGroup, allGroup) { },
-        //         closed(idGroup, idForm, formControl, formName, formGroup, allGroup) { },
+                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, onOptionSetted ) {
+                    let option = context.generateUniqueItems(10);
+                    (formGroup[idForm] as any).formAction.options.set(option.items.map(m => ({ id: m.id, description: m.description })));
+                    (formGroup[idForm] as any).formAction.formControl.setValue([option.items[0].id, option.items[1].id]);
+                },
+                opened(idGroup, idForm, formControl, formName, formGroup, allGroup) { },
+                closed(idGroup, idForm, formControl, formName, formGroup, allGroup) { },
 
-        //         remoteData: rxMethod<{ param: any, externalStore: WritableSignal<any> }>(pipe(
-        //             map(({ externalStore, param }) => externalStore.set(context.generateUniqueItems(100))),
-        //         )),
+                remoteData: rxMethod<{ param: any, externalStore: WritableSignal<any> }>(pipe(
+                    map(({ externalStore, param }) => externalStore.set(context.generateUniqueItems(100))),
+                )),
 
-        //         keyCombo: { keyDescription: ["description"], keyId: "id" },
-        //         autocomplete: true,
-        //         multiple: true,
-        //     }
-        // },
+                keyCombo: { keyDescription: ["description"], keyId: "id" },
+                autocomplete: true,
+                multiple: true,
+            }
+        },
 
 
         // {
@@ -162,12 +162,12 @@ export function createRegistry(object: any, context: any): TypeForm {
                 formName: "province",
                 onChange(idGroup, idForm, formCOntrol, formName, fg, typeControl, prevValue, allGroup) { },
 
-                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, onOptionSetted, setDisabledOption, setInitialOption) {
+                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, onOptionSetted  ) {
                     let option = context.generateUniqueItems(1000);
-                    setInitialOption.set(option.items.map(m => ({ id: m.id, description: m.description })));
+                    (formGroup[idForm] as any).formAction.options.set(option.items.map(m => ({ id: m.id, description: m.description })));
                     (formGroup[idForm] as any).formAction.formControl.setValue([option.items[0].id, option.items[2].id]);
 
-                    setDisabledOption.set([option.items[2].id]);
+                    (formGroup[idForm] as any).formAction.optionsDisabled.set([option.items[3].id]);
                 },
                 multiple: true,
                 autocomplete: true
@@ -176,23 +176,23 @@ export function createRegistry(object: any, context: any): TypeForm {
 
             }
         },
-        // {
-        //     formAction: {
+        {
+            formAction: {
 
-        //         title: "COMUNE",
-        //         type: TYPE_CONTROL_FORM.COMBO,
-        //         css: { class: ["col-12"] },
-        //         formControl: new FormControl(object?.townHall, []),
-        //         formName: "townHall",
-        //         multiple: false,
-        //         onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, onOptionSetted, setDisabledOption, setInitialOption) {
-        //             let option = context.generateUniqueItems(1000);
-        //             setInitialOption.set(option.items.map(m => ({ id: m.id, description: m.description })));
-        //             (formGroup[idForm] as any).formAction.formControl.setValue([option.items[0].id, option.items[1].id]);
-        //         },
-        //         autocomplete: true
-        //     }
-        // },
+                title: "COMUNE",
+                type: TYPE_CONTROL_FORM.COMBO,
+                css: { class: ["col-12"] },
+                formControl: new FormControl(object?.townHall, []),
+                formName: "townHall",
+                multiple: false,
+                onInitialize(idGroup, idForm, formControl, formName, formGroup, type, allGroup, paging, onOptionSetted  ) {
+                    let option = context.generateUniqueItems(1000);
+                    (formGroup[idForm] as any).formAction.options.set(option.items.map(m => ({ id: m.id, description: m.description })));
+                    (formGroup[idForm] as any).formAction.formControl.setValue([option.items[0].id, option.items[1].id]);
+                },
+                autocomplete: true
+            }
+        },
         // {
         //     formAction: {
 
