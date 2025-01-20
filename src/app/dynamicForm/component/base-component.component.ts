@@ -67,8 +67,10 @@ export class BaseComponent implements IBaseComponent {
   @Input() set question(config: Form) {
     this.control = { formAction: config };
     this.obsQuestions.next(this.control);
-    this.control.formAction.options = signal(null);
-    this.control.formAction.optionsDisabled = signal(null);
+    if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE || this.control.formAction.type == TYPE_CONTROL_FORM.COMBO) {
+      this.control.formAction.options = signal(null);
+      this.control.formAction.optionsDisabled = signal(null);
+    }
   };
 
 
@@ -137,7 +139,7 @@ export class BaseComponent implements IBaseComponent {
       autoUnsubscribe(this.obs),
       takeUntilDestroyed(this.destroyRef)).subscribe(({ allGroup, control }) => {
         // (control.formAction.type == TYPE_CONTROL_FORM.COMBO) ? this.onSetOptionWithSearch() : null;
-        // (control.formAction.type == TYPE_CONTROL_FORM.ARRAYSTRING) ? this.onSetOptionWithSearch() : null;
+         (control.formAction.type == TYPE_CONTROL_FORM.ARRAYSTRING) ? this.onSetOptionWithSearch() : null;
         // (control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) ? this.onSetOption() : null;
         control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE ? this.control.formAction.paging = this.initPagination : null;
         (control.formAction.formControl.disabled) ? control.formAction.formControl.disable() : control.formAction.formControl.enable();
