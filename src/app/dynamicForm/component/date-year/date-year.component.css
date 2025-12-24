@@ -19,3 +19,7 @@ label {
    font-style: italic;
    font-size: 0.6rem;
 }
+
+.mat-mdc-form-field-infix {
+   width: min-content !important;
+}

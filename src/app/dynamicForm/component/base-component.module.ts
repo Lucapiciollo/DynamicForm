@@ -1,3 +1,5 @@
+/** @format */
+
 // export * from './checkbox/checkbox.component';
 // export * from './combo/combo.component';
 // export * from './currency/currency.component';

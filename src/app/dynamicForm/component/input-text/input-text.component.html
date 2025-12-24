@@ -1,51 +1,35 @@
+<!-- @format -->
 
-
-
-@if(!control.formAction?.css?.hide) {
-  <ng-container  >
-  <div class="  d-flex w-100 ">
-
-      <mat-form-field  class="w-100 customMY" >
-            <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}
-              @if (control.formAction?.info) {
-                <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large">info_outline</mat-icon>
-              }            
+@if (!control.formAction?.css?.hide) {
+   <ng-container>
+      <div class="d-flex w-100">
+         <mat-form-field class="w-100 customMY">
+            <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled"
+               >{{ control.formAction.title }}
+               @if (control.formAction?.info) {
+                  <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-1">info_outline</mat-icon>
+               }
             </mat-label>
 
-            <input      [type]="control.formAction?.optionInputText?.password ? 'password':'text'"  #inputs [matTooltip]="control.formAction?.tipContent || null"
-                        [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
-                        matInput
-                        [formControl]="control.formAction?.formControl"
-                        [class.disabled]="control.formAction.formControl.disabled"
-                        [placeholder]="control.formAction.placeholder||''"
-                        [maxlength]="control.formAction?.optionInputText?.maxlength"
+            <input (change)="onChangeByMic($event)" [type]="control.formAction?.optionInputText?.password ? 'password' : 'text'" #inputs [matTooltip]="control.formAction?.tipContent || null" matInput [formControl]="control.formAction?.formControl" [class.disabled]="control.formAction.formControl.disabled" [placeholder]="control.formAction.placeholder || ''" [maxlength]="control.formAction?.optionInputText?.maxlength" />
+            <!-- <button matSuffix mat-icon-button aria-label="Clear" speech [e]="inputs" *ngIf="control.formAction?.optionInputText?.password !== 'password' && !control.formAction.formControl.disabled && !control?.formAction?.disableSpeech">
+               <mat-icon>mic</mat-icon>
+            </button> -->
 
-             >
-             @if(control.formAction?.optionInputText?.password!=='password' && !control.formAction.formControl.disabled  && !control?.formAction?.disableSpeech){
-              <button  matSuffix mat-icon-button aria-label="Clear" speech [e]="inputs"   >
-                <mat-icon >mic</mat-icon>
-              </button>
-             }
+            <i matSuffix class="fa fa-microphone text-center fs-20 me-3 iconsMic" speech [e]="inputs" *ngIf="control.formAction?.optionInputText?.password !== 'password' && !control.formAction.formControl.disabled && !control?.formAction?.disableSpeech"></i>
 
-            @if(control.formAction?.resetButton){
-              <button  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
-               <mat-icon>close</mat-icon>
-             </button>
-           }
+            @if (control.formAction?.resetButton) {
+               <button matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation(); control.formAction.formControl.reset()">
+                  <mat-icon>close</mat-icon>
+               </button>
+            }
+         </mat-form-field>
 
-          </mat-form-field>
-
-
-          <div #dynamicContainer class ="px-1"></div>
-
-        </div>
-        @for (error of getErrorFormControl( control.formAction?.formControl ) ; track error ) {
-          <mat-error>{{error}} </mat-error>
-       }
-       @if (control.formAction?.optionInputText?.maxlength || control?.formAction?.hint) {
-          <mat-hint   [attr.align]="'start'">{{inputs.value.length}}/{{control.formAction?.optionInputText?.maxlength}}</mat-hint>
-
-       }
-
- </ng-container>
+         <div #dynamicContainer class=""></div>
+      </div>
+      @for (error of getErrorFormControl(control.formAction?.formControl); track error) {
+         <mat-error>{{ error }} </mat-error>
+      }
+      <mat-hint *ngIf="control.formAction?.optionInputText?.maxlength || control?.formAction?.hint" [attr.align]="'start'">{{ inputs.value.length }}/{{ control.formAction?.optionInputText?.maxlength }}</mat-hint>
+   </ng-container>
 }

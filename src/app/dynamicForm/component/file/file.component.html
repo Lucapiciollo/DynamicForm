@@ -1,38 +1,33 @@
-@if(!control.formAction?.css?.hide) {
-  <ng-container  >
-        <div class="  d-flex w-100 ">
+<!-- @format -->
 
-                <mat-form-field class="w-100 customMY" >
-                        <mat-label class="form-label"   [class.disabled]="control.formAction.formControl.disabled">{{control.formAction.title}}   @if (getRequired()) { <span  >*</span>}
-                          
-                            
-                          @if (control.formAction?.info) {
-                            <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-2" style="font-size:large">info_outline</mat-icon>
-                          }                        
-                        </mat-label>
-                        <div camscan (onCaptureCam)="handleFileInputChange($any($event))"></div>
+@if (!control.formAction?.css?.hide) {
+   <ng-container>
+      <div class="d-flex w-100">
+         <mat-form-field class="w-100 customMY">
+            <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled"
+               >{{ control.formAction.title }} <span *ngIf="getRequired()">*</span>
+               @if (control.formAction?.info) {
+                  <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-1">info_outline</mat-icon>
+               }
+            </mat-label>
+            <div camscan (onCaptureCam)="handleFileInputChange($any($event))"></div>
 
-                        <input type="text" class="pointer" [matTooltip]="control.formAction?.tipContent || null"
-                                [style.color]="control.formAction?.css?.font?.color ? control.formAction?.css?.font?.color :'black'"
-                                readonly
-                                matInput
-                                [formControl]="display"
-                                [class.disabled]="control.formAction.formControl.disabled"
-                                (click)="f_input.click()"
-                        />
-                        <input type="file" multiple hidden #f_input (change)="handleFileInputChange($any(f_input).files )" />
+            <input #filename type="text" class="pointer" [matTooltip]="control.formAction?.tipContent || null" readonly matInput [disabled]="control.formAction.formControl.disabled" [class.disabled]="control.formAction.formControl.disabled" (click)="control.formAction.formControl.disabled == false ? f_input.click() : null" />
+            <input type="file" multiple hidden #f_input (change)="handleFileInputChange($any(f_input).files); filename.value = $any(f_input).files?.length ? $any(f_input).files[0].name : ''" />
 
-                        @if(control.formAction?.resetButton){
-                          <button  matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation();control.formAction.formControl.reset()" >
-                           <mat-icon>close</mat-icon>
-                         </button>
-                       }
-                      </mat-form-field>
-                      <div #dynamicContainer class ="px-1"></div>
-                    </div>
-                    @for (error of getErrorFormControl( control.formAction?.formControl ) ; track error ) {
-                      <mat-error>{{error}} </mat-error>
-                   }
-
-</ng-container>
+            @if (control.formAction?.resetButton && control.formAction.formControl.value != null) {
+               <button matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation(); control.formAction.formControl.reset()">
+                  <mat-icon>close</mat-icon>
+               </button>
+            }
+         </mat-form-field>
+         <div #dynamicContainer class=""></div>
+      </div>
+      @for (error of getErrorFormControl(display); track error) {
+         <mat-error>{{ error }} </mat-error>
+      }
+      @if (control?.formAction?.hint) {
+         <mat-hint>{{ control.formAction.hint }}</mat-hint>
+      }
+   </ng-container>
 }

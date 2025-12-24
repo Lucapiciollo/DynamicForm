@@ -6,12 +6,13 @@
          <mat-form-field class="w-100 customMY">
             <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled"
                >{{ control.formAction.title }}
-
                @if (control.formAction?.info) {
                   <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-1">info_outline</mat-icon>
                }
             </mat-label>
-            <input #inp [matTooltip]="control.formAction?.tipContent || null" type="number" matInput [formControl]="control.formAction?.formControl" [class.disabled]="control.formAction.formControl.disabled" [placeholder]="control.formAction.placeholder || ''" />
+            <input [readonly]="control.formAction.readonly" matInput [matDatepicker]="datepicker" [matTooltip]="control.formAction?.tipContent || null" #datainput [min]="control.formAction?.optionDate?.min" [max]="control.formAction?.optionDate?.max" [formControl]="control.formAction?.formControl" [class.disabled]="control.formAction.formControl.disabled" style="width: revert-layer !important" />
+            <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+            <mat-datepicker #datepicker panelClass="jp-year-picker" startView="multi-year" (closed)="_takeFocusAway(datepicker)" (yearSelected)="_yearSelectedHandler($event, datepicker)"></mat-datepicker>
             @if (control.formAction?.resetButton && control.formAction.formControl.value != null) {
                <button matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation(); control.formAction.formControl.reset()">
                   <mat-icon>close</mat-icon>
