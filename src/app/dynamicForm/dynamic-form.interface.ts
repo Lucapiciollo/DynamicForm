@@ -1,9 +1,9 @@
 /** @format */
 
-import {ComponentRef, Injector, Signal, WritableSignal} from '@angular/core';
-import {FormArray, FormControl, FormGroup} from '@angular/forms';
-import {FormComponentTemplate} from './component/FormComponentTemplate';
-import {Observable} from 'rxjs';
+import { ComponentRef, Injector, Signal, WritableSignal } from '@angular/core';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { FormComponentTemplate } from './component/FormComponentTemplate';
+import { Observable } from 'rxjs';
 
 /*********************************************************************************************************************************** */
 
@@ -13,7 +13,7 @@ export type RxMethod<Input> = ((input: Input | Signal<Input> | Observable<Input>
 /*********************************************************************************************************************************** */
 
 export type Utility = {
-   getFormByName?: (formName: string, parse: (response: any) => any) => void;
+   getFormByName?: (formName: string, parse: (response: any,form:any) => any) => void;
    getActionByName?: (actionName: string, parse: (form: FormAction) => any) => void;
    setDefaultOptions?: (formName: string, parse: (response: any) => Partial<TypeComboOption | {items: Array<any>; totalCount: number}>) => any;
    getSelectedOptions?: (formName: string, parse: (option: Signal<TypeComboOption>) => any) => TypeComboOption;

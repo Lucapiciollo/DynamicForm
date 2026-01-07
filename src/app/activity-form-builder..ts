@@ -174,7 +174,7 @@ export function createRegistry(object: any, context: any): TypeForm {
 
           (formGroup[idForm] as any).formAction.optionsDisabled.set([option.items[3].id]);
 
-          utils.getFormByName("townHall", (form) => {
+          utils.getFormByName("townHall", (form,f) => {
 
 
             form.formControl.setValue(form.options()[0].id)

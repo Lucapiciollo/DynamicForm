@@ -7,17 +7,17 @@
  * @desc [description]
  */
 
-import {Component, DestroyRef, ElementRef, EventEmitter, Injector, Input, Output, Signal, ViewChild, ViewContainerRef, WritableSignal, effect, inject, signal} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {FormControl, FormGroup} from '@angular/forms';
-import {ReplaySubject, Subscriber, Subscription, combineLatest, pairwise, startWith} from 'rxjs';
-import {IBaseComponent} from './base-component-interface';
-import {GetErrorForm, GetErrorFormControl, GetErrorFormControlFromObj} from './error-message-utils';
-import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
-import {FormComponentTemplate} from './FormComponentTemplate';
-import {Form, FormAction, TYPE_CONTROL_FORM, TypeComboOption, Utility} from '../dynamic-form.interface';
-import {autoUnsubscribe} from '../custom.operator';
-import {COMBO_PAING_INIT, MAX_ELEMENT_COMBO_SHOW} from '../dynamic-form.module';
+import { Component, DestroyRef, ElementRef, EventEmitter, Injector, Input, Output, Signal, ViewChild, ViewContainerRef, WritableSignal, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl, FormGroup } from '@angular/forms';
+import { ReplaySubject, Subscriber, Subscription, combineLatest, pairwise, startWith } from 'rxjs';
+import { IBaseComponent } from './base-component-interface';
+import { GetErrorForm, GetErrorFormControl, GetErrorFormControlFromObj } from './error-message-utils';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { FormComponentTemplate } from './FormComponentTemplate';
+import { Form, FormAction, TYPE_CONTROL_FORM, TypeComboOption, Utility } from '../dynamic-form.interface';
+import { autoUnsubscribe } from '../custom.operator';
+import { COMBO_PAING_INIT, MAX_ELEMENT_COMBO_SHOW } from '../dynamic-form.module';
 
 @Component({
    selector: '',
@@ -251,13 +251,13 @@ export class BaseComponent implements IBaseComponent {
    }
    /************************************************************************************************************************************************************************ */
 
-   private readonly getActionByName = (actionName: string, parse: (form: FormAction) => any): void => {
+   private readonly getActionByName = (actionName: string, parse: (form: FormAction ) => any): void => {
       const forms: Array<any> = JSON.findByKeyAndValue(this._allGroup, 'label', `${actionName}`, ['formControl', 'instance']) ?? [];
-      parse(forms?.length > 1 ? forms.map(m => ({name: m.object.formName, value: m.object})) : forms[0]?.object || null);
+      parse(forms?.length > 1 ? forms.map(m => ({name: m.object.formName, value: m.object})) : forms[0]?.object || null)
    };
-   private readonly getFormByName = (formName: string, parse: (form: FormAction) => any): void => {
+   private readonly getFormByName = (formName: string, parse: (form: FormAction,formObject:any) => any): void => {
       const forms: Array<any> = JSON.findByKeyAndValue(this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
-      parse(forms?.length > 1 ? forms.map(m => ({name: m.object.formName, value: m.object})) : forms[0]?.object || null);
+      parse(forms?.length > 1 ? forms.map(m => ({name: m.object.formName, value: m.object})) : forms[0]?.object || null,forms);
    };
 
    private readonly setDefaultOptions = (formName: string, parse: (response: any) => Partial<TypeComboOption | {items: Array<any>; totalCount: number}>): any => {
