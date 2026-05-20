@@ -1,0 +1,64 @@
+/** @format */
+@use '../../styles/df-field-base' as base;
+@use '../../styles/tokens' as *;
+@include base.df-field-base();
+
+:host {
+  .df-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $df-space-1 $df-space-2;
+    margin-top: $df-space-2;
+  }
+
+  .df-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: $df-space-1;
+    padding: 2px $df-space-2;
+    background: $df-color-primary-soft;
+    border: 1px solid rgba(79, 70, 229, 0.18);
+    border-radius: 4px;
+    font-family: $df-font-family;
+    font-size: 11px;
+    font-weight: 600;
+    color: $df-color-primary;
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+    transition: background $df-transition;
+
+    &:hover {
+      background: rgba(79, 70, 229, 0.15);
+    }
+
+    .df-tag-remove {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      border-radius: 2px;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      color: $df-color-primary;
+      font-size: 13px;
+      line-height: 1;
+      padding: 0;
+      transition: background $df-transition;
+
+      &:hover {
+        background: rgba(79, 70, 229, 0.22);
+      }
+    }
+  }
+
+  .df-add-row {
+    display: flex;
+    align-items: center;
+    gap: $df-space-2;
+    margin-top: $df-space-2;
+
+    mat-form-field { flex: 1 1 0; }
+  }
+}

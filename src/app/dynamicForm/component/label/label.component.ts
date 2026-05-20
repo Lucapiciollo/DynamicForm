@@ -11,9 +11,10 @@ import {Component, ElementRef, Injector} from '@angular/core';
 import {BaseComponent} from '../base-component.component';
 
 @Component({
-   selector: 'app-label',
+   
+  standalone: false,selector: 'app-label',
    templateUrl: './label.component.html',
-   styleUrls: ['../../dynamic-form.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss', './label.component.scss'],
 })
 export class LabelComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */
@@ -26,3 +27,4 @@ export class LabelComponent extends BaseComponent {
    }
    /************************************************************************************************************************************************************************ */
 }
+

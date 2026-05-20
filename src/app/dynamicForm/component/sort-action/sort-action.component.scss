@@ -1,0 +1,51 @@
+/** @format */
+@use '../../styles/df-field-base' as base;
+@use '../../styles/tokens' as *;
+@include base.df-field-base();
+
+:host {
+  .df-sort-row {
+    display: flex;
+    align-items: center;
+    gap: $df-space-2;
+    flex-wrap: wrap;
+  }
+
+  .df-sort-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: $df-radius-xs;
+    border: 1px solid $df-color-border;
+    background: $df-color-surface;
+    color: $df-color-muted;
+    cursor: pointer;
+    transition:
+      background $df-transition,
+      color $df-transition,
+      border-color $df-transition,
+      box-shadow $df-transition;
+
+    mat-icon,
+    .material-icons {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    &:hover {
+      background: $df-color-primary-soft;
+      border-color: $df-color-primary;
+      color: $df-color-primary;
+    }
+
+    &:active,
+    &.active {
+      background: $df-color-primary;
+      border-color: $df-color-primary;
+      color: #fff;
+      box-shadow: $df-shadow-focus;
+    }
+  }
+}

@@ -12,9 +12,10 @@ import {Component, ElementRef, Injector} from '@angular/core';
 import {BaseComponent} from '../base-component.component';
 
 @Component({
-   selector: 'app-date-time',
+   
+  standalone: false,selector: 'app-date-time',
    templateUrl: './date-time.component.html',
-   styleUrls: ['../../dynamic-form.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss', './date-time.component.scss'],
    providers: [DatePipe],
 })
 export class DateTimeComponent extends BaseComponent {
@@ -28,3 +29,4 @@ export class DateTimeComponent extends BaseComponent {
    }
    /************************************************************************************************************************************************************************ */
 }
+

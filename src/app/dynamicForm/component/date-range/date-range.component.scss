@@ -1,0 +1,26 @@
+/** @format */
+@use '../../styles/df-field-base' as base;
+@use '../../styles/tokens' as *;
+@include base.df-field-base();
+
+// Date-range: two pickers side by side with a visual connector
+:host {
+  .df-range-row {
+    display: flex;
+    align-items: center;
+    gap: $df-space-3;
+
+    mat-form-field {
+      flex: 1 1 0;
+    }
+
+    .df-range-separator {
+      flex: 0 0 auto;
+      font-size: 18px;
+      color: $df-color-muted;
+      line-height: 1;
+      margin-top: $df-space-2;
+      user-select: none;
+    }
+  }
+}

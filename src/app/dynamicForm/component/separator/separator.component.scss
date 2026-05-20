@@ -1,0 +1,46 @@
+/** @format */
+@use '../../styles/tokens' as *;
+
+:host {
+  display: block;
+  font-family: $df-font-family;
+  padding: $df-space-4 0;
+}
+
+.df-separator {
+  display: flex;
+  align-items: center;
+  gap: $df-space-3;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1 1 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      $df-color-border-strong 25%,
+      $df-color-border-strong 75%,
+      transparent
+    );
+  }
+
+  .df-separator-label {
+    flex: 0 0 auto;
+    font-family: $df-font-family;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: $df-color-muted;
+    white-space: nowrap;
+    padding: 0 $df-space-2;
+  }
+}
+
+hr.df-separator-line {
+  border: none;
+  border-top: 1px solid $df-color-border;
+  margin: 0;
+}

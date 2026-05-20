@@ -1,0 +1,29 @@
+/** @format */
+@use '../../styles/df-field-base' as base;
+@use '../../styles/tokens' as *;
+@include base.df-field-base();
+
+// Checkbox: align checkbox + label text in a clean row
+:host {
+  .df-checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: $df-space-2;
+  }
+
+  // Override label to look like normal paragraph text when inside a checkbox row
+  .df-checkbox-label {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    color: $df-color-text;
+    cursor: pointer;
+    line-height: 1.5;
+    margin: 0;
+
+    &:hover {
+      color: $df-color-primary;
+    }
+  }
+}

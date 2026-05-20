@@ -36,9 +36,10 @@ import { Store } from './store';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'app-combo',
+  
+  standalone: false,selector: 'app-combo',
   templateUrl: './combo.component.html',
-  styleUrls: ['../../dynamic-form.component.scss', './combo.component.css'],
+  styleUrls: ['../../dynamic-form.component.scss', './combo.component.scss'],
   providers: [Store],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -442,3 +443,4 @@ export class ComboComponent extends BaseComponent implements AfterViewInit {
     this.inputSubject.next(value);
   }
 }
+

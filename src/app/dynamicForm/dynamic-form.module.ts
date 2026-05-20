@@ -3,7 +3,6 @@
 import {CommonModule} from '@angular/common';
 import {InjectionToken, ModuleWithProviders, NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {Camera} from '@ionic-native/camera/ngx';
 import {InputTextComponent} from './component/base-component.module';
 import {ArrayStringComponent} from './component/arraystring/arraystring.component';
 import {CheckboxComponent} from './component/checkbox/checkbox.component';
@@ -55,7 +54,6 @@ const minYearCalendar = () => {
 
 @NgModule({
    providers: [
-      Camera,
       {provide: DATE_PIPE, useValue: {dateFormat: 'yyyy-MM-dd'}},
       {
          provide: DATE_PIPE_TIME,

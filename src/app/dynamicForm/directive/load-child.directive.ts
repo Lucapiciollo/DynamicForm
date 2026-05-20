@@ -10,8 +10,10 @@
 import {Directive, ViewContainerRef} from '@angular/core';
 
 @Directive({
-   selector: '[loadChild]',
+   
+  standalone: false,selector: '[loadChild]',
 })
 export class LoadChildDirective {
    constructor(public viewContainerRef: ViewContainerRef) {}
 }
+

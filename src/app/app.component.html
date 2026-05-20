@@ -1,11 +1,16 @@
 <div class="playground-page">
    <header class="playground-header">
       <div>
-         <h1>DynamicForm Playground ultra safe</h1>
-         <p>Versione minima stabile: gruppi annidati, sottogruppi e actions, senza combo/date/file/remote scroll.</p>
+         <h1>DynamicForm Playground step 07</h1>
+         <p>
+            Test completo: configurazione Angular runtime e configurazione JSON puro, con gruppi annidati, actions,
+            date, combo, array, file, date-range e combo paginata con ricerca + scroll.
+         </p>
       </div>
 
       <div class="playground-actions">
+         <button type="button" [class.active]="mode === 'angular'" (click)="setMode('angular')">Angular config</button>
+         <button type="button" [class.active]="mode === 'json'" (click)="setMode('json')">JSON config</button>
          <button type="button" (click)="patchDemoValue()">Patch demo</button>
          <button type="button" (click)="submit()">Submit</button>
          <button type="button" class="secondary" (click)="reset()">Reset</button>
@@ -13,14 +18,29 @@
    </header>
 
    <section class="playground-card">
-      <app-dynamic-form
-         [questions]="questions"
-         (onFormCreate)="onFormCreate($event)"
-         (onQuestionsCreate)="onQuestionsCreate($event)">
-      </app-dynamic-form>
+      <ng-container [ngSwitch]="mode">
+         <app-dynamic-form
+            *ngSwitchCase="'angular'"
+            [config]="angularConfig"
+            (onFormCreate)="onFormCreate($event)"
+            (onQuestionsCreate)="onQuestionsCreate($event)">
+         </app-dynamic-form>
+
+         <app-dynamic-form
+            *ngSwitchCase="'json'"
+            [json]="jsonSchema"
+            (onFormCreate)="onFormCreate($event)"
+            (onQuestionsCreate)="onQuestionsCreate($event)">
+         </app-dynamic-form>
+      </ng-container>
    </section>
 
    <section class="value-grid">
+      <div class="value-card">
+         <h2>Mode</h2>
+         <pre>{{ mode }}</pre>
+      </div>
+
       <div class="value-card">
          <h2>Value</h2>
          <pre>{{ formValue | json }}</pre>

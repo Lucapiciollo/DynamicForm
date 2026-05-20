@@ -11,9 +11,10 @@ import {Component, ElementRef, Injector} from '@angular/core';
 import {BaseComponent} from '../base-component.component';
 
 @Component({
-   selector: 'app-currency',
+   
+  standalone: false,selector: 'app-currency',
    templateUrl: './currency.component.html',
-   styleUrls: ['../../dynamic-form.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss', './currency.component.scss'],
 })
 export class CurrencyComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */
@@ -25,3 +26,4 @@ export class CurrencyComponent extends BaseComponent {
    }
    /************************************************************************************************************************************************************************ */
 }
+

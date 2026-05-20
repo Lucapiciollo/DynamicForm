@@ -11,9 +11,10 @@ import {Component, ElementRef, Injector} from '@angular/core';
 import {BaseComponent} from '../base-component.component';
 
 @Component({
-   selector: 'app-textarea',
+   
+  standalone: false,selector: 'app-textarea',
    templateUrl: './textarea.component.html',
-   styleUrls: ['../../dynamic-form.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss', './textarea.component.scss'],
 })
 export class TextareaComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */
@@ -26,3 +27,4 @@ export class TextareaComponent extends BaseComponent {
    }
    /************************************************************************************************************************************************************************ */
 }
+

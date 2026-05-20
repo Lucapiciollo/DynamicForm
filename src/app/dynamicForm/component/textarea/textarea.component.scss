@@ -1,0 +1,15 @@
+/** @format */
+@use '../../styles/df-field-base' as base;
+@use '../../styles/tokens' as *;
+@include base.df-field-base();
+
+:host {
+  // Let textarea grow vertically; cap at 6 rows
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+    max-height: 240px;
+    line-height: 1.6;
+    font-family: $df-font-family;
+  }
+}

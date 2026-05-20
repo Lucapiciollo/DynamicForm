@@ -1,0 +1,57 @@
+/** @format */
+// Shared mixin — Hollywood compact style
+// Usage: @use '../../styles/df-field-base' as base; @include base.df-field-base();
+@use './tokens' as *;
+
+@mixin df-field-base {
+  :host {
+    display: block;
+    font-family: $df-font-family;
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  // ── Field label: luxury uppercase, razor-thin
+  label {
+    display: block;
+    font-family: $df-font-family;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: $df-color-muted;
+    margin-bottom: $df-space-1;
+    user-select: none;
+    transition: color $df-transition;
+  }
+
+  // ── Hint / helper text
+  .bottomLabel {
+    display: block;
+    font-family: $df-font-family;
+    font-size: 10px;
+    color: $df-color-muted;
+    margin-top: $df-space-1;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+  }
+
+  // ── Validation error — accent red bar on the left
+  .mat-mdc-error,
+  .mat-error {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: $df-font-family;
+    font-size: 10px;
+    font-weight: 600;
+    color: $df-color-danger !important;
+    letter-spacing: 0.02em;
+    margin-top: $df-space-1;
+    padding-left: $df-space-2;
+    border-left: 2px solid $df-color-danger;
+    line-height: 1.4;
+  }
+}

@@ -13,9 +13,10 @@ import {BaseComponent} from '../base-component.component';
 import {AbstractControl, FormControl, ValidationErrors} from '@angular/forms';
 
 @Component({
-   selector: 'app-file',
+   
+  standalone: false,selector: 'app-file',
    templateUrl: './file.component.html',
-   styleUrls: ['../../dynamic-form.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss', './file.component.scss'],
 })
 export class FileComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */
@@ -83,3 +84,4 @@ export class FileComponent extends BaseComponent {
       return validators.reduce((errors, validator) => ({...errors, ...validator(control)}), null);
    }
 }
+

@@ -1,0 +1,17 @@
+/** @format */
+@use '../../styles/df-field-base' as base;
+@use '../../styles/tokens' as *;
+@include base.df-field-base();
+
+// date-time: date and time pickers in a responsive row
+:host {
+  .df-datetime-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $df-space-3;
+
+    mat-form-field {
+      flex: 1 1 140px;
+    }
+  }
+}

@@ -1,0 +1,11 @@
+/** @format */
+@use '../../styles/df-field-base' as base;
+@use '../../styles/tokens' as *;
+@include base.df-field-base();
+
+// Year picker: constrain width to content
+:host {
+  .mat-mdc-form-field-infix {
+    width: min-content !important;
+  }
+}

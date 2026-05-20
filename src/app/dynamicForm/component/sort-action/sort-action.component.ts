@@ -6,9 +6,10 @@ import {BaseComponent} from '../base-component.component';
 type SortDirection = 'ASC' | 'DESC';
 
 @Component({
-   selector: 'app-sort-action',
+   
+  standalone: false,selector: 'app-sort-action',
    templateUrl: './sort-action.component.html',
-   styleUrls: ['../../dynamic-form.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss', './sort-action.component.scss'],
 })
 export class SortActionComponent extends BaseComponent {
    constructor(
@@ -35,3 +36,4 @@ export class SortActionComponent extends BaseComponent {
       this.control?.formAction?.toggleAction?.(nextValue);
    }
 }
+

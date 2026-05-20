@@ -20,7 +20,8 @@ import { autoUnsubscribe } from '../custom.operator';
 import { COMBO_PAING_INIT, MAX_ELEMENT_COMBO_SHOW } from '../dynamic-form.module';
 
 @Component({
-   selector: '',
+   
+  standalone: false,selector: '',
    template: ``,
 })
 export class BaseComponent implements IBaseComponent {
@@ -289,3 +290,4 @@ export class BaseComponent implements IBaseComponent {
       return parse(parsedForm?.length > 1 ? parsedForm.map(m => m.instance?.signalStoreBase?.getSelectedOptionsFromTotal) : parsedForm.instance?.signalStoreBase.getSelectedOptionsFromTotal || null);
    };
 }
+

@@ -1,0 +1,29 @@
+/** @format */
+@use '../../styles/df-field-base' as base;
+@use '../../styles/tokens' as *;
+@include base.df-field-base();
+
+// Radio buttons: clean horizontal/vertical group
+:host {
+  mat-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $df-space-2 $df-space-4;
+  }
+
+  mat-radio-button {
+    font-family: $df-font-family;
+    font-size: 13px;
+    transition: color $df-transition;
+
+    &:hover {
+      color: $df-color-primary;
+    }
+  }
+
+  .df-radio-option-label {
+    font-size: 13px;
+    font-weight: 400;
+    color: $df-color-text;
+  }
+}

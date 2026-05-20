@@ -1,0 +1,65 @@
+/** @format */
+@use '../../styles/df-field-base' as base;
+@use '../../styles/tokens' as *;
+@include base.df-field-base();
+
+:host {
+  .df-file-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $df-space-2;
+    border: 1px dashed $df-color-border-strong;
+    border-radius: $df-radius-md;
+    padding: $df-space-5 $df-space-4;
+    background: $df-color-surface-soft;
+    cursor: pointer;
+    transition: border-color $df-transition, background $df-transition;
+    text-align: center;
+
+    &:hover,
+    &.drag-over {
+      border-color: $df-color-primary;
+      background: $df-color-primary-soft;
+    }
+
+    .df-file-icon {
+      font-size: 26px;
+      color: $df-color-muted;
+      line-height: 1;
+    }
+
+    .df-file-hint {
+      font-family: $df-font-family;
+      font-size: 11px;
+      color: $df-color-muted;
+      line-height: 1.5;
+      letter-spacing: 0.01em;
+
+      strong {
+        color: $df-color-primary;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .df-file-name {
+    display: inline-flex;
+    align-items: center;
+    gap: $df-space-2;
+    margin-top: $df-space-2;
+    padding: 2px $df-space-3;
+    background: $df-color-primary-soft;
+    border-radius: 99px;
+    font-family: $df-font-family;
+    font-size: 11px;
+    font-weight: 600;
+    color: $df-color-primary;
+    letter-spacing: 0.02em;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

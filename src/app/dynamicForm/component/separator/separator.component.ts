@@ -11,9 +11,10 @@ import {Component, ElementRef, Injector} from '@angular/core';
 import {BaseComponent} from '../base-component.component';
 
 @Component({
-   selector: 'app-separator',
+   
+  standalone: false,selector: 'app-separator',
    templateUrl: './separator.component.html',
-   styleUrls: ['../../dynamic-form.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss', './separator.component.scss'],
 })
 export class SeparatorComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */
@@ -28,3 +29,4 @@ export class SeparatorComponent extends BaseComponent {
    }
    /************************************************************************************************************************************************************************ */
 }
+

@@ -8,7 +8,8 @@ import {DynamicFormJsonSchema} from './models/dynamic-form-json-schema.model';
 import {DynamicFormJsonMapperService} from './services/dynamic-form-json-mapper.service';
 
 @Component({
-   styleUrls: ['./dynamic-form.component.scss'],
+   
+  standalone: false,styleUrls: ['./dynamic-form.component.scss'],
    selector: 'app-dynamic-form',
    templateUrl: './dynamic-form.component.html',
    providers: [StepperService],
@@ -74,3 +75,4 @@ export class DynamicFormComponent {
       this.compile();
    }
 }
+

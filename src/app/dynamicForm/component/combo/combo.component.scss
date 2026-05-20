@@ -1,0 +1,54 @@
+/** @format */
+@use '../../styles/df-field-base' as base;
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+@include base.df-field-base();
+
+:host {
+  .search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: $df-color-surface;
+    border: 1px solid $df-color-border;
+    border-radius: $df-radius-sm;
+    overflow: hidden;
+    transition: border-color $df-transition, box-shadow $df-transition;
+
+    &:focus-within {
+      border-color: $df-color-primary;
+      box-shadow: $df-shadow-focus;
+    }
+  }
+
+  .search-icon {
+    position: absolute;
+    left: $df-space-3;
+    color: $df-color-muted;
+    font-size: 15px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: $df-space-2 $df-space-3 $df-space-2 calc(#{$df-space-3} + 22px);
+    border: 0;
+    outline: none;
+    background: transparent;
+    font-family: $df-font-family;
+    font-size: 13px;
+    color: $df-color-text;
+    min-height: 36px;
+    letter-spacing: 0.01em;
+
+    &::placeholder {
+      color: $df-color-muted;
+    }
+  }
+
+  .autocomplete-search {
+    min-height: 36px !important;
+  }
+}

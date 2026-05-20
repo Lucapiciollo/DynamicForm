@@ -1,36 +1,44 @@
-// DynamicForm design tokens
-// Puoi sovrascrivere questi token nel progetto host prima dell'import del tema.
+// ─── DynamicForm Hollywood Design Tokens ───────────────────────────────────
+// Premium · Compact · Cinematic
+// Override before importing to customise the theme.
 
 $df-prefix: 'df' !default;
 
-$df-font-family: Inter, Roboto, 'Helvetica Neue', Arial, sans-serif !default;
-$df-radius-xs: 8px !default;
-$df-radius-sm: 10px !default;
-$df-radius-md: 14px !default;
-$df-radius-lg: 18px !default;
+// Typography — Inter for precision, Roboto as fallback
+$df-font-family: 'Inter', Roboto, system-ui, -apple-system, sans-serif !default;
 
-$df-space-1: 4px !default;
-$df-space-2: 8px !default;
-$df-space-3: 12px !default;
-$df-space-4: 16px !default;
-$df-space-5: 20px !default;
+// ── Radius: sharp & modern
+$df-radius-xs: 3px  !default;
+$df-radius-sm: 5px  !default;
+$df-radius-md: 8px  !default;
+$df-radius-lg: 11px !default;
+
+// ── Spacing: compact — every step is tight
+$df-space-1: 2px  !default;
+$df-space-2: 5px  !default;
+$df-space-3: 9px  !default;
+$df-space-4: 13px !default;
+$df-space-5: 18px !default;
 $df-space-6: 24px !default;
 
-$df-color-bg: #f7f8fb !default;
-$df-color-surface: #ffffff !default;
-$df-color-surface-soft: #f9fafb !default;
-$df-color-border: #e5e7eb !default;
-$df-color-border-strong: #cbd5e1 !default;
-$df-color-text: #111827 !default;
-$df-color-muted: #6b7280 !default;
-$df-color-primary: #2563eb !default;
-$df-color-primary-soft: rgba(37, 99, 235, 0.10) !default;
-$df-color-danger: #dc2626 !default;
-$df-color-success: #16a34a !default;
-$df-color-warning: #f59e0b !default;
+// ── Colour palette — deep ink + electric indigo accent
+$df-color-bg:           #f4f4f8 !default;
+$df-color-surface:      #ffffff !default;
+$df-color-surface-soft: #f8f8fb !default;
+$df-color-border:       #e2e2ea !default;
+$df-color-border-strong:#c4c4d4 !default;
+$df-color-text:         #0e0e1a !default;   // midnight ink
+$df-color-muted:        #7878a0 !default;
+$df-color-primary:      #4f46e5 !default;   // electric indigo
+$df-color-primary-soft: rgba(79, 70, 229, 0.09) !default;
+$df-color-danger:       #e02d3c !default;
+$df-color-success:      #10a05a !default;
+$df-color-warning:      #d97706 !default;
 
-$df-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08) !default;
-$df-shadow-md: 0 10px 30px rgba(15, 23, 42, 0.10) !default;
-$df-shadow-focus: 0 0 0 4px rgba(37, 99, 235, 0.14) !default;
+// ── Shadows: layered, cinematic depth
+$df-shadow-sm:    0 1px 2px rgba(10, 10, 30, 0.08), 0 0 0 1px rgba(10, 10, 30, 0.04) !default;
+$df-shadow-md:    0 6px 24px rgba(10, 10, 30, 0.13), 0 1px 4px rgba(10, 10, 30, 0.08) !default;
+$df-shadow-focus: 0 0 0 3px rgba(79, 70, 229, 0.22) !default;
 
-$df-transition: 160ms ease !default;
+// ── Motion: snappy cubic-bezier
+$df-transition: 110ms cubic-bezier(0.4, 0, 0.2, 1) !default;

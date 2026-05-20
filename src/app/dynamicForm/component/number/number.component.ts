@@ -11,9 +11,10 @@ import {Component, ElementRef, Injector} from '@angular/core';
 import {BaseComponent} from '../base-component.component';
 
 @Component({
-   selector: 'app-number',
+   
+  standalone: false,selector: 'app-number',
    templateUrl: './number.component.html',
-   styleUrls: ['../../dynamic-form.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss', './number.component.scss'],
 })
 export class NumberComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */
@@ -28,3 +29,4 @@ export class NumberComponent extends BaseComponent {
    }
    /************************************************************************************************************************************************************************ */
 }
+

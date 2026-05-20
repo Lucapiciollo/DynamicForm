@@ -11,9 +11,10 @@ import {Component, ComponentRef, ElementRef, Injector, viewChild, ViewChild, Vie
 import {BaseComponent} from '../base-component.component';
 
 @Component({
-   selector: 'app-input-text',
+   
+  standalone: false,selector: 'app-input-text',
    templateUrl: './input-text.component.html',
-   styleUrls: ['../../dynamic-form.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss', './input-text.component.scss'],
 })
 export class InputTextComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */
@@ -37,3 +38,4 @@ export class InputTextComponent extends BaseComponent {
       }
    }
 }
+

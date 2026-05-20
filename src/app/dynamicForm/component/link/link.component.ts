@@ -11,9 +11,10 @@ import {Component, ElementRef, Injector} from '@angular/core';
 import {BaseComponent} from '../base-component.component';
 
 @Component({
-   selector: 'app-link',
+   
+  standalone: false,selector: 'app-link',
    templateUrl: './link.component.html',
-   styleUrls: ['../../dynamic-form.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss', './link.component.scss'],
 })
 export class LinkComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */
@@ -37,3 +38,4 @@ export class LinkComponent extends BaseComponent {
       }, 1);
    }
 }
+
