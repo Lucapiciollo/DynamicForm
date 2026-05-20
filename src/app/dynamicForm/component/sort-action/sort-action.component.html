@@ -1,7 +1,20 @@
 <!-- @format -->
 
 <ng-container *ngIf="!control.formAction?.css?.hide">
-   <div class="row customMY w-auto p-0 text-end" *ngIf="{sortupper: 'ASC'} as view" [matTooltip]="control.formAction?.tipContent || null">
-      <img [ngClass]="control.formAction?.css?.iconCss" (click)="view.sortupper === 'ASC' ? (view.sortupper = 'DESC') : (view.sortupper = 'ASC'); control.formAction?.formControl.setValue(view.sortupper); control.formAction?.toggleAction ? control.formAction?.toggleAction(view.sortupper) : null" [src]="view.sortupper === 'ASC' ? control.formAction?.css?.toggleIcons[0] : control.formAction?.css?.toggleIcons[1]" [formControl]="control.formAction?.formControl" [class.disabled]="control.formAction.formControl.disabled" />
+   <div class="df-sort-action row customMY w-auto p-0 text-end" [matTooltip]="control.formAction?.tipContent || null">
+      <button
+         mat-icon-button
+         type="button"
+         [disabled]="control.formAction?.formControl?.disabled"
+         [class.disabled]="control.formAction?.formControl?.disabled"
+         (click)="toggleSort()">
+         <ng-container *ngIf="getToggleIcon() as icon; else defaultSortIcon">
+            <img [ngClass]="control.formAction?.css?.iconCss" [src]="icon" alt="sort" />
+         </ng-container>
+
+         <ng-template #defaultSortIcon>
+            <mat-icon>{{ getSortValue() === 'ASC' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+         </ng-template>
+      </button>
    </div>
 </ng-container>

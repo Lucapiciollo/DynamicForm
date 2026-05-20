@@ -7,7 +7,7 @@
  * @desc [description]
  */
 
-import { Component, DestroyRef, ElementRef, EventEmitter, Injector, Input, Output, Signal, ViewChild, ViewContainerRef, WritableSignal, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, EventEmitter, Injector, Input, Output, Signal, ViewChild, ViewContainerRef, WritableSignal, effect, inject, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ReplaySubject, Subscriber, Subscription, combineLatest, pairwise, startWith } from 'rxjs';
@@ -72,10 +72,15 @@ export class BaseComponent implements IBaseComponent {
       this.control = {formAction: config};
 
       this.control.formAction.instance = this;
-      if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE || TYPE_CONTROL_FORM.TIME || this.control.formAction.type == TYPE_CONTROL_FORM.COMBO || this.control.formAction.type == TYPE_CONTROL_FORM.RADIOGROUP) {
-         this.control.formAction.options = signal(null);
-         this.control.formAction.optionsDisabled = signal(null);
-         this.control.formAction.paramsForRemoteData = signal(null);
+      if (
+         this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE ||
+         this.control.formAction.type == TYPE_CONTROL_FORM.TIME ||
+         this.control.formAction.type == TYPE_CONTROL_FORM.COMBO ||
+         this.control.formAction.type == TYPE_CONTROL_FORM.RADIOGROUP
+      ) {
+         this.control.formAction.options = typeof this.control.formAction.options === 'function' ? this.control.formAction.options : signal(this.control.formAction.options || null);
+         this.control.formAction.optionsDisabled = typeof this.control.formAction.optionsDisabled === 'function' ? this.control.formAction.optionsDisabled : signal(this.control.formAction.optionsDisabled || null);
+         this.control.formAction.paramsForRemoteData = typeof this.control.formAction.paramsForRemoteData === 'function' ? this.control.formAction.paramsForRemoteData : signal(this.control.formAction.paramsForRemoteData || null);
       }
 
       this.obsQuestions.next(this.control);
@@ -160,12 +165,17 @@ export class BaseComponent implements IBaseComponent {
             if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBO || this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
                effect(
                   () => {
-                     let opt = this.control.formAction.options();
+                     const opt = this.control.formAction.options();
                      if (opt != null) {
-                        this.signalStoreBase.setSelectedOptions([]);
-                        this.signalStoreBase.setFilteredOptions(opt, this.control.formAction?.keyCombo);
-                        this.signalStoreBase.setTotalOptions(opt);
-                        this.setInitialOption.set(opt);
+                        // IMPORTANT: the store methods read/write signals internally.
+                        // Keep those reads out of this effect dependencies, otherwise
+                        // setFilteredOptions/selectedOptions can retrigger this effect forever.
+                        untracked(() => {
+                           this.signalStoreBase.setSelectedOptions([]);
+                           this.signalStoreBase.setFilteredOptions(opt, this.control.formAction?.keyCombo);
+                           this.signalStoreBase.setTotalOptions(opt, this.control.formAction?.keyCombo);
+                           this.setInitialOption.set(opt);
+                        });
                      }
                   },
                   {injector: this.injector, allowSignalWrites: true},
@@ -173,8 +183,8 @@ export class BaseComponent implements IBaseComponent {
 
                effect(
                   () => {
-                     let disable = this.control.formAction.optionsDisabled();
-                     this.signalStoreBase?.addDisabledOption(disable);
+                     const disable = this.control.formAction.optionsDisabled();
+                     untracked(() => this.signalStoreBase?.addDisabledOption(disable));
                   },
                   {injector: this.injector, allowSignalWrites: true},
                );

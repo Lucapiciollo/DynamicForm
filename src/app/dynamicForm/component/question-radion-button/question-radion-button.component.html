@@ -12,7 +12,7 @@
             </mat-label>
 
             <mat-radio-group [formControl]="control.formAction?.formControl" class="row" [matTooltip]="control.formAction?.tipContent || null">
-               @for (secondElement of control.formAction.options(); track $index) {
+               @for (secondElement of getOptions(); track $index) {
                   <mat-radio-button [value]="secondElement.id" [class]="control?.formAction?.css?.classRadio" [disabled]="secondElement.disabled">
                      @if (secondElement.img) {
                         <img [src]="secondElement.img" />

@@ -1,0 +1,284 @@
+@use './tokens' as *;
+@use './mixins' as *;
+
+:host {
+  display: block;
+  font-family: $df-font-family;
+  color: $df-color-text;
+}
+
+:host(.scaled),
+.scaled {
+  display: block;
+  min-width: 0;
+}
+
+.dynamic-form-shell {
+  background: $df-color-bg;
+  border-radius: $df-radius-lg;
+  padding: $df-space-4;
+}
+
+.form-title {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: $df-space-2;
+  color: $df-color-text;
+  font-size: 0.98rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  padding: 0 $df-space-2 $df-space-2 $df-space-4;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 4px;
+    height: 18px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, $df-color-primary, #60a5fa);
+  }
+}
+
+.form-sub-title {
+  width: 100%;
+  color: $df-color-muted;
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: $df-space-3 $df-space-2 $df-space-2;
+}
+
+.customMY {
+  margin: 0;
+}
+
+.form-label {
+  display: inline-flex;
+  align-items: center;
+  gap: $df-space-1;
+  font-weight: 650;
+
+  &.disabled {
+    opacity: 0.55;
+  }
+}
+
+// Ogni componente-field che usa la classe bootstrap col-* riceve aria e allineamento coerente.
+:host[class*='col-'] {
+  @include df-field-shell;
+}
+
+// Angular Material MDC form fields
+:host ::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+:host ::ng-deep .mat-mdc-text-field-wrapper {
+  background: $df-color-surface;
+  border-radius: $df-radius-md !important;
+  transition: box-shadow $df-transition, border-color $df-transition, background $df-transition;
+}
+
+:host ::ng-deep .mat-mdc-form-field-focus-overlay {
+  background: transparent;
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  box-shadow: $df-shadow-focus;
+}
+
+:host ::ng-deep .mdc-notched-outline__leading,
+:host ::ng-deep .mdc-notched-outline__notch,
+:host ::ng-deep .mdc-notched-outline__trailing {
+  border-color: $df-color-border !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: $df-color-primary !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field-error,
+:host ::ng-deep mat-error {
+  color: $df-color-danger;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+:host ::ng-deep .mat-mdc-hint {
+  color: $df-color-muted;
+}
+
+// Checkbox
+:host ::ng-deep .mat-mdc-checkbox {
+  min-height: 56px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid $df-color-border;
+  border-radius: $df-radius-md;
+  padding: 0 $df-space-3;
+  background: $df-color-surface;
+  transition: box-shadow $df-transition, border-color $df-transition, background $df-transition;
+
+  &:hover {
+    border-color: $df-color-border-strong;
+    background: $df-color-surface-soft;
+  }
+}
+
+// Radio group
+:host ::ng-deep .mat-mdc-radio-group,
+:host ::ng-deep .df-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $df-space-2;
+}
+
+:host ::ng-deep .mat-mdc-radio-button {
+  border: 1px solid $df-color-border;
+  border-radius: 999px;
+  background: $df-color-surface;
+  padding: $df-space-1 $df-space-3 $df-space-1 $df-space-1;
+  transition: border-color $df-transition, background $df-transition, box-shadow $df-transition;
+
+  &:hover {
+    border-color: $df-color-primary;
+    background: $df-color-primary-soft;
+  }
+}
+
+// Label / link / separator
+.df-label {
+  @include df-card($df-space-4);
+  color: $df-color-muted;
+  line-height: 1.55;
+}
+
+.df-link {
+  display: inline-flex;
+  align-items: center;
+  gap: $df-space-2;
+  color: $df-color-primary;
+  font-weight: 700;
+  text-decoration: none;
+  padding: $df-space-2 $df-space-3;
+  border-radius: $df-radius-sm;
+  background: $df-color-primary-soft;
+  transition: transform $df-transition, box-shadow $df-transition;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: $df-shadow-sm;
+  }
+}
+
+.df-separator {
+  display: flex;
+  align-items: center;
+  gap: $df-space-3;
+  color: $df-color-muted;
+  font-weight: 700;
+  margin: $df-space-4 $df-space-2;
+
+  &::before,
+  &::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, transparent, $df-color-border, transparent);
+  }
+}
+
+// File input
+.df-file-drop {
+  @include df-card($df-space-4);
+  border-style: dashed;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $df-space-3;
+  min-height: 72px;
+  transition: border-color $df-transition, background $df-transition, box-shadow $df-transition;
+
+  &:hover {
+    border-color: $df-color-primary;
+    background: $df-color-primary-soft;
+  }
+}
+
+// Array string
+.df-array-string {
+  @include df-card($df-space-3);
+
+  &__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $df-space-2;
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: $df-space-1;
+    padding: $df-space-1 $df-space-3;
+    border-radius: 999px;
+    background: $df-color-primary-soft;
+    color: $df-color-primary;
+    font-weight: 700;
+  }
+}
+
+// Sort action
+.df-sort-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  button {
+    border-radius: 999px;
+    background: $df-color-surface;
+    border: 1px solid $df-color-border;
+    box-shadow: $df-shadow-sm;
+    transition: transform $df-transition, box-shadow $df-transition, border-color $df-transition;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: $df-color-primary;
+      box-shadow: $df-shadow-md;
+    }
+  }
+
+  .sort-action-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+  }
+}
+
+.loading-bar-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  overflow: hidden;
+  background: rgba(37, 99, 235, 0.10);
+}
+
+.loading-bar {
+  width: 40%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, $df-color-primary, transparent);
+  animation: df-loading-bar 1s infinite ease-in-out;
+}
+
+@keyframes df-loading-bar {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(260%); }
+}

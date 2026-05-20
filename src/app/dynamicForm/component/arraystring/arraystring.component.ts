@@ -7,7 +7,7 @@
  * @desc [description]
  */
 
-import {Component, effect, ElementRef, inject, Injector, signal} from '@angular/core';
+import {Component, effect, ElementRef, inject, Injector, signal, untracked} from '@angular/core';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {BaseComponent} from '../base-component.component';
 import {MatChipInputEvent} from '@angular/material/chips';
@@ -33,7 +33,12 @@ export class ArrayStringComponent extends BaseComponent {
       super(injector, element);
 
       effect(() => {
-         this.control?.formAction?.formControl.setValue(this.getList());
+         const list = this.getList();
+         untracked(() => {
+            const control = this.control?.formAction?.formControl;
+            if (!control) return;
+            control.setValue(list, {emitEvent: true});
+         });
       });
    }
    /************************************************************************************************************************************************************************ */
@@ -47,7 +52,7 @@ export class ArrayStringComponent extends BaseComponent {
       if (value.length < 1) this.errorsInchipValue.set(this.validateWithExtractedValidators([...this.control?.formAction?.formControl.value]));
       else this.errorsInchipValue.set(this.validateWithExtractedValidators([...this.control?.formAction?.formControl.value, value]));
 
-      if (Object.keys(this.errorsInchipValue()).length < 1) {
+      if (Object.keys(this.errorsInchipValue() || {}).length < 1) {
          let ccs = this.control?.formAction?.formControl.value || [];
          if (value) {
             ccs = [...ccs, value];

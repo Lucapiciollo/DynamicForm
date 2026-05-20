@@ -1,7 +1,7 @@
 /** @format */
 
 import {CommonModule} from '@angular/common';
-import {InjectionToken, NgModule} from '@angular/core';
+import {InjectionToken, ModuleWithProviders, NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Camera} from '@ionic-native/camera/ngx';
 import {InputTextComponent} from './component/base-component.module';
@@ -30,6 +30,7 @@ import {SeparatorComponent} from './component/separator/separator.component';
 import {FixSearchBox} from './directive/fixSearchBox.directive';
 import {DateYearComponent} from './component/date-year/date-year.component';
 import moment from 'moment';
+import {DynamicFormRuntimeConfig, provideDynamicFormForModule} from './providers/dynamic-form.providers';
 /**
  * @author luca.piciollo
  * @email lucapiciollo@gmail.com
@@ -70,4 +71,12 @@ const minYearCalendar = () => {
    imports: [CommonModule, ReactiveFormsModule, FormsModule, MaterialModule],
    exports: [TimeToNumberPipe, DateYearComponent, ArrayStringComponent, SeparatorComponent, LanguagePipe, LoadChildDirective, CamScanDirective, SortActionComponent, ReactiveFormsModule, FormsModule, ComboComponent, CommonModule, DynamicFormComponent, InputTextComponent, CheckboxComponent, CurrencyComponent, DateComponent, DateRangeComponent, DateTimeComponent, FileComponent, InputTimeComponent, LabelComponent, NumberComponent, QuestionRadioButtonComponent, TextareaComponent, LinkComponent, MaterialModule, FixSearchBox],
 })
-export class DynamicFormModule {}
+export class DynamicFormModule {
+   static forRoot(config: DynamicFormRuntimeConfig = {}): ModuleWithProviders<DynamicFormModule> {
+      return {
+         ngModule: DynamicFormModule,
+         providers: provideDynamicFormForModule(config),
+      };
+   }
+}
+

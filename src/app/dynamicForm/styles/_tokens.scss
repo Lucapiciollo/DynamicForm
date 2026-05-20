@@ -1,0 +1,36 @@
+// DynamicForm design tokens
+// Puoi sovrascrivere questi token nel progetto host prima dell'import del tema.
+
+$df-prefix: 'df' !default;
+
+$df-font-family: Inter, Roboto, 'Helvetica Neue', Arial, sans-serif !default;
+$df-radius-xs: 8px !default;
+$df-radius-sm: 10px !default;
+$df-radius-md: 14px !default;
+$df-radius-lg: 18px !default;
+
+$df-space-1: 4px !default;
+$df-space-2: 8px !default;
+$df-space-3: 12px !default;
+$df-space-4: 16px !default;
+$df-space-5: 20px !default;
+$df-space-6: 24px !default;
+
+$df-color-bg: #f7f8fb !default;
+$df-color-surface: #ffffff !default;
+$df-color-surface-soft: #f9fafb !default;
+$df-color-border: #e5e7eb !default;
+$df-color-border-strong: #cbd5e1 !default;
+$df-color-text: #111827 !default;
+$df-color-muted: #6b7280 !default;
+$df-color-primary: #2563eb !default;
+$df-color-primary-soft: rgba(37, 99, 235, 0.10) !default;
+$df-color-danger: #dc2626 !default;
+$df-color-success: #16a34a !default;
+$df-color-warning: #f59e0b !default;
+
+$df-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08) !default;
+$df-shadow-md: 0 10px 30px rgba(15, 23, 42, 0.10) !default;
+$df-shadow-focus: 0 0 0 4px rgba(37, 99, 235, 0.14) !default;
+
+$df-transition: 160ms ease !default;

@@ -1,95 +1,67 @@
-import { Component, Injector, Input } from '@angular/core';
-import { Observable, debounce, exhaustMap, merge, mergeAll, of, timer, toArray } from 'rxjs';
-import { ConfigForm, FormAction } from './dynamicForm/dynamic-form.interface';
-import { activityForm, createRegistry } from './activity-form-builder.';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { FormComponentTemplate } from './dynamicForm/component/FormComponentTemplate';
+/** @format */
 
-
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
-})
-export class AppComponent {
-  questions$: Observable<ConfigForm>;
-
-  componentRef = DynamicComponent;
-  options=this.generateUniqueItems(1);
-
-  constructor(public injector:Injector) {
-    this.questions$ = of(activityForm({}, this));
-
-
-
-  }
-
-  onFormCreate(formGroup: FormGroup | FormArray) {
-    // formGroup.disable()
-    // formGroup.valueChanges.pipe(debounce(() => timer(0, 1000))).subscribe(
-    //   (value: any) =>
-    //   console.log(value)
-    //   )
-
-
-    // formGroup.enable()
-  }
-
-  generateRandomString(length) {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let result = "";
-    for (let i = 0; i < length; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length)) ;
-    }
-    return result;
-  }
-
-  // Funzione per creare una lista di item univoci
-  generateUniqueItems(count) {
-    const items = new Set();
-
-    while (items.size < count) {
-      const id = this.generateRandomString(4); // ID univoco di 4 caratteri
-      const description = `Descrizione ${this.generateRandomString(6)} - ${items.size}`; // Descrizione casuale
-
-      items.add(JSON.stringify({ id, description })); // Usa JSON.stringify per mantenere l'unicità
-    }
-
-    return {items:Array.from(items).map((item: any) => JSON.parse(item)), totalCount: 10};
-  }
-
-
-}
+import {Component, OnDestroy} from '@angular/core';
+import {FormArray, FormGroup} from '@angular/forms';
+import {Subscription} from 'rxjs';
+import {ConfigForm} from './dynamicForm/dynamic-form.interface';
+import {
+   collectFormErrors,
+   createUltraSafeNestedActionsFormBuilder,
+   patchUltraSafeDemo,
+} from './dynamicForm/examples/ultra-safe-nested-actions.builder';
 
 @Component({
-  template: `
-            <button matSuffix mat-icon-button aria-label="Clear"   (click)="setConfig(null)">
-                <mat-icon>sort</mat-icon>
-            </button>
-   `
+   selector: 'app-root',
+   templateUrl: './app.component.html',
+   styleUrls: ['./app.component.scss'],
 })
-export class DynamicComponent extends FormComponentTemplate {
+export class AppComponent implements OnDestroy {
+   questions: ConfigForm = createUltraSafeNestedActionsFormBuilder();
 
+   form: FormGroup | FormArray | null = null;
+   formValue: any = null;
+   rawValue: any = null;
+   formErrors: Record<string, any> = {};
 
+   private valueChangesSub?: Subscription;
 
-  questions: ConfigForm;
-  formParent: FormControl<any> | FormGroup<any> | FormArray<any>;
-  formControl: FormControl<any>;
-  formConfig: FormAction;
+   onFormCreate(form: FormGroup | FormArray): void {
+      this.valueChangesSub?.unsubscribe();
+      this.form = form;
+      this.refreshDebugValues();
+      this.valueChangesSub = form.valueChanges.subscribe(() => this.refreshDebugValues());
+      console.log('FORM CREATO:', form);
+   }
 
-  setConfig(formConfig: FormAction) {
-    // (this.questions[0].formGroup[7].formAction as any).options = [...[{ id: 1, description: "test" }]];
-    console.log(this.formParent, this.formConfig, this.formControl, this.questions);
+   onQuestionsCreate(questions: ConfigForm): void {
+      console.log('QUESTIONS CREATE:', questions);
+   }
 
-  }
+   patchDemoValue(): void {
+      patchUltraSafeDemo(this.form);
+      this.refreshDebugValues();
+   }
 
-  public initialize(): void {
-    this.questions = this.getQuestions();
-  }
+   submit(): void {                                                                                                                                                                                                                                                                             
+      if (!this.form) return;
+      this.form.markAllAsTouched();
+      this.refreshDebugValues();
+      console.log(this.form.valid ? 'SUBMIT FORM' : 'FORM NON VALIDO', this.form.value, this.formErrors);
+   }
 
+   reset(): void {
+      this.form?.reset();
+      this.refreshDebugValues();
+   }
 
+   refreshDebugValues(): void {
+      if (!this.form) return;
+      this.formValue = this.form.value;
+      this.rawValue = this.form instanceof FormGroup ? this.form.getRawValue() : this.form.value;
+      this.formErrors = collectFormErrors(this.form);
+   }
 
-
-
-
+   ngOnDestroy(): void {
+      this.valueChangesSub?.unsubscribe();
+   }
 }

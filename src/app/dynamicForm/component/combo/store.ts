@@ -5,9 +5,6 @@ import {patchState, signalStore, withComputed, withHooks, withMethods, withState
 
 import {TypeComboOption} from '../../dynamic-form.interface';
 
-/**************************************************************************************************************************************************/
-/**************************************************************************************************************************************************/
-/**************************************************************************************************************************************************/
 interface IState {
    totalOptions: TypeComboOption;
    filteredOptions: TypeComboOption;
@@ -16,248 +13,195 @@ interface IState {
    isLoading: boolean;
    disabledOption: Array<string>;
 }
-/**************************************************************************************************************************************************/
-/**************************************************************************************************************************************************/
-/**************************************************************************************************************************************************/
-const initialState = {
+
+const initialState: IState = {
    isLoading: false,
-   filteredOptions: null,
-   selectedOptions: null,
-   totalOptions: null,
-   defaultOptions: null,
+   filteredOptions: [],
+   selectedOptions: [],
+   totalOptions: [],
+   defaultOptions: [],
    disabledOption: [],
 };
-/**************************************************************************************************************************************************/
-/**************************************************************************************************************************************************/
-/**************************************************************************************************************************************************/
+
 const STATE = new InjectionToken<IState>('IState', {
    factory: () => initialState,
 });
 
-/**************************************************************************************************************************************************/
-/**************************************************************************************************************************************************/
-/**************************************************************************************************************************************************/
+type KeyCombo = {
+   keyId: string | Array<string>;
+   keyDescription: string | Array<string>;
+};
+
+function asArray<T = any>(value: T[] | null | undefined): T[] {
+   return Array.isArray(value) ? [...value] : [];
+}
+
+function getByKey(source: any, key: string | Array<string>): any {
+   if (Array.isArray(key)) {
+      return key.map(k => source?.[k]).filter(v => v !== null && v !== undefined).join(' ').trim();
+   }
+   return source?.[key];
+}
+
+function normalizeOptions(value: Partial<TypeComboOption | {items: Array<any>; totalCount: number}> | null | undefined, keyCombo: KeyCombo = {keyId: 'id', keyDescription: 'description'}): TypeComboOption {
+   const source = value && typeof value === 'object' && !Array.isArray(value) && Object.prototype.hasOwnProperty.call(value, 'items')
+      ? (value as {items: Array<any>; totalCount: number}).items
+      : value;
+
+   return asArray(source as any[]).map(item => ({
+      ...item,
+      id: getByKey(item, keyCombo.keyId),
+      description: getByKey(item, keyCombo.keyDescription),
+   }));
+}
+
+function distinctArray<T extends {id?: any} = any>(array: T[] | null | undefined): T[] {
+   const seenIds = new Set<any>();
+   const result: T[] = [];
+
+   for (const item of asArray(array)) {
+      const key = item && typeof item === 'object' ? item.id : item;
+      if (seenIds.has(key)) continue;
+      seenIds.add(key);
+      result.push(item);
+   }
+
+   return result;
+}
+
 export const Store = signalStore(
    {protectedState: false},
    withState(() => inject(STATE)),
-   /**************************************************************************************************************************************************/
-   /**************************************************************************************************************************************************/
-   /**************************************************************************************************************************************************/
 
    withComputed(store => ({
-      getFilterOption: computed(() => {
-         return store.filteredOptions();
-      }),
-      /**************************************************************************************************************************************************/
-      getIsLoading: computed(() => {
-         return store.isLoading();
+      getFilterOption: computed(() => asArray(store.filteredOptions())),
+
+      getIsLoading: computed(() => store.isLoading()),
+
+      getSelectedOptions: computed(() => [...asArray(store.selectedOptions()), ...asArray(store.defaultOptions())]),
+
+      getSelectedOptionsFromTotal: computed(() => {
+         const selectedOptions = asArray(store.selectedOptions());
+         const defaultOptions = asArray(store.defaultOptions());
+         return untracked(() => [
+            ...asArray(store.totalOptions()).filter(f => selectedOptions.some(s => s.id == f.id)),
+            ...defaultOptions,
+         ]);
       }),
 
-      /**************************************************************************************************************************************************/
-      getSelectedOptions: computed(() => {
-         return [...store.selectedOptions(), ...(store.defaultOptions() || [])];
-      }),
-      /**************************************************************************************************************************************************/
-      getSelectedOptionsFromTotal: computed(() => {
-         let selectedOptions = store.selectedOptions() || [];
-         let defaultOptions = store.defaultOptions() || [];
-         let opt = untracked(() => [...(store.totalOptions() || []?.filter(f => selectedOptions?.some(s => s.id == f.id))), ...defaultOptions]);
-         return opt;
-      }),
-      /**************************************************************************************************************************************************/
-      getTotalOptions: computed(() => {
-         return store.totalOptions();
-      }),
-      /**************************************************************************************************************************************************/
-      getDisabledOptions: computed(() => {
-         return store.disabledOption();
-      }),
-      /**************************************************************************************************************************************************/
-      getDefaultOptions: computed(() => {
-         return store.defaultOptions();
-      }),
-      /**************************************************************************************************************************************************/
+      getTotalOptions: computed(() => asArray(store.totalOptions())),
+
+      getDisabledOptions: computed(() => asArray(store.disabledOption())),
+
+      getDefaultOptions: computed(() => asArray(store.defaultOptions())),
+
       getConcatStringDescription: computed(() => {
-         let description = [...(store.defaultOptions() || [])?.map(m => m.description), ...(store.selectedOptions() || [])?.map(m => m.description)].filter(f => f.length > 0);
+         const description = [...asArray(store.defaultOptions()), ...asArray(store.selectedOptions())]
+            .map(m => m?.description)
+            .filter(f => !!f && f.length > 0);
          if (description.length > 2) return description.join(',');
          return null;
       }),
    })),
 
-   /**************************************************************************************************************************************************/
-   /**************************************************************************************************************************************************/
-   /**************************************************************************************************************************************************/
-
    withMethods(store => ({
-      distinctArray(array) {
-         const seenIds = new Set();
-         return array.clone().filter(item => {
-            if (seenIds.has(item.id)) return false;
-            seenIds.add(item.id);
-            return true;
-         });
-      },
+      distinctArray,
 
       setFilteredOptions(
-         newElement: Partial<TypeComboOption | {items: Array<any>; totalCount: number}>,
-         keyCombo: {
-            keyId: string | Array<string>;
-            keyDescription: string | Array<string>;
-         } = {keyId: 'id', keyDescription: 'description'},
-         append: boolean,
+         newElement: Partial<TypeComboOption | {items: Array<any>; totalCount: number}> | null | undefined,
+         keyCombo: KeyCombo = {keyId: 'id', keyDescription: 'description'},
+         append: boolean = false,
       ): void {
-         if (newElement.hasOwnProperty('items')) {
-            if (append) {
-               patchState(store, state => ({
-                  isLoading: false,
-                  filteredOptions: this.distinctArray([
-                     ...state.selectedOptions,
-                     ...state.filteredOptions,
-                     ...(newElement as {items: Array<any>; totalCount: number}).items?.map(m => ({
-                        ...m,
-                        id: keyCombo.keyId instanceof Array ? keyCombo.keyId.reduce((a, b) => (a += ` ${m[b]}`), '').trim() : m[keyCombo?.keyId],
-                        description: keyCombo.keyDescription instanceof Array ? keyCombo.keyDescription.reduce((a, b) => (a += ` ${m[b]}`), '').trim() : m[keyCombo?.keyDescription],
-                     })),
-                  ]),
-               }));
-            } else {
-               patchState(store, state => ({
-                  isLoading: false,
-                  filteredOptions: this.distinctArray([
-                     ...state.selectedOptions,
-                     ...(newElement as {items: Array<any>; totalCount: number}).items?.map(m => ({
-                        ...m,
-                        id: keyCombo.keyId instanceof Array ? keyCombo.keyId.reduce((a, b) => (a += ` ${m[b]}`), '').trim() : m[keyCombo?.keyId],
-                        description: keyCombo.keyDescription instanceof Array ? keyCombo.keyDescription.reduce((a, b) => (a += ` ${m[b]}`), '').trim() : m[keyCombo?.keyDescription],
-                     })),
-                  ]),
-               }));
-            }
-         } else {
-            if (append) {
-               let opt = null;
-               untracked(() => {
-                  opt = this.getFilterOption().clone();
-                  opt.map(m => (m.selected = this.getSelectedOptions().some(s => s.id == m.id)));
-               });
-               patchState(store, state => ({
-                  filteredOptions: this.distinctArray([
-                     //  ...state.selectedOptions,
-                     //  ...state.filteredOptions,
-                     ...opt,
-                     ...(newElement as TypeComboOption).map(m => ({
-                        ...m,
-                        id: keyCombo.keyId instanceof Array ? keyCombo.keyId.reduce((a, b) => (a += ` ${m[b]}`), '').trim() : m[keyCombo?.keyId],
-                        description: keyCombo.keyDescription instanceof Array ? keyCombo.keyDescription.reduce((a, b) => (a += ` ${m[b]}`), '').trim() : m[keyCombo?.keyDescription],
-                     })),
-                  ]),
-                  isLoading: false,
-               }));
-            } else {
-               patchState(store, state => ({
-                  filteredOptions: this.distinctArray([
-                     ...state.selectedOptions,
-                     ...(newElement as TypeComboOption).map(m => ({
-                        ...m,
-                        id: keyCombo.keyId instanceof Array ? keyCombo.keyId.reduce((a, b) => (a += ` ${m[b]}`), '').trim() : m[keyCombo?.keyId],
-                        description: keyCombo.keyDescription instanceof Array ? keyCombo.keyDescription.reduce((a, b) => (a += ` ${m[b]}`), '').trim() : m[keyCombo?.keyDescription],
-                     })),
-                  ]),
-                  isLoading: false,
-               }));
-            }
-         }
+         const selected = asArray(store.selectedOptions());
+         const current = asArray(store.filteredOptions());
+         const next = normalizeOptions(newElement, keyCombo);
+         const filteredOptions = append ? distinctArray([...selected, ...current, ...next]) : distinctArray([...selected, ...next]);
+
+         const totalCount = newElement && typeof newElement === 'object' && !Array.isArray(newElement) && Object.prototype.hasOwnProperty.call(newElement, 'totalCount')
+            ? Number((newElement as {items: Array<any>; totalCount: number}).totalCount || 0)
+            : undefined;
+
+         patchState(store, state => ({
+            ...state,
+            filteredOptions,
+            isLoading: false,
+            ...(totalCount !== undefined ? {storeData: {items: filteredOptions, totalCount}} : {}),
+         } as any));
       },
 
-      setSelectedOptions(newElement: Partial<TypeComboOption>): void {
-         patchState(store, state => ({selectedOptions: [...newElement]}));
+      updateFilterOption(options: TypeComboOption | null | undefined): void {
+         patchState(store, state => ({...state, filteredOptions: distinctArray(asArray(options)), isLoading: false}));
       },
 
-      setTotalOptions(newElement: Partial<TypeComboOption>): void {
-         patchState(store, state => ({totalOptions: [...newElement]}));
+      setSelectedOptions(newElement: Partial<TypeComboOption> | null | undefined): void {
+         patchState(store, state => ({...state, selectedOptions: asArray(newElement as any)}));
+      },
+
+      setTotalOptions(newElement: Partial<TypeComboOption | {items: Array<any>; totalCount: number}> | null | undefined, keyCombo: KeyCombo = {keyId: 'id', keyDescription: 'description'}): void {
+         patchState(store, state => ({...state, totalOptions: distinctArray(normalizeOptions(newElement, keyCombo))}));
       },
 
       setIsLoading(value: boolean): void {
-         patchState(store, state => ({isLoading: value}));
+         patchState(store, state => ({...state, isLoading: value}));
       },
 
       setDefaultOptions(
-         newElement: Partial<TypeComboOption | {items: Array<any>; totalCount: number}>,
-         keyCombo: {keyId: string; keyDescription: string | Array<string>} = {
-            keyId: 'id',
-            keyDescription: 'description',
-         },
+         newElement: Partial<TypeComboOption | {items: Array<any>; totalCount: number}> | null | undefined,
+         keyCombo: KeyCombo = {keyId: 'id', keyDescription: 'description'},
       ): void {
-         if (newElement.hasOwnProperty('items')) {
-            patchState(store, state => ({
-               defaultOptions: [
-                  ...(newElement as {items: Array<any>; totalCount: number}).items?.map(m => ({
-                     ...m,
-                     id: m[keyCombo?.keyId],
-                     description: keyCombo.keyDescription instanceof Array ? keyCombo.keyDescription.reduce((a, b) => (a += ` ${m[b]}`), '') : m[keyCombo?.keyDescription],
-                  })),
-               ],
-            }));
-         } else {
-            patchState(store, state => ({
-               defaultOptions: [
-                  ...(newElement as TypeComboOption).map(m => ({
-                     ...m,
-                     id: m[keyCombo?.keyId],
-                     description: keyCombo.keyDescription instanceof Array ? keyCombo.keyDescription.reduce((a, b) => (a += ` ${m[b]}`), '') : m[keyCombo?.keyDescription],
-                  })),
-               ],
-               isLoading: false,
-            }));
-         }
+         patchState(store, state => ({
+            ...state,
+            defaultOptions: normalizeOptions(newElement, keyCombo),
+            isLoading: false,
+         }));
       },
 
-      addDisabledOption(value: Array<string>): void {
-         patchState(store, state => ({disabledOption: value}));
+      addDisabledOption(value: Array<string> | null | undefined): void {
+         patchState(store, state => ({...state, disabledOption: asArray(value)}));
       },
 
-      /**************************************************************************************************************************************************/
       updateOptionSelected(optionId: string, isSelected: boolean, isMultiple: boolean): void {
-         let selectedOptions = (store.selectedOptions() || []).clone<TypeComboOption>();
+         let selectedOptions = asArray(store.selectedOptions());
+         const option = asArray(store.filteredOptions()).find(f => f.id == optionId);
+
+         if (!option) return;
+
          if (isMultiple) {
             if (selectedOptions.find((f: any) => f.id == optionId) != null) {
                selectedOptions = selectedOptions.filter(f => f.id != optionId);
             } else {
-               let items = (store.filteredOptions() || [])?.clone<TypeComboOption>().find(f => f.id == optionId);
-               items['selected'] = true;
-               selectedOptions.push(items);
+               selectedOptions.push({...option, selected: true});
             }
-            patchState(store, state => ({selectedOptions: selectedOptions}));
          } else {
-            let items = (store.filteredOptions() || [])?.clone<TypeComboOption>().find(f => f.id == optionId);
-            patchState(store, state => ({selectedOptions: [items]}));
+            selectedOptions = [{...option, selected: true}];
          }
+
+         patchState(store, state => ({...state, selectedOptions}));
       },
-      /**************************************************************************************************************************************************/
    })),
 
-   /**************************************************************************************************************************************************/
-   /**************************************************************************************************************************************************/
-   /**************************************************************************************************************************************************/
    withHooks({
       onInit(store) {
          patchState(store, state => ({
             ...state,
             filteredOptions: [],
             selectedOptions: [],
+            totalOptions: [],
+            defaultOptions: [],
             storeData: {items: [], totalCount: 0},
-            isLoading: true,
-         }));
+            isLoading: false,
+         } as any));
       },
       onDestroy(store) {
          patchState(store, state => ({
             ...state,
             filteredOptions: [],
             selectedOptions: [],
+            totalOptions: [],
+            defaultOptions: [],
             storeData: {items: [], totalCount: 0},
-            isLoading: true,
-         }));
+            isLoading: false,
+         } as any));
       },
    }),
-   /**************************************************************************************************************************************************/
 );

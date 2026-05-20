@@ -1,3 +1,39 @@
-<div>
-  <app-dynamic-form [questions]="questions$ | async" (onFormCreate)="onFormCreate($event)"></app-dynamic-form>
+<div class="playground-page">
+   <header class="playground-header">
+      <div>
+         <h1>DynamicForm Playground ultra safe</h1>
+         <p>Versione minima stabile: gruppi annidati, sottogruppi e actions, senza combo/date/file/remote scroll.</p>
+      </div>
+
+      <div class="playground-actions">
+         <button type="button" (click)="patchDemoValue()">Patch demo</button>
+         <button type="button" (click)="submit()">Submit</button>
+         <button type="button" class="secondary" (click)="reset()">Reset</button>
+      </div>
+   </header>
+
+   <section class="playground-card">
+      <app-dynamic-form
+         [questions]="questions"
+         (onFormCreate)="onFormCreate($event)"
+         (onQuestionsCreate)="onQuestionsCreate($event)">
+      </app-dynamic-form>
+   </section>
+
+   <section class="value-grid">
+      <div class="value-card">
+         <h2>Value</h2>
+         <pre>{{ formValue | json }}</pre>
+      </div>
+
+      <div class="value-card">
+         <h2>Raw value</h2>
+         <pre>{{ rawValue | json }}</pre>
+      </div>
+
+      <div class="value-card">
+         <h2>Errori</h2>
+         <pre>{{ formErrors | json }}</pre>
+      </div>
+   </section>
 </div>

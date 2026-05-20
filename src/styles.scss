@@ -17,3 +17,5 @@ h2{
     --main-bg-color: yellow !important;
    
 }
+/* DynamicForm global overlay/theme overrides */
+@import './app/dynamicForm/styles/material-overrides';

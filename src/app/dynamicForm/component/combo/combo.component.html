@@ -23,7 +23,7 @@
                      <span class="search-icon my-auto">
                         <mat-icon class="m-auto">search</mat-icon>
                      </span>
-                     <input matInput class="mat-mdc-option ps-5 py-0" (keydown.Space)="$event.stopPropagation()" [matTooltip]="control.formAction?.tipContent || null" #filterInput (input)="onInputChange(filterInput.value)" [placeholder]="control.formAction.placeholder" />
+                     <input matInput class="ps-5 py-0" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" [matTooltip]="control.formAction?.tipContent || null" #filterInput (input)="onInputChange(filterInput.value)" [placeholder]="control.formAction.placeholder" />
                      @if (signalStore.getIsLoading()) {
                         <div class="loading-bar-container">
                            <div class="loading-bar"></div>

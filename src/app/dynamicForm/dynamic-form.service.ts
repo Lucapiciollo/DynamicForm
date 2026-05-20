@@ -1,7 +1,7 @@
 /** @format */
 
 import {Injectable} from '@angular/core';
-import {FormArray, FormGroup} from '@angular/forms';
+import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {v4 as uuidv4} from 'uuid';
 import {ConfigForm, TYPE_CONTROL_FORM} from './dynamic-form.interface';
 
@@ -14,11 +14,20 @@ export class StepperService {
             formArray.push(new FormGroup({}));
             (question as any)['id'] = uuid;
             question.formGroup?.forEach(fg => {
-               if (fg.formAction.formGroup) {
-                  fg.formAction.type = TYPE_CONTROL_FORM.GROUP;
-                  (formArray.controls[formArray.controls.length - 1] as FormGroup).addControl(fg.formAction.formName as string, new FormArray<any>([]));
-                  this.toFormGroup(fg.formAction.formGroup, (formArray.controls[formArray.controls.length - 1] as FormGroup).get(fg.formAction.formName as string) as FormArray);
-               } else (formArray.controls[formArray.controls.length - 1] as FormGroup).addControl(fg.formAction.formName as string, fg.formAction.formControl);
+               const action = fg.formAction;
+               if (action.formGroup) {
+                  action.type = TYPE_CONTROL_FORM.GROUP;
+                  (formArray.controls[formArray.controls.length - 1] as FormGroup).addControl(action.formName as string, new FormArray<any>([]));
+                  this.toFormGroup(action.formGroup, (formArray.controls[formArray.controls.length - 1] as FormGroup).get(action.formName as string) as FormArray);
+               } else {
+                  if (!action.formName) {
+                     action.formName = uuidv4();
+                  }
+                  if (!action.formControl) {
+                     action.formControl = new FormControl({value: null, disabled: action.disabled ?? false});
+                  }
+                  (formArray.controls[formArray.controls.length - 1] as FormGroup).addControl(action.formName as string, action.formControl);
+               }
             });
          }
       });

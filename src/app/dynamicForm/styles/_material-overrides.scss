@@ -1,0 +1,61 @@
+@use './tokens' as *;
+@use './mixins' as *;
+
+// Questo file va importato globalmente in src/styles.scss perché i pannelli mat-select/mat-datepicker
+// vivono nell'overlay CDK, fuori dall'incapsulamento del componente.
+
+.cdk-overlay-pane .mat-mdc-select-panel {
+  border-radius: $df-radius-lg !important;
+  box-shadow: $df-shadow-md !important;
+  padding: $df-space-1 !important;
+  @include df-scrollbar;
+}
+
+.cdk-overlay-pane .mat-mdc-option {
+  min-height: 44px !important;
+  border-radius: $df-radius-sm !important;
+  margin: 2px 0 !important;
+  transition: background $df-transition, color $df-transition;
+}
+
+.cdk-overlay-pane .mat-mdc-option:hover:not(.mdc-list-item--disabled),
+.cdk-overlay-pane .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: $df-color-primary-soft !important;
+}
+
+.cdk-overlay-pane .search-container {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  min-height: 48px;
+  background: $df-color-surface;
+  display: flex;
+  align-items: center;
+  border-radius: $df-radius-md;
+  border: 1px solid $df-color-border;
+  margin: $df-space-1 $df-space-1 $df-space-2;
+  overflow: hidden;
+  box-shadow: $df-shadow-sm;
+}
+
+.cdk-overlay-pane .search-container input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  min-height: 44px;
+  padding-right: $df-space-3;
+}
+
+.cdk-overlay-pane .search-icon {
+  position: absolute;
+  left: $df-space-3;
+  color: $df-color-muted;
+  z-index: 1;
+}
+
+.cdk-overlay-pane .mat-datepicker-content,
+.cdk-overlay-pane .mat-timepicker-panel {
+  border-radius: $df-radius-lg !important;
+  box-shadow: $df-shadow-md !important;
+}

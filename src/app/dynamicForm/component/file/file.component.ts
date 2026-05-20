@@ -36,7 +36,7 @@ export class FileComponent extends BaseComponent {
    ngAfterViewInit(): void {
       const originalReset = this.control.formAction.formControl.reset;
       this.control.formAction.formControl.reset = (...args: any[]) => {
-         this.filename.nativeElement.value = '';
+         if (this.filename?.nativeElement) this.filename.nativeElement.value = '';
          originalReset.apply(this.control.formAction.formControl, args);
       };
    }
@@ -61,7 +61,7 @@ export class FileComponent extends BaseComponent {
       if (l.length) {
          if (this.control?.formAction?.size && l[0].size > this.control?.formAction?.size) {
             this.control.formAction?.onError('Impossibile caricare il file: dimensione superiore al limite consentito');
-            this.f_input.nativeElement.value = null;
+            if (this.f_input?.nativeElement) this.f_input.nativeElement.value = null as any;
             this.control.reset();
          } else {
             const f = l[0];

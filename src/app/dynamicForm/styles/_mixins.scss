@@ -1,0 +1,48 @@
+@use './tokens' as *;
+
+@mixin df-card($padding: $df-space-4) {
+  background: $df-color-surface;
+  border: 1px solid $df-color-border;
+  border-radius: $df-radius-lg;
+  box-shadow: $df-shadow-sm;
+  padding: $padding;
+}
+
+@mixin df-field-shell {
+  display: block;
+  width: 100%;
+  padding: $df-space-2;
+}
+
+@mixin df-focus-ring {
+  outline: none;
+  box-shadow: $df-shadow-focus;
+}
+
+@mixin df-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.55) transparent;
+
+  &::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(100, 116, 139, 0.45);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@mixin df-button-reset {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
