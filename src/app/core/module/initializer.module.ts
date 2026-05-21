@@ -10,7 +10,7 @@
  * ]
  */
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { PlAmbientModeLoaderService, PlCoreModule } from 'pl-core-utils-library';
+import { BROWSER, PlAmbientModeLoaderService, PlCoreModule } from 'pl-core-utils-library';
 
 import AmbientModeProviderFactory from '../initializer/AmbientModeLoader';
 
@@ -19,7 +19,7 @@ import AmbientModeProviderFactory from '../initializer/AmbientModeLoader';
 
 import { registerLocaleData } from '@angular/common';
 import locale from '@angular/common/locales/it';
- 
+
 registerLocaleData(locale);
 
 
@@ -39,15 +39,22 @@ registerLocaleData(locale);
 @NgModule({
   declarations: [],
   imports: [
-    PlCoreModule,
- 
+    PlCoreModule.forRoot({
+      browserValid: [BROWSER.CHROME, BROWSER.EDGE, BROWSER.FIREFOX],
+      disableLog: false,
+      maxCacheAge: 300000,
+      cacheTag: '@cachable@',
+      mockPath: 'public/mock',
+      enableAlert: true
+    }),
+
 
   ],
   providers: [
 
- 
+
     { provide: APP_INITIALIZER, useFactory: AmbientModeProviderFactory, deps: [PlAmbientModeLoaderService], multi: true },
- 
+
 
 
 
@@ -56,7 +63,7 @@ registerLocaleData(locale);
   ],
   exports: [
     PlCoreModule,
- 
+
 
   ]
 })

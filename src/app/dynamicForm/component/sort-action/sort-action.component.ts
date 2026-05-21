@@ -1,7 +1,8 @@
 /** @format */
 
-import {Component, ElementRef, Injector} from '@angular/core';
-import {BaseComponent} from '../base-component.component';
+import { Component, ElementRef, Injector } from '@angular/core';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { BaseComponent } from '../base-component.component';
 
 type SortDirection = 'ASC' | 'DESC';
 
@@ -21,18 +22,38 @@ export class SortActionComponent extends BaseComponent {
 
    getSortValue(): SortDirection {
       const value = this.control?.formAction?.formControl?.value;
+
       return value === 'DESC' ? 'DESC' : 'ASC';
    }
 
    getToggleIcon(): string | null {
       const icons = this.control?.formAction?.css?.toggleIcons;
-      if (!Array.isArray(icons) || icons.length < 2) return null;
+
+      if (!Array.isArray(icons) || icons.length < 2) {
+         return null;
+      }
+
       return this.getSortValue() === 'ASC' ? icons[0] : icons[1];
    }
 
    toggleSort(): void {
+      const formControl = this.control?.formAction?.formControl as
+         | FormControl
+         | FormArray
+         | FormGroup;
+
+      if (!formControl || formControl.disabled) {
+         return;
+      }
+
       const nextValue: SortDirection = this.getSortValue() === 'ASC' ? 'DESC' : 'ASC';
-      this.control?.formAction?.formControl?.setValue(nextValue);
+
+      formControl.setValue(nextValue);
+      formControl.markAsDirty();
+      formControl.markAsTouched();
+      formControl.updateValueAndValidity();
+
       this.control?.formAction?.toggleAction?.(nextValue);
+      this.control?.formAction?.action?.(formControl);
    }
 }

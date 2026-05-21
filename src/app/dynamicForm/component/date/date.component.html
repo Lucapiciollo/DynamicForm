@@ -4,31 +4,68 @@
    <ng-container>
       <div class="d-flex w-100">
          <mat-form-field class="w-100 customMY">
-            <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled"
-               >{{ control.formAction.title }}
+            <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">
+               {{ control.formAction.title }}
+
                @if (control.formAction?.info) {
-                  <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-1">info_outline</mat-icon>
+                  <mat-icon
+                     [matTooltip]="control.formAction?.info.msg"
+                     [style.color]="control.formAction?.info.color"
+                     class="mx-1">
+                     info_outline
+                  </mat-icon>
                }
             </mat-label>
-            <input [readonly]="control.formAction.readonly" matInput [matDatepicker]="datepicker" [matTooltip]="control.formAction?.tipContent || null" #datainput [min]="control.formAction?.optionDate?.min" [max]="control.formAction?.optionDate?.max" [formControl]="control.formAction?.formControl" [class.disabled]="control.formAction.formControl.disabled" />
-            <mat-datepicker-toggle matIconSuffix [for]="datepicker" (click)="stopOutFocus(datainput)"></mat-datepicker-toggle>
-            <mat-datepicker #datepicker (opened)="openedStream($event, $any(datainput))" (closed)="closedStream($event)">
+
+            <input
+               #datainput
+               matInput
+               [readonly]="control.formAction.readonly"
+               [matDatepicker]="datepicker"
+               [matTooltip]="control.formAction?.tipContent || null"
+               [min]="control.formAction?.optionDate?.min"
+               [max]="control.formAction?.optionDate?.max"
+               [formControl]="$any(control.formAction?.formControl)"
+               [class.disabled]="control.formAction.formControl.disabled"
+               [placeholder]="control.formAction.placeholder || ''"
+               (focus)="emitFocus()"
+               (blur)="emitBlur()" />
+
+            <mat-datepicker-toggle
+               matIconSuffix
+               [for]="datepicker"
+               (click)="stopOutFocus($any(datainput))">
+            </mat-datepicker-toggle>
+
+            <mat-datepicker
+               #datepicker
+               (opened)="openedStream($event, $any(datainput))"
+               (closed)="closedStream($event)">
                <mat-datepicker-actions>
-                  <button mat-button matDatepickerCancel>Chiudi</button>
-                  <button mat-raised-button color="primary" matDatepickerApply>OK</button>
+                  <button mat-button matDatepickerCancel type="button">Chiudi</button>
+                  <button mat-raised-button color="primary" matDatepickerApply type="button">OK</button>
                </mat-datepicker-actions>
             </mat-datepicker>
+
             @if (control.formAction?.resetButton && control.formAction.formControl.value != null) {
-               <button matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation(); control.formAction.formControl.reset()">
+               <button
+                  matSuffix
+                  mat-icon-button
+                  aria-label="Clear"
+                  type="button"
+                  (click)="$event.stopPropagation(); control.formAction.formControl.reset()">
                   <mat-icon>close</mat-icon>
                </button>
             }
          </mat-form-field>
+
          <div #dynamicContainer class=""></div>
       </div>
-      @for (error of getErrorFormControl(control.formAction?.formControl); track error) {
-         <mat-error>{{ error }} </mat-error>
+
+      @for (error of getErrorFormControl($any(control.formAction?.formControl)); track error) {
+         <mat-error>{{ error }}</mat-error>
       }
+
       @if (control?.formAction?.hint) {
          <mat-hint>{{ control.formAction.hint }}</mat-hint>
       }

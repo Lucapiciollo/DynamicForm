@@ -2,46 +2,26 @@
 
 import { ComponentRef, Injector, Signal, WritableSignal } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { FormComponentTemplate } from './component/FormComponentTemplate';
 import { Observable } from 'rxjs';
+import { FormComponentTemplate } from './component/FormComponentTemplate';
 
-/*********************************************************************************************************************************** */
+/***********************************************************************************************************************************
+ * RX METHOD
+ ***********************************************************************************************************************************/
 
-export type RxMethodRef = {destroy: () => void};
-export type RxMethod<Input> = ((input: Input | Signal<Input> | Observable<Input>, config?: {injector?: Injector}) => RxMethodRef) & RxMethodRef;
-
-/*********************************************************************************************************************************** */
-
-export type Utility = {
-   getFormByName?: (formName: string, parse: (response: any,form:any) => any) => void;
-   getActionByName?: (actionName: string, parse: (form: FormAction) => any) => void;
-   setDefaultOptions?: (formName: string, parse: (response: any) => Partial<TypeComboOption | {items: Array<any>; totalCount: number}>) => any;
-   getSelectedOptions?: (formName: string, parse: (option: Signal<TypeComboOption>) => any) => TypeComboOption;
-   onSettedOptions?: (formName: string, parse: (event: Signal<TypeComboOption>) => any) => TypeComboOption;
+export type RxMethodRef = {
+   destroy: () => void;
 };
 
-export type TypeOptionDate = {
-   max?: string;
-   min?: string;
-   onClose?: (value: any, formgroup: FormGroup) => void;
-};
-export type TypeOptionTime = {max?: string; min?: string};
-export type TypeOptionNumber = {max?: number; min?: number; step?: number};
-export type TypeCss = {
-   iconCss?: string;
-   classRadio?: Array<string>;
-   class?: Array<string>;
-   hide?: boolean;
-   font?: {color?: string};
-   rows?: number;
-   toggleIcons?: [string, string];
-};
-export type TypeInputText = {maxlength?: number; password?: boolean};
-export type TypeOption = {
-   date?: TypeOptionDate;
-   css?: TypeCss;
-   inputText?: TypeInputText;
-};
+export type RxMethod<Input> = ((
+   input: Input | Signal<Input> | Observable<Input>,
+   config?: { injector?: Injector },
+) => RxMethodRef) &
+   RxMethodRef;
+
+/***********************************************************************************************************************************
+ * ENUM
+ ***********************************************************************************************************************************/
 
 export enum TYPE_CONTROL_FORM {
    ARRAYSTRING,
@@ -69,28 +49,49 @@ export enum TYPE_CONTROL_FORM {
    YEAR,
 }
 
-export type Form = {
-   formAction: FormAction;
+/***********************************************************************************************************************************
+ * BASE TYPES
+ ***********************************************************************************************************************************/
+
+export type TypeOptionDate = {
+   max?: string;
+   min?: string;
+   onClose?: (value: any, formgroup: FormGroup) => void;
 };
 
-export type TypeForm = Array<Form>;
+export type TypeOptionTime = {
+   max?: string;
+   min?: string;
+};
 
-export type Group = {
-   title?: string;
+export type TypeOptionNumber = {
+   max?: number;
+   min?: number;
+   step?: number;
+};
+
+export type TypeInputText = {
+   maxlength?: number;
+   password?: boolean;
+};
+
+export type TypeCss = {
+   iconCss?: string | Array<string>;
+   classRadio?: Array<string>;
    class?: Array<string>;
-   formGroup?: TypeForm;
-   bottomLabel?: string;
-   actions?: Array<{
-      label?: string;
-      action: (questions: Array<Form>, idForm: string, formGroup: FormGroup | FormArray) => void;
-      cssClassIcon?: Array<string>;
-      cssClassButton?: Array<string>;
-      disabled?: boolean;
-      visible?: boolean;
-   }>;
+   hide?: boolean;
+   font?: {
+      color?: string;
+   };
+   rows?: number;
+   toggleIcons?: [string, string];
 };
 
-export type ConfigForm = Array<Group>;
+export type TypeOption = {
+   date?: TypeOptionDate;
+   css?: TypeCss;
+   inputText?: TypeInputText;
+};
 
 export type TypeRadioOption = Array<{
    id: any;
@@ -107,360 +108,397 @@ export type TypeComboOption = Array<{
    default?: boolean;
    hide?: boolean;
    selected?: boolean;
-   tag?: {bgTag: string; bgText: string; name: string};
+   tag?: {
+      bgTag: string;
+      bgText: string;
+      name: string;
+   };
 }>;
 
-export declare type FormAction = FormActionComboPaginate | FormActionGeneric | FormActionTextArea | FormActionQuestion | FormActionNumber | FormActionText | FormActionCombo | FormActionCurrency | FormActionCheckbox | FormActionDateRange | FormActionDate | FormActionYear | FormActionDateRange | FormActionDateTime | FormActionFile | FormActionTime;
-export declare type FormActionCombo = {
-   autocomplete?: boolean;
+/***********************************************************************************************************************************
+ * STRUCTURE
+ ***********************************************************************************************************************************/
+
+export type Form = {
+   formAction: FormAction;
+};
+
+export type TypeForm = Array<Form>;
+
+export type DynamicFormActionButton = {
+   label?: string;
+   name?: string;
+   translateId?: string;
+   icon?: string;
+
+   cssClassIcon?: Array<string>;
+   cssClassButton?: Array<string>;
+
    disabled?: boolean;
-   multiple?: boolean;
-   formName?: string;
+   visible?: boolean;
+
+   action: (
+      questions: Array<Form>,
+      idForm: string,
+      formGroup: FormGroup | FormArray,
+   ) => void;
+};
+
+export type Group = {
    title?: string;
+   class?: Array<string>;
+   formGroup?: TypeForm;
+   bottomLabel?: string;
+   actions?: Array<DynamicFormActionButton>;
+};
+
+export type ConfigForm = Array<Group>;
+
+/***********************************************************************************************************************************
+ * UTILITY
+ ***********************************************************************************************************************************/
+
+export type Utility = {
+   getFormByName?: (
+      formName: string,
+      parse: (response: FormAction, form?: Form) => any,
+   ) => void;
+
+   getActionByName?: (
+      actionName: string,
+      parse: (action: DynamicFormActionButton) => any,
+   ) => void;
+
+   setDefaultOptions?: (
+      formName: string,
+      parse: (
+         response: any,
+      ) => Partial<TypeComboOption | { items: Array<any>; totalCount: number }>,
+   ) => any;
+
+   getSelectedOptions?: (
+      formName: string,
+      parse: (option: Signal<TypeComboOption>) => any,
+   ) => TypeComboOption;
+
+   onSettedOptions?: (
+      formName: string,
+      parse: (event: Signal<TypeComboOption>) => any,
+   ) => TypeComboOption;
+};
+
+/***********************************************************************************************************************************
+ * EVENTS
+ ***********************************************************************************************************************************/
+
+export type DynamicFormOnChange = (
+   idGroup: number,
+   idForm: number,
+   formControl: FormControl | FormArray | FormGroup,
+   formName: string,
+   formGroup: Array<Form>,
+   type: TYPE_CONTROL_FORM,
+   prevValue: any,
+   allGroup: ConfigForm,
+   utility: Utility,
+) => void | Promise<void>;
+
+export type DynamicFormOnInitialize = (
+   idGroup: number,
+   idForm: number,
+   formControl: FormControl | FormArray | FormGroup,
+   formName: string,
+   formGroup: Array<Form>,
+   type: TYPE_CONTROL_FORM,
+   allGroup: ConfigForm,
+   paging?: { count: number; page: number; totalCount?: number } | null,
+   onOptionSetted?: Signal<Array<any>> | null,
+   utility?: Utility,
+) => void | Promise<void>;
+
+export type DynamicFormOpenClose = (
+   idGroup: number,
+   idForm: number,
+   formControl: FormControl | FormArray | FormGroup,
+   formName: string,
+   formGroup: Array<Form>,
+   allGroup: ConfigForm,
+   utility: Utility,
+) => void | Promise<void>;
+
+export type DynamicFormSearch = (
+   idGroup: number,
+   idForm: number,
+   formControl: FormControl | FormArray | FormGroup,
+   formName: string,
+   formGroup: Array<Form>,
+   search: string,
+   utility: Utility,
+) => void | Promise<void>;
+
+export type DynamicFormScrollEnd = (
+   idGroup: number,
+   idForm: number,
+   formControl: FormControl | FormArray | FormGroup,
+   formName: string,
+   formGroup: Array<Form>,
+   paging: { count: number; page: number; totalCount?: number },
+   utility: Utility,
+) => void | Promise<void>;
+
+export type DynamicFormFocusBlur = (
+   idGroup: number,
+   idForm: number,
+   formControl: FormControl | FormArray | FormGroup,
+   formName: string,
+   formGroup: Array<Form>,
+   allGroup: ConfigForm,
+   utility: Utility,
+) => void | Promise<void>;
+
+/***********************************************************************************************************************************
+ * BASE FORM ACTION
+ ***********************************************************************************************************************************/
+
+export type FormActionBase = {
+   formName?: string;
+   disabled?: boolean;
+   title?: string;
+   label?: string;
+   translateId?: string;
+
    formControl?: FormControl | FormArray | FormGroup;
    css?: TypeCss;
-   type?: TYPE_CONTROL_FORM.COMBO;
+   type?: TYPE_CONTROL_FORM;
+
+   componentRef?: Array<ComponentRef<FormComponentTemplate>>;
+
+   value?: any;
+   placeholder?: string;
+
+   formGroup?: ConfigForm;
+
+   tipContent?: string;
    hint?: string;
-   tipContent?: string;
-   formGroup?: ConfigForm;
-   info?: {msg: string; color: string};
-   disabledOption?: TypeComboOption;
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   opened?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm, utility: Utility) => void;
-   closed?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, paging: {count: number; page: number}, onOptionSetted: Signal<Array<any>>, utility: Utility) => void;
-   keyCombo?: {
-      keyId: string | Array<string>;
-      keyDescription: string | Array<string>;
-      keySearch?: string;
+   info?: {
+      msg: string;
+      color: string;
    };
-   options?: WritableSignal<TypeComboOption>;
-   optionsDisabled?: Signal<TypeComboOption>;
-};
 
-export declare type FormActionComboPaginate = {
+   resetButton?: boolean;
    autocomplete?: boolean;
-   disabled?: boolean;
    multiple?: boolean;
-   formName?: string;
-   title?: string;
-   formControl: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type: TYPE_CONTROL_FORM.COMBOPAGINATE;
-   tipContent?: string;
-   formGroup?: ConfigForm;
-   info?: {msg: string; color: string};
-   paging?: {count: number; page: number; totalCount: number};
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, paging: {count: number; page: number}, onOptionSetted: Signal<Array<any>>, utility: Utility) => void;
-   opened?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm, utility: Utility) => void;
-   closed?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm, utility: Utility) => void;
-   remoteData: RxMethod<{param: any; externalStore: WritableSignal<any>}> | RxMethodRef;
-   keyCombo?: {
-      keyId: string | Array<string>;
-      keyDescription: string | Array<string>;
-      keySearch?: string;
-   };
-   options?: Signal<TypeComboOption>;
-   paramsForRemoteData?: Signal<{[key: string]: any}>;
-   optionsDisabled?: Signal<TypeComboOption>;
-};
+   readonly?: boolean;
+   hidden?: boolean;
+   disableSpeech?: boolean;
 
-export declare type FormActionCheckbox = {
-   formName?: string;
-   disabled?: boolean;
-   title?: string;
-   formControl?: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type?: TYPE_CONTROL_FORM.CHECKBOX;
-   tipContent?: string;
-   formGroup?: ConfigForm;
-   info?: {msg: string; color: string};
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, utility: Utility) => void;
-   action?: (formControl: FormControl | FormArray | FormGroup) => void;
-   utility?: {
-      getFormByName: (formName: string, parse: (form: any) => any) => FormActionCombo;
-      setDefaultOptions: (option: Partial<TypeComboOption | {items: Array<any>; totalCount: number}>) => void;
-   };
-};
-
-export declare type FormActionCurrency = {
-   formName?: string;
-   disabled?: boolean;
-   title?: string;
+   optionInputText?: TypeInputText;
    optionNumber?: TypeOptionNumber;
-   formControl?: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type?: TYPE_CONTROL_FORM.CURRENCY;
-   tipContent?: string;
-   formGroup?: ConfigForm;
-   info?: {msg: string; color: string};
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, utility: Utility) => void;
-   action?: (formControl: FormControl | FormArray | FormGroup) => void;
-   utility?: {
-      getFormByName: (formName: string, parse: (form: any) => any) => FormActionCombo;
-      setDefaultOptions: (option: Partial<TypeComboOption | {items: Array<any>; totalCount: number}>) => void;
-   };
-};
+   optionDate?: TypeOptionDate;
+   optionTime?: TypeOptionTime;
+   optionsTime?: TypeOptionTime;
 
-export declare type FormActionDate = {
-   formName?: string;
-   disabled?: boolean;
-   title?: string;
-   formControl?: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type?: TYPE_CONTROL_FORM.DATA;
-   readonly: boolean;
-   tipContent?: string;
-   hint?: string;
-   formGroup?: ConfigForm;
-   optionDate?: TypeOptionDate;
-   info?: {msg: string; color: string};
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, utility: Utility) => void;
-   action?: (formControl: FormControl | FormArray | FormGroup) => void;
-   utility?: {
-      getFormByName: (formName: string, parse: (form: any) => any) => FormActionCombo;
-      setDefaultOptions: (option: Partial<TypeComboOption | {items: Array<any>; totalCount: number}>) => void;
-   };
-};
-export declare type FormActionYear = {
-   formName?: string;
-   disabled?: boolean;
-   title?: string;
-   formControl?: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type?: TYPE_CONTROL_FORM.YEAR;
-   readonly: boolean;
-   tipContent?: string;
-   hint?: string;
-   formGroup?: ConfigForm;
-   optionDate?: TypeOptionDate;
-   info?: {msg: string; color: string};
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, utility: Utility) => void;
-   action?: (formControl: FormControl | FormArray | FormGroup) => void;
-   utility?: {
-      getFormByName: (formName: string, parse: (form: any) => any) => FormActionCombo;
-      setDefaultOptions: (option: Partial<TypeComboOption | {items: Array<any>; totalCount: number}>) => void;
-   };
-};
+   rows?: number;
+   accept?: string;
+   href?: string;
+   target?: string;
+   currency?: string;
+   size?: number;
+   pageSize?: number;
 
-export declare type FormActionDateRange = {
-   formName?: string;
-   disabled?: boolean;
-   title?: string;
-   formControl?: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type?: TYPE_CONTROL_FORM.DATARANGE;
-   readonly: boolean;
-   tipContent?: string;
-   hint?: string;
-   formGroup?: ConfigForm;
-   optionDate?: TypeOptionDate;
-   info?: {msg: string; color: string};
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, utility: Utility) => void;
-   action?: (formControl: FormControl | FormArray | FormGroup) => void;
-   onClose(
+   options?: WritableSignal<TypeComboOption> | Signal<TypeComboOption> | TypeComboOption | any;
+   optionsDisabled?: WritableSignal<TypeComboOption> | Signal<TypeComboOption> | TypeComboOption | any;
+   disabledOption?: TypeComboOption;
+
+   paramsForRemoteData?: WritableSignal<{ [key: string]: any }> | Signal<{ [key: string]: any }> | any;
+
+   remoteData?: RxMethod<{ param: any; externalStore: WritableSignal<any> }> | RxMethodRef | any;
+
+   keyCombo?: {
+      keyId: string | Array<string>;
+      keyDescription: string | Array<string>;
+      keySearch?: string;
+   };
+
+   paging?: {
+      count: number;
+      page: number;
+      totalCount?: number;
+   };
+
+   props?: Record<string, any>;
+
+   onChange?: DynamicFormOnChange;
+   onInitialize?: DynamicFormOnInitialize;
+
+   /**
+    * Solo componenti apribili:
+    * COMBO, COMBOPAGINATE, DATA, DATETIME, TIME, YEAR.
+    */
+   opened?: DynamicFormOpenClose;
+   closed?: DynamicFormOpenClose;
+
+   /**
+    * Solo componenti con input/focus reale:
+    * TEXT, NUMBER, CURRENCY, TEXTAREA, EMAIL, TIME, ecc.
+    */
+   onFocus?: DynamicFormFocusBlur;
+   onBlur?: DynamicFormFocusBlur;
+
+   /**
+    * Solo combo/search/autocomplete.
+    */
+   onSearch?: DynamicFormSearch;
+
+   /**
+    * Solo combo paginata.
+    */
+   onScrollEnd?: DynamicFormScrollEnd;
+
+   action?: (formControl: FormControl | FormArray | FormGroup) => void | Promise<void>;
+
+   toggleAction?: (direction: 'ASC' | 'DESC' | string) => void;
+
+   onError?: (message: string) => void;
+
+   /**
+    * Specifico DateRange storico.
+    */
+   onClose?: (
       value: any,
       formControl: FormGroup<{
          from: FormControl<Date | null>;
          to: FormControl<Date | null>;
       }>,
       utility: Utility,
-   );
+   ) => void | Promise<void>;
+
    utility?: {
-      getFormByName: (formName: string, parse: (form: any) => any) => FormActionCombo;
-      setDefaultOptions: (option: Partial<TypeComboOption | {items: Array<any>; totalCount: number}>) => void;
+      getFormByName?: (formName: string, parse: (form: any) => any) => FormActionCombo;
+      setDefaultOptions?: (
+         option: Partial<TypeComboOption | { items: Array<any>; totalCount: number }>,
+      ) => void;
    };
-};
 
-export declare type FormActionDateTime = {
-   formName?: string;
-   disabled?: boolean;
-   title?: string;
-   formControl?: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type?: TYPE_CONTROL_FORM.DATETIME;
-   tipContent?: string;
-   hint?: string;
-   formGroup?: ConfigForm;
-   info?: {msg: string; color: string};
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, utility: Utility) => void;
-   action?: (formControl: FormControl | FormArray | FormGroup) => void;
-   utility?: {
-      getFormByName: (formName: string, parse: (form: any) => any) => FormActionCombo;
-      setDefaultOptions: (option: Partial<TypeComboOption | {items: Array<any>; totalCount: number}>) => void;
-   };
-};
-
-export declare type FormActionTime = {
-   formName?: string;
-   disabled?: boolean;
-   title?: string;
-   formControl?: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type?: TYPE_CONTROL_FORM.TIME;
-   tipContent?: string;
-   optionsTime?: TypeOptionTime;
-   hint?: string;
-   formGroup?: ConfigForm;
-   info?: {msg: string; color: string};
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, utility: Utility) => void;
-   action?: (formControl: FormControl | FormArray | FormGroup) => void;
-   utility?: {
-      getFormByName: (formName: string, parse: (form: any) => any) => FormActionCombo;
-      setDefaultOptions: (option: Partial<TypeComboOption | {items: Array<any>; totalCount: number}>) => void;
-   };
-};
-
-export declare type FormActionFile = {
-   formName?: string;
-   disabled?: boolean;
-   title?: string;
-   formControl?: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type?: TYPE_CONTROL_FORM.FILE;
-   tipContent?: string;
-   placeholder?: string;
-   formGroup?: ConfigForm;
-   hint?: string;
-   size?: number;
-   info?: {msg: string; color: string};
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, utility: Utility) => void;
-   action?: (formControl: FormControl | FormArray | FormGroup) => void;
-   utility?: {
-      getFormByName: (formName: string, parse: (form: any) => any) => FormActionCombo;
-      setDefaultOptions: (option: Partial<TypeComboOption | {items: Array<any>; totalCount: number}>) => void;
-   };
-   onError?: (message: string) => void;
-};
-
-export declare type FormActionText = {
-   formName?: string;
-   disabled?: boolean;
-   title?: string;
-   formControl?: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type?: TYPE_CONTROL_FORM.TEXT;
-   disableSpeech?: boolean;
-   tipContent?: string;
-   optionInputText?: TypeInputText;
-   placeholder: string;
-   formGroup?: ConfigForm;
-   info?: {msg: string; color: string};
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, utility: Utility) => void;
-   action?: (formControl: FormControl | FormArray | FormGroup) => void;
-   utility?: {
-      getFormByName: (formName: string, parse: (form: any) => any) => FormActionCombo;
-      setDefaultOptions: (option: Partial<TypeComboOption | {items: Array<any>; totalCount: number}>) => void;
-   };
-};
-
-export declare type FormActionNumber = {
-   formName?: string;
-   disabled?: boolean;
-   title?: string;
-   formControl?: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type?: TYPE_CONTROL_FORM.NUMBER;
-   tipContent?: string;
-   optionNumber?: TypeOptionNumber;
-   placeholder: string;
-   formGroup?: ConfigForm;
-   info?: {msg: string; color: string};
-   hint?: string;
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, utility: Utility) => void;
-   action?: (formControl: FormControl | FormArray | FormGroup) => void;
-   utility?: {
-      getFormByName: (formName: string, parse: (form: any) => any) => FormActionCombo;
-      setDefaultOptions: (option: Partial<TypeComboOption | {items: Array<any>; totalCount: number}>) => void;
-   };
-};
-
-export declare type FormActionQuestion = {
-   formName?: string;
-   disabled?: boolean;
-   title?: string;
-   formControl?: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type?: TYPE_CONTROL_FORM.RADIOGROUP;
-   tipContent?: string;
-   formGroup?: ConfigForm;
-   options?: Signal<TypeComboOption>;
-   info?: {msg: string; color: string};
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, utility: Utility) => void;
-   action?: (formControl: FormControl | FormArray | FormGroup) => void;
-};
-
-export declare type FormActionTextArea = {
-   formName?: string;
-   disabled?: boolean;
-   title?: string;
-   formControl?: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type?: TYPE_CONTROL_FORM.TEXTAREA;
-   disableSpeech?: boolean;
-   tipContent?: string;
-   optionInputText?: TypeInputText;
-   placeholder: string;
-   formGroup?: ConfigForm;
-   info?: {msg: string; color: string};
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, utility: Utility) => void;
-   action?: (formControl: FormControl | FormArray | FormGroup) => void;
-};
-
-export declare type FormActionGeneric = {
-   formName?: string;
-   disabled?: boolean;
-   componentRef?: Array<ComponentRef<FormComponentTemplate>>;
-   title?: string;
-   label?: string;
-   value?: any;
-   placeholder?: string;
-   formControl?: FormControl | FormArray | FormGroup;
-   css?: TypeCss;
-   type?: TYPE_CONTROL_FORM;
-   optionInputText?: TypeInputText;
-   optionNumber?: TypeOptionNumber;
-   optionDate?: TypeOptionDate;
-   optionTime?: TypeOptionTime;
-   formGroup?: ConfigForm;
-   tipContent?: string;
-   hint?: string;
-   info?: {msg: string; color: string};
-   resetButton?: boolean;
-   rows?: number;
-   accept?: string;
-   href?: string;
-   target?: string;
-   currency?: string;
-   pageSize?: number;
-   autocomplete?: boolean;
-   multiple?: boolean;
-   options?: any;
-   optionsDisabled?: any;
-   paramsForRemoteData?: any;
-   keyCombo?: {keyId: string | Array<string>; keyDescription: string | Array<string>; keySearch?: string};
-   remoteData?: any;
-   paging?: {count: number; page: number; totalCount?: number};
-   readonly?: boolean;
-   onChange?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, prevValue: any, allGroup: ConfigForm, utility: Utility) => void;
-   onInitialize?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, type: TYPE_CONTROL_FORM, allGroup: ConfigForm, paging?: {count: number; page: number}, onOptionSetted?: Signal<Array<any>>, utility?: Utility) => void;
-   opened?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm, utility: Utility) => void;
-   closed?: (idGroup: number, idForm: number, formControl: FormControl | FormArray | FormGroup, formName: string, formGroup: Array<Form>, allGroup: ConfigForm, utility: Utility) => void;
-   action?: (formControl: FormControl | FormArray | FormGroup) => void;
-   toggleAction?: (direction: 'ASC' | 'DESC' | string) => void;
-   props?: Record<string, any>;
    [key: string]: any;
 };
+
+/***********************************************************************************************************************************
+ * SPECIFIC FORM ACTIONS
+ ***********************************************************************************************************************************/
+
+export type FormActionCombo = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.COMBO;
+   options?: WritableSignal<TypeComboOption>;
+   optionsDisabled?: Signal<TypeComboOption>;
+   keyCombo?: {
+      keyId: string | Array<string>;
+      keyDescription: string | Array<string>;
+      keySearch?: string;
+   };
+};
+
+export type FormActionComboPaginate = FormActionBase & {
+   type: TYPE_CONTROL_FORM.COMBOPAGINATE;
+   formControl: FormControl | FormArray | FormGroup;
+   remoteData: RxMethod<{ param: any; externalStore: WritableSignal<any> }> | RxMethodRef | any;
+   options?: Signal<TypeComboOption> | WritableSignal<TypeComboOption>;
+   paramsForRemoteData?: Signal<{ [key: string]: any }> | WritableSignal<{ [key: string]: any }>;
+   paging?: {
+      count: number;
+      page: number;
+      totalCount: number;
+   };
+   keyCombo?: {
+      keyId: string | Array<string>;
+      keyDescription: string | Array<string>;
+      keySearch?: string;
+   };
+};
+
+export type FormActionCheckbox = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.CHECKBOX;
+};
+
+export type FormActionCurrency = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.CURRENCY;
+   optionNumber?: TypeOptionNumber;
+};
+
+export type FormActionDate = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.DATA;
+   readonly?: boolean;
+   optionDate?: TypeOptionDate;
+};
+
+export type FormActionYear = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.YEAR;
+   readonly?: boolean;
+   optionDate?: TypeOptionDate;
+};
+
+export type FormActionDateRange = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.DATARANGE;
+   readonly?: boolean;
+   optionDate?: TypeOptionDate;
+};
+
+export type FormActionDateTime = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.DATETIME;
+};
+
+export type FormActionTime = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.TIME;
+   optionsTime?: TypeOptionTime;
+};
+
+export type FormActionFile = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.FILE;
+   accept?: string;
+   size?: number;
+};
+
+export type FormActionText = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.TEXT;
+   optionInputText?: TypeInputText;
+};
+
+export type FormActionNumber = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.NUMBER;
+   optionNumber?: TypeOptionNumber;
+};
+
+export type FormActionQuestion = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.RADIOGROUP;
+   options?: Signal<TypeComboOption>;
+};
+
+export type FormActionTextArea = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.TEXTAREA;
+   optionInputText?: TypeInputText;
+};
+
+export type FormActionGeneric = FormActionBase;
+
+/**
+ * Unione finale.
+ *
+ * Manteniamo i tipi specifici perché i componenti possono usarli,
+ * ma la base è abbastanza ampia da non rompere builder e vecchi form.
+ */
+export type FormAction =
+   | FormActionComboPaginate
+   | FormActionCombo
+   | FormActionGeneric
+   | FormActionTextArea
+   | FormActionQuestion
+   | FormActionNumber
+   | FormActionText
+   | FormActionCurrency
+   | FormActionCheckbox
+   | FormActionDateRange
+   | FormActionDate
+   | FormActionYear
+   | FormActionDateTime
+   | FormActionFile
+   | FormActionTime;

@@ -1,20 +1,40 @@
 <!-- @format -->
 
-<ng-container *ngIf="!control.formAction?.css?.hide">
-   <div class="df-sort-action row customMY w-auto p-0 text-end" [matTooltip]="control.formAction?.tipContent || null">
-      <button
-         mat-icon-button
-         type="button"
-         [disabled]="control.formAction?.formControl?.disabled"
-         [class.disabled]="control.formAction?.formControl?.disabled"
-         (click)="toggleSort()">
-         <ng-container *ngIf="getToggleIcon() as icon; else defaultSortIcon">
-            <img [ngClass]="control.formAction?.css?.iconCss" [src]="icon" alt="sort" />
-         </ng-container>
+@if (!control.formAction?.css?.hide) {
+   <ng-container>
+      <div
+         class="df-sort-action row customMY w-auto p-0 text-end"
+         [matTooltip]="control.formAction?.tipContent || null">
 
-         <ng-template #defaultSortIcon>
-            <mat-icon>{{ getSortValue() === 'ASC' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
-         </ng-template>
-      </button>
-   </div>
-</ng-container>
+         <button
+            mat-icon-button
+            type="button"
+            [disabled]="control.formAction?.formControl?.disabled"
+            [class.disabled]="control.formAction?.formControl?.disabled"
+            (focus)="emitFocus()"
+            (blur)="emitBlur()"
+            (click)="toggleSort()">
+
+            @if (getToggleIcon(); as icon) {
+               <img
+                  [ngClass]="control.formAction?.css?.iconCss"
+                  [src]="icon"
+                  alt="sort" />
+            } @else {
+               <mat-icon>
+                  {{ getSortValue() === 'ASC' ? 'arrow_upward' : 'arrow_downward' }}
+               </mat-icon>
+            }
+
+         </button>
+
+         <div #dynamicContainer class=""></div>
+      </div>
+
+      @if (control.formAction?.formControl) {
+         @for (error of getErrorFormControl($any(control.formAction?.formControl)); track error) {
+            <mat-error>{{ error }}</mat-error>
+         }
+      }
+   </ng-container>
+}

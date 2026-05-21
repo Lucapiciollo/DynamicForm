@@ -1,23 +1,44 @@
 /**
  * @format
- * @author luca.piciollo
- * @email lucapiciollo@gmail.com
- * @create date 2022-03-29 19:47:50
- * @modify date 2024-11-24 11:29:45
- * @desc [description]
  */
 
-import { Component, DestroyRef, ElementRef, EventEmitter, Injector, Input, Output, Signal, ViewChild, ViewContainerRef, WritableSignal, effect, inject, signal, untracked } from '@angular/core';
+import {
+   Component,
+   DestroyRef,
+   ElementRef,
+   EventEmitter,
+   Injector,
+   Input,
+   Output,
+   Signal,
+   ViewChild,
+   ViewContainerRef,
+   WritableSignal,
+   effect,
+   inject,
+   signal,
+   untracked,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup } from '@angular/forms';
-import { ReplaySubject, Subscriber, Subscription, combineLatest, pairwise, startWith } from 'rxjs';
-import { IBaseComponent } from './base-component-interface';
-import { GetErrorForm, GetErrorFormControl, GetErrorFormControlFromObj } from './error-message-utils';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { combineLatest, pairwise, ReplaySubject, startWith, Subscriber, Subscription } from 'rxjs';
+
+import { IBaseComponent } from './base-component-interface';
 import { FormComponentTemplate } from './FormComponentTemplate';
-import { Form, FormAction, TYPE_CONTROL_FORM, TypeComboOption, Utility } from '../dynamic-form.interface';
+import { GetErrorForm, GetErrorFormControl, GetErrorFormControlFromObj } from './error-message-utils';
+
 import { autoUnsubscribe } from '../custom.operator';
 import { COMBO_PAING_INIT, MAX_ELEMENT_COMBO_SHOW } from '../dynamic-form.module';
+import {
+   ConfigForm,
+   DynamicFormActionButton,
+   Form,
+   FormAction,
+   TYPE_CONTROL_FORM,
+   TypeComboOption,
+   Utility,
+} from '../dynamic-form.interface';
 
 @Component({
    selector: '',
@@ -26,42 +47,65 @@ import { COMBO_PAING_INIT, MAX_ELEMENT_COMBO_SHOW } from '../dynamic-form.module
 })
 export class BaseComponent implements IBaseComponent {
    @Output() onCaptureCam: EventEmitter<File> = new EventEmitter<File>();
-   @Output() instance: EventEmitter<{instance: BaseComponent; name: string}> = new EventEmitter<{
+
+   @Output() instance: EventEmitter<{ instance: BaseComponent; name: string }> = new EventEmitter<{
       instance: BaseComponent;
       name: string;
    }>();
-   private obsQuestions: ReplaySubject<Form> = new ReplaySubject(1);
-   private obsAllGroup: ReplaySubject<any> = new ReplaySubject(1);
-   public initPagination: {count: number; page: number} = inject(COMBO_PAING_INIT);
-   public combotext: {maxElementShow: number} = inject(MAX_ELEMENT_COMBO_SHOW);
-   public mySignal: WritableSignal<{items: Array<any>; totalCount: number}> = signal(null);
+
+   private obsQuestions: ReplaySubject<{ formAction: FormAction }> = new ReplaySubject(1);
+   private obsAllGroup: ReplaySubject<ConfigForm> = new ReplaySubject(1);
+
+   public initPagination: { count: number; page: number; totalCount?: number } = inject(COMBO_PAING_INIT);
+   public combotext: { maxElementShow: number } = inject(MAX_ELEMENT_COMBO_SHOW);
+
+   public mySignal: WritableSignal<{ items: Array<any>; totalCount: number } | null> = signal(null);
    public readonly onOptionSetted: Signal<any> = signal(null);
+
    public destroyRef: DestroyRef = inject(DestroyRef);
+
    public getErrorForm: (formGroup: FormGroup, formName: string) => Array<string> = GetErrorForm;
    public getErrorFormControl: (formControl: FormControl) => Array<string> = GetErrorFormControl;
    public getErrorFormControlFromObj: (errors: Object) => Array<string> = GetErrorFormControlFromObj;
-   public control: any = {formAction: {}};
+
+   public control: { formAction: FormAction } = { formAction: {} as FormAction };
+
    public obs: Subscriber<Subscription> = new Subscriber<Subscription>();
-   // public setDisabledOption: WritableSignal<Array<string>> = signal([]);
-   public setInitialOption: WritableSignal<TypeComboOption | {items: Array<any>; totalCount: number}> = signal([]);
-   /************************************************************************************************************************************************************************ */
+
+   public setInitialOption: WritableSignal<TypeComboOption | { items: Array<any>; totalCount: number } | null> = signal(null);
+
    public _autocomplete: MatAutocompleteTrigger = null;
    protected selectedItems: any[] = new Array<any>();
-   public _allGroup: any;
-   public internalValue;
+
+   public _allGroup: ConfigForm;
+   public internalValue: any;
    public utils: Utility;
-   /************************************************************************************************************************************************************************ */
+
+   public signalStoreBase: any;
 
    @Input() formActionIndex: number = 0;
    @Input() formGroupIndex: number = 0;
-   @Input() group: any = null;
-   @Input() set allGroup(allGroup: any) {
+
+   /**
+    * Questo è il gruppo corrente, cioè group.formGroup passato dal DynamicFormComponent.
+    */
+   @Input() group: Array<Form> = null;
+
+   @Input() set allGroup(allGroup: ConfigForm) {
       this._allGroup = allGroup;
       this.obsAllGroup.next(this._allGroup);
    }
-   /************************************************************************************************************************************************************************ */
 
-   @Input() set question(config: Form) {
+   /**
+    * ATTENZIONE:
+    * Dal template attuale arriva direttamente `formAction`, non il wrapper `{ formAction }`.
+    *
+    * dynamic-form.component.html:
+    * [question]="formAction"
+    *
+    * Però manteniamo anche compatibilità con eventuale `{ formAction }`.
+    */
+   @Input() set question(config: FormAction | Form) {
       this.utils = {
          getFormByName: this.getFormByName,
          setDefaultOptions: this.setDefaultOptions,
@@ -70,223 +114,545 @@ export class BaseComponent implements IBaseComponent {
          getActionByName: this.getActionByName,
       };
 
-      this.control = {formAction: config};
+      const normalizedControl = this.normalizeQuestion(config);
 
-      this.control.formAction.instance = this;
-      if (
-         this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE ||
-         this.control.formAction.type == TYPE_CONTROL_FORM.TIME ||
-         this.control.formAction.type == TYPE_CONTROL_FORM.COMBO ||
-         this.control.formAction.type == TYPE_CONTROL_FORM.RADIOGROUP
-      ) {
-         this.control.formAction.options = typeof this.control.formAction.options === 'function' ? this.control.formAction.options : signal(this.control.formAction.options || null);
-         this.control.formAction.optionsDisabled = typeof this.control.formAction.optionsDisabled === 'function' ? this.control.formAction.optionsDisabled : signal(this.control.formAction.optionsDisabled || null);
-         this.control.formAction.paramsForRemoteData = typeof this.control.formAction.paramsForRemoteData === 'function' ? this.control.formAction.paramsForRemoteData : signal(this.control.formAction.paramsForRemoteData || null);
+      this.control = normalizedControl;
+
+      if (this.control?.formAction) {
+         this.control.formAction.instance = this;
       }
+
+      this.prepareSignalsForOptionBasedControls();
 
       this.obsQuestions.next(this.control);
    }
 
-   /************************************************************************************************************************************************************************ */
-   public signalStoreBase;
-   public set signalStoreValue(value) {
+   public set signalStoreValue(value: any) {
       this.signalStoreBase = value;
    }
-   /************************************************************************************************************************************************************************ */
 
    constructor(
       protected injector: Injector,
       protected element: ElementRef,
    ) {}
 
-   /************************************************************************************************************************************************************************ */
-   onSetOptionWithSearch = () => {
-      if (typeof this.control?.formAction?.options != 'function') {
+   /***********************************************************************************************************************************
+    * NORMALIZATION
+    ***********************************************************************************************************************************/
+
+   private normalizeQuestion(config: FormAction | Form): { formAction: FormAction } {
+      if (!config) {
+         return { formAction: {} as FormAction };
+      }
+
+      if ((config as Form)?.formAction) {
+         return config as Form;
+      }
+
+      return {
+         formAction: config as FormAction,
+      };
+   }
+
+   private prepareSignalsForOptionBasedControls(): void {
+      const type = this.control?.formAction?.type;
+
+      if (
+         type === TYPE_CONTROL_FORM.COMBOPAGINATE ||
+         type === TYPE_CONTROL_FORM.TIME ||
+         type === TYPE_CONTROL_FORM.COMBO ||
+         type === TYPE_CONTROL_FORM.RADIOGROUP
+      ) {
+         this.control.formAction.options =
+            typeof this.control.formAction.options === 'function'
+               ? this.control.formAction.options
+               : signal(this.control.formAction.options || null);
+
+         this.control.formAction.optionsDisabled =
+            typeof this.control.formAction.optionsDisabled === 'function'
+               ? this.control.formAction.optionsDisabled
+               : signal(this.control.formAction.optionsDisabled || null);
+
+         this.control.formAction.paramsForRemoteData =
+            typeof this.control.formAction.paramsForRemoteData === 'function'
+               ? this.control.formAction.paramsForRemoteData
+               : signal(this.control.formAction.paramsForRemoteData || null);
+      }
+   }
+
+   /***********************************************************************************************************************************
+    * INIT
+    ***********************************************************************************************************************************/
+
+   ngOnInit(): void {
+      combineLatest({
+         control: this.obsQuestions,
+         allGroup: this.obsAllGroup,
+      })
+         .pipe(autoUnsubscribe(this.obs), takeUntilDestroyed(this.destroyRef))
+         .subscribe(({ allGroup, control }) => {
+            this.control = control;
+
+            this.setupArrayStringSearchOptions(control);
+            this.setupComboPagination(control);
+            this.setupDisabledState(control);
+            this.overrideComboPaginateReset(control, allGroup);
+            this.setupComboEffects(control);
+            this.applyCssClasses(control);
+            this.emitInitialize(control, allGroup);
+            this.listenValueChanges(control);
+         });
+   }
+
+   ngOnDestroy(): void {}
+
+   /***********************************************************************************************************************************
+    * SETUP
+    ***********************************************************************************************************************************/
+
+   private setupArrayStringSearchOptions(control: { formAction: FormAction }): void {
+      if (control?.formAction?.type === TYPE_CONTROL_FORM.ARRAYSTRING) {
+         this.onSetOptionWithSearch();
+      }
+   }
+
+   private setupComboPagination(control: { formAction: FormAction }): void {
+      if (control?.formAction?.type === TYPE_CONTROL_FORM.COMBOPAGINATE) {
+         control.formAction.paging = {
+            ...this.initPagination,
+            totalCount: control.formAction?.paging?.totalCount ?? this.initPagination?.totalCount ?? 0,
+         };
+      }
+   }
+
+   private setupDisabledState(control: { formAction: FormAction }): void {
+      const formControl = control?.formAction?.formControl;
+
+      if (!formControl) {
+         return;
+      }
+
+      if (formControl.disabled) {
+         formControl.disable({ emitEvent: false });
+      } else {
+         formControl.enable({ emitEvent: false });
+      }
+   }
+
+   private overrideComboPaginateReset(control: { formAction: FormAction }, allGroup: ConfigForm): void {
+      if (control?.formAction?.type !== TYPE_CONTROL_FORM.COMBOPAGINATE) {
+         return;
+      }
+
+      const formControl = control?.formAction?.formControl;
+
+      if (!formControl) {
+         return;
+      }
+
+      const originalReset = formControl.reset.bind(formControl);
+
+      formControl.reset = (args?: any) => {
+         try {
+            originalReset(args);
+         } catch (e) {
+            originalReset([args]);
+         }
+
+         this.emitInitialize(control, allGroup);
+      };
+   }
+
+   private setupComboEffects(control: { formAction: FormAction }): void {
+      if (
+         control?.formAction?.type !== TYPE_CONTROL_FORM.COMBO &&
+         control?.formAction?.type !== TYPE_CONTROL_FORM.COMBOPAGINATE
+      ) {
+         return;
+      }
+
+      if (!this.signalStoreBase) {
+         return;
+      }
+
+      effect(
+         () => {
+            const optionsFn = this.control?.formAction?.options;
+
+            if (typeof optionsFn !== 'function') {
+               return;
+            }
+
+            const opt = optionsFn();
+
+            if (opt != null) {
+               untracked(() => {
+                  this.signalStoreBase.setSelectedOptions([]);
+                  this.signalStoreBase.setFilteredOptions(opt, this.control.formAction?.keyCombo);
+                  this.signalStoreBase.setTotalOptions(opt, this.control.formAction?.keyCombo);
+                  this.setInitialOption.set(opt);
+               });
+            }
+         },
+         { injector: this.injector, allowSignalWrites: true },
+      );
+
+      effect(
+         () => {
+            const disabledFn = this.control?.formAction?.optionsDisabled;
+
+            if (typeof disabledFn !== 'function') {
+               return;
+            }
+
+            const disable = disabledFn();
+
+            untracked(() => this.signalStoreBase?.addDisabledOption(disable));
+         },
+         { injector: this.injector, allowSignalWrites: true },
+      );
+   }
+
+   private applyCssClasses(control: { formAction: FormAction }): void {
+      if (!control?.formAction?.css?.class?.length) {
+         return;
+      }
+
+      control.formAction.css.class.forEach((c: string) => {
+         this.element?.nativeElement?.classList?.add(c);
+      });
+   }
+
+   private listenValueChanges(control: { formAction: FormAction }): void {
+      const formControl = control?.formAction?.formControl;
+
+      if (!formControl) {
+         return;
+      }
+
+      formControl.valueChanges
+         .pipe(autoUnsubscribe(this.obs), takeUntilDestroyed(this.destroyRef), startWith(null), pairwise())
+         .subscribe(([prevValue, next]: [any, any]) => {
+            this.callOnChange(prevValue, next);
+         });
+   }
+
+   /***********************************************************************************************************************************
+    * OPTION SETTER FOR ARRAYSTRING
+    ***********************************************************************************************************************************/
+
+   public onSetOptionWithSearch = (): void => {
+      if (typeof this.control?.formAction?.options !== 'function') {
          this.internalValue = this.control.formAction.options || [];
+
          Object.defineProperty(this.control.formAction, 'options', {
             set: newValue => {
                this.internalValue = newValue;
-               this.signalStoreBase.updateFilterOption(this._filter(null));
+               this.signalStoreBase?.updateFilterOption?.(this._filter(null));
             },
             get: () => {
                return this.internalValue;
             },
             configurable: true,
          });
-      } else {
       }
    };
-   /************************************************************************************************************************************************************************ */
-   // onSetOption = () => {
 
-   //   if (typeof this.control?.formAction?.options != "function") {
-   //     this.internalValue = this.control.formAction.options || [];
-   //     Object.defineProperty(this.control.formAction, "options", {
-   //       set: (newValue) => {
-   //         this.internalValue = newValue;
-   //         this.signalStoreBase.updateFilterOption(newValue);
-   //       },
-   //       get: () => {
-   //         return this.internalValue;
-   //       },
-   //       configurable: true
-   //     });
-   //   } else {
+   /***********************************************************************************************************************************
+    * EMIT EVENTS
+    ***********************************************************************************************************************************/
 
-   //   }
-   // }
-   /************************************************************************************************************************************************************************ */
+   private emitInitialize(control: { formAction: FormAction }, allGroup: ConfigForm): void {
+      const formAction = control?.formAction;
 
-   ngOnInit() {
-      combineLatest({
-         control: this.obsQuestions,
-         allGroup: this.obsAllGroup,
-      })
-         .pipe(autoUnsubscribe(this.obs), takeUntilDestroyed(this.destroyRef))
-         .subscribe(({allGroup, control}) => {
-            control.formAction.type == TYPE_CONTROL_FORM.ARRAYSTRING ? this.onSetOptionWithSearch() : null;
-            control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE ? (this.control.formAction.paging = this.initPagination) : null;
-            control.formAction.formControl.disabled ? control.formAction.formControl.disable() : control.formAction.formControl.enable();
+      if (!formAction?.onInitialize) {
+         return;
+      }
 
-            if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
-               const originalReset = control.formAction.formControl.reset.bind(control.formAction.formControl);
-
-               control.formAction.formControl.reset = args => {
-                  try {
-                     originalReset(args);
-                  } catch (e) {
-                     originalReset([args]);
-                  }
-                  if (control.formAction.onInitialize) {
-                     control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, this.initPagination as any, this.signalStoreBase?.totalOptions as any, this.utils);
-                  }
-               };
-            }
-
-            if (this.control.formAction.type == TYPE_CONTROL_FORM.COMBO || this.control.formAction.type == TYPE_CONTROL_FORM.COMBOPAGINATE) {
-               effect(
-                  () => {
-                     const opt = this.control.formAction.options();
-                     if (opt != null) {
-                        // IMPORTANT: the store methods read/write signals internally.
-                        // Keep those reads out of this effect dependencies, otherwise
-                        // setFilteredOptions/selectedOptions can retrigger this effect forever.
-                        untracked(() => {
-                           this.signalStoreBase.setSelectedOptions([]);
-                           this.signalStoreBase.setFilteredOptions(opt, this.control.formAction?.keyCombo);
-                           this.signalStoreBase.setTotalOptions(opt, this.control.formAction?.keyCombo);
-                           this.setInitialOption.set(opt);
-                        });
-                     }
-                  },
-                  {injector: this.injector, allowSignalWrites: true},
-               );
-
-               effect(
-                  () => {
-                     const disable = this.control.formAction.optionsDisabled();
-                     untracked(() => this.signalStoreBase?.addDisabledOption(disable));
-                  },
-                  {injector: this.injector, allowSignalWrites: true},
-               );
-            }
-
-            if (control?.formAction?.css?.class) {
-               control?.formAction?.css?.class.map((c: any) => {
-                  this.element?.nativeElement?.classList?.add(c);
-               });
-            }
-
-            if (control.formAction) {
-               if ((control.formAction.type as TYPE_CONTROL_FORM) == TYPE_CONTROL_FORM.COMBOPAGINATE || (control.formAction.type as TYPE_CONTROL_FORM) == TYPE_CONTROL_FORM.COMBO) {
-                  if (control.formAction.onInitialize) {
-                     control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, this.initPagination as any, this.signalStoreBase.totalOptions as any, this.utils);
-                  }
-               } else if (control.formAction.onInitialize) control.formAction.onInitialize(this.formGroupIndex, this.formActionIndex, control.formAction?.formControl, control.formAction.formName as string, this.group, control.formAction.type as TYPE_CONTROL_FORM, allGroup, null, this.signalStoreBase?.totalOptions as any, this.utils);
-
-               control.formAction?.formControl.valueChanges.pipe(autoUnsubscribe(this.obs), takeUntilDestroyed(this.destroyRef), startWith(null), pairwise()).subscribe(async ([prevValue, next]: [any, any]) => {
-                  this.callOnhange(prevValue, next);
-               });
-            }
-         });
+      formAction.onInitialize(
+         this.formGroupIndex,
+         this.formActionIndex,
+         formAction.formControl,
+         formAction.formName as string,
+         this.group,
+         formAction.type as TYPE_CONTROL_FORM,
+         allGroup,
+         formAction.paging ?? this.initPagination ?? null,
+         this.getOptionSettedSignal(),
+         this.utils,
+      );
    }
-   /************************************************************************************************************************************************************************ */
-   ngOnDestroy(): void {}
-   /************************************************************************************************************************************************************************ */
+
+   public callOnChange(prevValue: any, nextValue?: any): void {
+      const formAction = this.control?.formAction;
+
+      if (!formAction?.onChange) {
+         return;
+      }
+
+      formAction.onChange(
+         this.formGroupIndex,
+         this.formActionIndex,
+         formAction.formControl,
+         formAction.formName as string,
+         this.group,
+         formAction.type as TYPE_CONTROL_FORM,
+         prevValue,
+         this._allGroup,
+         this.utils,
+      );
+   }
+
+   public emitOpened(): void {
+      const formAction = this.control?.formAction;
+
+      if (!formAction?.opened) {
+         return;
+      }
+
+      formAction.opened(
+         this.formGroupIndex,
+         this.formActionIndex,
+         formAction.formControl,
+         formAction.formName as string,
+         this.group,
+         this._allGroup,
+         this.utils,
+      );
+   }
+
+   public emitClosed(): void {
+      const formAction = this.control?.formAction;
+
+      if (!formAction?.closed) {
+         return;
+      }
+
+      formAction.closed(
+         this.formGroupIndex,
+         this.formActionIndex,
+         formAction.formControl,
+         formAction.formName as string,
+         this.group,
+         this._allGroup,
+         this.utils,
+      );
+   }
+
+   public emitFocus(): void {
+      const formAction = this.control?.formAction;
+
+      if (!formAction?.onFocus) {
+         return;
+      }
+
+      formAction.onFocus(
+         this.formGroupIndex,
+         this.formActionIndex,
+         formAction.formControl,
+         formAction.formName as string,
+         this.group,
+         this._allGroup,
+         this.utils,
+      );
+   }
+
+   public emitBlur(): void {
+      const formAction = this.control?.formAction;
+
+      if (!formAction?.onBlur) {
+         return;
+      }
+
+      formAction.onBlur(
+         this.formGroupIndex,
+         this.formActionIndex,
+         formAction.formControl,
+         formAction.formName as string,
+         this.group,
+         this._allGroup,
+         this.utils,
+      );
+   }
+
+   public emitSearch(search: string): void {
+      const formAction = this.control?.formAction;
+
+      if (!formAction?.onSearch) {
+         return;
+      }
+
+      formAction.onSearch(
+         this.formGroupIndex,
+         this.formActionIndex,
+         formAction.formControl,
+         formAction.formName as string,
+         this.group,
+         search,
+         this.utils,
+      );
+   }
+
+   public emitScrollEnd(paging?: { count: number; page: number; totalCount?: number }): void {
+      const formAction = this.control?.formAction;
+
+      if (!formAction?.onScrollEnd) {
+         return;
+      }
+
+      formAction.onScrollEnd(
+         this.formGroupIndex,
+         this.formActionIndex,
+         formAction.formControl,
+         formAction.formName as string,
+         this.group,
+         paging ?? formAction.paging ?? this.initPagination,
+         this.utils,
+      );
+   }
+
+   private getOptionSettedSignal(): Signal<Array<any>> | null {
+      if (this.signalStoreBase?.totalOptions) {
+         return this.signalStoreBase.totalOptions as Signal<Array<any>>;
+      }
+
+      if (this.signalStoreBase?.getSelectedOptionsFromTotal) {
+         return this.signalStoreBase.getSelectedOptionsFromTotal as Signal<Array<any>>;
+      }
+
+      return this.onOptionSetted as Signal<Array<any>>;
+   }
+
+   /***********************************************************************************************************************************
+    * FILTER
+    ***********************************************************************************************************************************/
+
    public _filter(value: string = ''): any {
-      let cloned = [...(this.signalStoreBase.getTotalOptions() || [])]; // JSON.parse(JSON.stringify(this.internalValue || []));
+      const cloned = [...(this.signalStoreBase?.getTotalOptions?.() || [])];
       const filterValue = value?.toString()?.toLowerCase() || null;
+
       if (filterValue == null) {
          return cloned;
       }
-      if (cloned)
-         return cloned.filter((option: any) => {
-            if (filterValue != null && option?.description) {
-               if ((option?.description as string)?.toLowerCase().includes(filterValue) || option.id == filterValue) return option;
-            }
-         });
+
+      return cloned.filter((option: any) => {
+         if (filterValue != null && option?.description) {
+            return (option.description as string).toLowerCase().includes(filterValue) || option.id == filterValue;
+         }
+
+         return false;
+      });
    }
-   /************************************************************************************************************************************************************************ */
-   callOnhange(prevValue, next) {
-      if (this.control.formAction && this.control.formAction.onChange) this.control.formAction.onChange(this.formGroupIndex, this.formActionIndex, this.control.formAction?.formControl, this.control.formAction.formName, this.group, this.control.formAction.type, prevValue, this._allGroup, this.utils);
-   }
-   /************************************************************************************************************************************************************************ */
-   @ViewChild('dynamicContainer', {read: ViewContainerRef})
+
+   /***********************************************************************************************************************************
+    * DYNAMIC COMPONENTS
+    ***********************************************************************************************************************************/
+
+   @ViewChild('dynamicContainer', { read: ViewContainerRef })
    container!: ViewContainerRef;
-   private componentRef = [];
-   /************************************************************************************************************************************************************************ */
-   ngAfterViewInit() {
+
+   private componentRef: Array<any> = [];
+
+   ngAfterViewInit(): void {
       if (this.container && this.control?.formAction?.componentRef) {
          this.createDynamicComponent();
       }
    }
-   /************************************************************************************************************************************************************************ */
-   createDynamicComponent() {
+
+   createDynamicComponent(): void {
       this.container.clear();
       this.componentRef = [];
-      this.control?.formAction?.componentRef?.map(component => {
-         const componentRef = this.container.createComponent<FormComponentTemplate>(component);
+
+      this.control?.formAction?.componentRef?.forEach(component => {
+         const componentRef = this.container.createComponent<FormComponentTemplate>(component as any);
+
          componentRef.instance.getFormControl = () => this.control?.formAction?.formControl;
          componentRef.instance.getFormConfig = () => this.control?.formAction;
          componentRef.instance.getFormParent = () => this.control?.formAction?.formControl?.parent;
          componentRef.instance.getQuestions = () => this._allGroup;
          componentRef.instance.initialize();
+
          this.componentRef.push(componentRef);
       });
    }
-   /************************************************************************************************************************************************************************ */
-   destroyDynamicComponent() {
+
+   destroyDynamicComponent(): void {
       if (this.componentRef) {
-         this.componentRef.map(c => c.destroy());
+         this.componentRef.forEach(c => c.destroy());
       }
    }
-   /************************************************************************************************************************************************************************ */
 
-   private readonly getActionByName = (actionName: string, parse: (form: FormAction ) => any): void => {
-      const forms: Array<any> = JSON.findByKeyAndValue(this._allGroup, 'label', `${actionName}`, ['formControl', 'instance']) ?? [];
-      parse(forms?.length > 1 ? forms.map(m => ({name: m.object.formName, value: m.object})) : forms[0]?.object || null)
-   };
-   private readonly getFormByName = (formName: string, parse: (form: FormAction,formObject:any) => any): void => {
-      const forms: Array<any> = JSON.findByKeyAndValue(this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
-      parse(forms?.length > 1 ? forms.map(m => ({name: m.object.formName, value: m.object})) : forms[0]?.object || null,forms);
+   /***********************************************************************************************************************************
+    * UTILITY
+    ***********************************************************************************************************************************/
+
+   private readonly getActionByName = (actionName: string, parse: (action: DynamicFormActionButton) => any): void => {
+      const actions: Array<any> = JSON.findByKeyAndValue(this._allGroup, 'label', `${actionName}`, ['formControl', 'instance']) ?? [];
+
+      const response = actions?.length > 1
+         ? actions.map(m => ({ name: m.object?.name || m.object?.label, value: m.object }))
+         : actions[0]?.object || null;
+
+      parse(response);
    };
 
-   private readonly setDefaultOptions = (formName: string, parse: (response: any) => Partial<TypeComboOption | {items: Array<any>; totalCount: number}>): any => {
+   private readonly getFormByName = (formName: string, parse: (form: FormAction, formObject?: any) => any): void => {
       const forms: Array<any> = JSON.findByKeyAndValue(this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
-      let parsedForm = forms.length > 1 ? forms.map(m => ({name: m.object.formName, value: m.object})) : forms[0]?.object || null;
-      let response = parse(forms.length > 1 ? forms.map(m => ({name: m.object.formName, value: m.object})) : forms[0]?.object || null);
+
+      const response = forms?.length > 1
+         ? forms.map(m => ({ name: m.object.formName, value: m.object }))
+         : forms[0]?.object || null;
+
+      parse(response, forms);
+   };
+
+   private readonly setDefaultOptions = (
+      formName: string,
+      parse: (response: any) => Partial<TypeComboOption | { items: Array<any>; totalCount: number }>,
+   ): any => {
+      const forms: Array<any> = JSON.findByKeyAndValue(this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
+
+      const parsedForm = forms.length > 1
+         ? forms.map(m => ({ name: m.object.formName, value: m.object }))
+         : forms[0]?.object || null;
+
+      const response = parse(parsedForm);
+
+      if (Array.isArray(parsedForm)) {
+         parsedForm.forEach((f: any) => {
+            f?.value?.instance?.signalStoreBase?.setDefaultOptions(response || []);
+         });
+         return;
+      }
+
       parsedForm?.instance?.signalStoreBase?.setDefaultOptions(response || []);
    };
 
    private readonly getSelectedOptions = (formName: string, parse: (option: Signal<TypeComboOption>) => any): TypeComboOption => {
       const forms: Array<any> = JSON.findByKeyAndValue(this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
-      let parsedForm = forms.length > 1 ? forms.map(m => ({name: m.object.formName, value: m.object})) : forms[0]?.object || null;
-      return parse(parsedForm?.length > 1 ? parsedForm.map(m => m.instance?.signalStoreBase?.getSelectedOptions) : parsedForm.instance?.signalStoreBase?.getSelectedOptions || null);
+
+      const parsedForm = forms.length > 1
+         ? forms.map(m => ({ name: m.object.formName, value: m.object }))
+         : forms[0]?.object || null;
+
+      return parse(
+         parsedForm?.length > 1
+            ? parsedForm.map(m => m.value?.instance?.signalStoreBase?.getSelectedOptions)
+            : parsedForm?.instance?.signalStoreBase?.getSelectedOptions || null,
+      );
    };
 
    private readonly onSettedOptions = (formName: string, parse: (event: Signal<TypeComboOption>) => any): TypeComboOption => {
       const forms: Array<any> = JSON.findByKeyAndValue(this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
-      let parsedForm = forms.length > 1 ? forms.map(m => ({name: m.object.formName, value: m.object})) : forms[0]?.object || null;
-      return parse(parsedForm?.length > 1 ? parsedForm.map(m => m.instance?.signalStoreBase?.getSelectedOptionsFromTotal) : parsedForm.instance?.signalStoreBase.getSelectedOptionsFromTotal || null);
+
+      const parsedForm = forms.length > 1
+         ? forms.map(m => ({ name: m.object.formName, value: m.object }))
+         : forms[0]?.object || null;
+
+      return parse(
+         parsedForm?.length > 1
+            ? parsedForm.map(m => m.value?.instance?.signalStoreBase?.getSelectedOptionsFromTotal)
+            : parsedForm?.instance?.signalStoreBase?.getSelectedOptionsFromTotal || null,
+      );
    };
 }

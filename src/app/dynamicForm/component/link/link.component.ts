@@ -1,14 +1,10 @@
 /**
  * @format
- * @author luca.piciollo
- * @email lucapiciollo@gmail.com
- * @create date 2022-11-18 12:55:11
- * @modify date 2022-11-18 12:55:11
- * @desc [description]
  */
 
-import {Component, ElementRef, Injector} from '@angular/core';
-import {BaseComponent} from '../base-component.component';
+import { Component, ElementRef, Injector } from '@angular/core';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { BaseComponent } from '../base-component.component';
 
 @Component({
    selector: 'app-link',
@@ -17,24 +13,39 @@ import {BaseComponent} from '../base-component.component';
    standalone: false,
 })
 export class LinkComponent extends BaseComponent {
-   /************************************************************************************************************************************************************************ */
-
-   /************************************************************************************************************************************************************************ */
-
    constructor(
       protected override injector: Injector,
       protected override element: ElementRef,
    ) {
       super(injector, element);
    }
-   /************************************************************************************************************************************************************************ */
-   optionSelected(link: any) {
-      this.control.formAction.formControl.setValue({
-         clicked: true,
-         value: link,
-      });
-      setTimeout(() => {
-         this.control.formAction.formControl.setValue({clicked: false, value: link}, {emitEvent: false});
-      }, 1);
+
+   onLinkClick(event: MouseEvent): void {
+      const formAction = this.control?.formAction;
+
+      if (!formAction) {
+         return;
+      }
+
+      formAction.action?.(
+         formAction.formControl as FormControl | FormArray | FormGroup,
+      );
+
+      /**
+       * Se non hai href, evitiamo navigazioni vuote.
+       * Se hai href, lasciamo il comportamento normale del link.
+       */
+      if (!formAction.href) {
+         event.preventDefault();
+         event.stopPropagation();
+      }
+   }
+
+   getHref(): string | null {
+      return this.control?.formAction?.href || null;
+   }
+
+   getTarget(): string {
+      return this.control?.formAction?.target || '_self';
    }
 }

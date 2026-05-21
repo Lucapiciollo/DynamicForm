@@ -4,22 +4,51 @@
    <ng-container>
       <div class="d-flex w-100">
          <mat-form-field class="w-100 customMY">
-            <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled"
-               >{{ control.formAction.title }}
+            <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">
+               {{ control.formAction.title }}
+
                @if (control.formAction?.info) {
-                  <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color" class="mx-1">info_outline</mat-icon>
+                  <mat-icon
+                     [matTooltip]="control.formAction?.info.msg"
+                     [style.color]="control.formAction?.info.color"
+                     class="mx-1">
+                     info_outline
+                  </mat-icon>
                }
             </mat-label>
 
-            <input (change)="onChangeByMic($event)" [type]="control.formAction?.optionInputText?.password ? 'password' : 'text'" #inputs [matTooltip]="control.formAction?.tipContent || null" matInput [formControl]="control.formAction?.formControl" [class.disabled]="control.formAction.formControl.disabled" [placeholder]="control.formAction.placeholder || ''" [maxlength]="control.formAction?.optionInputText?.maxlength" />
-            <!-- <button matSuffix mat-icon-button aria-label="Clear" speech [e]="inputs" *ngIf="control.formAction?.optionInputText?.password !== 'password' && !control.formAction.formControl.disabled && !control?.formAction?.disableSpeech">
-               <mat-icon>mic</mat-icon>
-            </button> -->
+            <input
+               #inputs
+               matInput
+               [type]="control.formAction?.optionInputText?.password ? 'password' : 'text'"
+               [matTooltip]="control.formAction?.tipContent || null"
+               [formControl]="$any(control.formAction?.formControl)"
+               [class.disabled]="control.formAction.formControl.disabled"
+               [placeholder]="control.formAction.placeholder || ''"
+               [maxlength]="control.formAction?.optionInputText?.maxlength"
+               (change)="onChangeByMic($event)"
+               (focus)="emitFocus()"
+               (blur)="emitBlur()" />
 
-            <i matSuffix class="fa fa-microphone text-center fs-20 me-3 iconsMic" speech [e]="inputs" *ngIf="control.formAction?.optionInputText?.password !== 'password' && !control.formAction.formControl.disabled && !control?.formAction?.disableSpeech"></i>
+            <i
+               matSuffix
+               class="fa fa-microphone text-center fs-20 me-3 iconsMic"
+               speech
+               [e]="inputs"
+               *ngIf="
+                  $any(control.formAction?.optionInputText?.password) !== 'password' &&
+                  !control.formAction.formControl.disabled &&
+                  !control?.formAction?.disableSpeech
+               ">
+            </i>
 
             @if (control.formAction?.resetButton) {
-               <button matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation(); control.formAction.formControl.reset()">
+               <button
+                  matSuffix
+                  mat-icon-button
+                  aria-label="Clear"
+                  type="button"
+                  (click)="$event.stopPropagation(); control.formAction.formControl.reset()">
                   <mat-icon>close</mat-icon>
                </button>
             }
@@ -27,9 +56,15 @@
 
          <div #dynamicContainer class=""></div>
       </div>
-      @for (error of getErrorFormControl(control.formAction?.formControl); track error) {
-         <mat-error>{{ error }} </mat-error>
+
+      @for (error of getErrorFormControl( $any(control.formAction?.formControl) ); track error) {
+         <mat-error>{{ error }}</mat-error>
       }
-      <mat-hint *ngIf="control.formAction?.optionInputText?.maxlength || control?.formAction?.hint" [attr.align]="'start'">{{ inputs.value.length }}/{{ control.formAction?.optionInputText?.maxlength }}</mat-hint>
+
+      <mat-hint
+         *ngIf="control.formAction?.optionInputText?.maxlength || control?.formAction?.hint"
+         [attr.align]="'start'">
+         {{ inputs.value.length }}/{{ control.formAction?.optionInputText?.maxlength }}
+      </mat-hint>
    </ng-container>
 }

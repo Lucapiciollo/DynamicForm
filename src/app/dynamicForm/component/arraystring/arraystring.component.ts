@@ -1,21 +1,28 @@
 /**
  * @format
  * @author luca.piciollo
- * @email lucapiciollo@gmail.com
- * @create date 2022-03-29 19:47:50
- * @modify date 2022-03-29 19:47:50
- * @desc [description]
  */
 
-import {Component, effect, ElementRef, inject, Injector, signal, untracked} from '@angular/core';
-import {LiveAnnouncer} from '@angular/cdk/a11y';
-import {BaseComponent} from '../base-component.component';
-import {MatChipInputEvent} from '@angular/material/chips';
-import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {AbstractControl, ValidationErrors} from '@angular/forms';
+import {
+   Component,
+   ElementRef,
+   Injector,
+   effect,
+   inject,
+   signal,
+   untracked,
+} from '@angular/core';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors } from '@angular/forms';
+
+import { BaseComponent } from '../base-component.component';
+
 export interface Fruit {
    name: string;
 }
+
 @Component({
    selector: 'app-arraystring',
    templateUrl: './arraystring.component.html',
@@ -25,7 +32,11 @@ export interface Fruit {
 export class ArrayStringComponent extends BaseComponent {
    public getList = signal<Array<string>>([]);
    public errorsInchipValue = signal<ValidationErrors | null>(null);
-   /************************************************************************************************************************************************************************ */
+
+   readonly addOnBlur = true;
+   readonly separatorKeysCodes = [ENTER, COMMA] as const;
+
+   readonly announcer = inject(LiveAnnouncer);
 
    constructor(
       protected override injector: Injector,
@@ -35,54 +46,85 @@ export class ArrayStringComponent extends BaseComponent {
 
       effect(() => {
          const list = this.getList();
+
          untracked(() => {
-            const control = this.control?.formAction?.formControl;
-            if (!control) return;
-            control.setValue(list, {emitEvent: true});
+            const control = this.control?.formAction?.formControl as
+               | FormControl
+               | FormArray
+               | FormGroup;
+
+            if (!control) {
+               return;
+            }
+
+            control.setValue(list, { emitEvent: true });
+            control.markAsDirty();
+            control.updateValueAndValidity();
          });
       });
    }
-   /************************************************************************************************************************************************************************ */
-   readonly addOnBlur = true;
-   readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
-   readonly announcer = inject(LiveAnnouncer);
+   override ngOnInit(): void {
+      super.ngOnInit();
+
+      const value = this.control?.formAction?.formControl?.value;
+
+      this.getList.set(Array.isArray(value) ? value : []);
+   }
 
    add(event: MatChipInputEvent): void {
       const value = (event.value || '').trim();
-      if (value.length < 1) this.errorsInchipValue.set(this.validateWithExtractedValidators([...this.control?.formAction?.formControl.value]));
-      else this.errorsInchipValue.set(this.validateWithExtractedValidators([...this.control?.formAction?.formControl.value, value]));
+      const currentValue = this.getCurrentValue();
+
+      if (value.length < 1) {
+         this.errorsInchipValue.set(this.validateWithExtractedValidators(currentValue));
+         return;
+      }
+
+      const nextValue = [...currentValue, value];
+
+      this.errorsInchipValue.set(this.validateWithExtractedValidators(nextValue));
 
       if (Object.keys(this.errorsInchipValue() || {}).length < 1) {
-         let ccs = this.control?.formAction?.formControl.value || [];
-         if (value) {
-            ccs = [...ccs, value];
-            this.getList.set(ccs);
-         }
-         event.chipInput!.clear();
+         this.getList.set(nextValue);
+         event.chipInput?.clear();
+
+         this.control?.formAction?.action?.(
+            this.control.formAction.formControl as FormControl | FormArray | FormGroup,
+         );
       }
    }
-   /************************************************************************************************************************************************************************ */
 
    remove(value: string): void {
-      let ccs = this.control?.formAction?.formControl.value || [];
-      ccs = ccs.filter(f => f != value);
-      this.getList.set(ccs);
-   }
-   /************************************************************************************************************************************************************************ */
+      const nextValue = this.getCurrentValue().filter(item => item !== value);
 
-   /************************************************************************************************************************************************************************ */
+      this.getList.set(nextValue);
 
-   ngOnInit(): void {
-      let ccs = this.control?.formAction?.formControl.value || [];
-      this.getList.set(ccs);
+      this.control?.formAction?.action?.(
+         this.control.formAction.formControl as FormControl | FormArray | FormGroup,
+      );
    }
-   /************************************************************************************************************************************************************************ */
+
+   getCurrentValue(): string[] {
+      const value = this.control?.formAction?.formControl?.value;
+
+      return Array.isArray(value) ? value : [];
+   }
 
    validateWithExtractedValidators(value: string[]): ValidationErrors | null {
-      const control = {value} as AbstractControl;
-      const validators = this.control?.formAction?.formControl.validator ? [this.control?.formAction?.formControl.validator] : [];
-      return validators.reduce((errors, validator) => ({...errors, ...validator(control)}), null);
+      const control = { value } as AbstractControl;
+      const validators = this.control?.formAction?.formControl?.validator
+         ? [this.control.formAction.formControl.validator]
+         : [];
+
+      const errors = validators.reduce(
+         (acc, validator) => ({
+            ...acc,
+            ...validator(control),
+         }),
+         null as ValidationErrors | null,
+      );
+
+      return errors;
    }
-   /************************************************************************************************************************************************************************ */
 }
