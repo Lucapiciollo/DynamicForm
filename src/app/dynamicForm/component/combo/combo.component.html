@@ -1,164 +1,118 @@
 <!-- @format -->
 
 @if (!control.formAction.css?.hide) {
-   <ng-container>
-      <div class="d-flex w-100">
-         <mat-form-field class="w-100 customMY">
-            @if (control.formAction?.title) {
-               <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">
-                  {{ control.formAction.title }}
+<ng-container>
+   <div class="d-flex w-100">
+      <mat-form-field class="w-100 customMY">
+         @if (control.formAction?.title) {
+         <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">
+            {{ control.formAction.title }}
 
-                  @if (control.formAction?.info) {
-                     <mat-icon
-                        [matTooltip]="control.formAction?.info.msg"
-                        [style.color]="control.formAction?.info.color"
-                        class="mx-1">
-                        info_outline
-                     </mat-icon>
-                  }
-               </mat-label>
+            @if (control.formAction?.info) {
+            <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color"
+               class="mx-1">
+               info_outline
+            </mat-icon>
+            }
+         </mat-label>
+         }
+         <mat-select #selectRef class="py-0 my-0" panelClass="df-combo-scroll-panel"
+            [matTooltip]="control.formAction.multiple ? signalStore.getConcatStringDescription() : null"
+            [formControl]="$any(control.formAction.formControl)" [multiple]="control.formAction.multiple"
+            (openedChange)="onOpenedChange($event)" (focus)="emitFocus()" (blur)="emitBlur()">
+
+            <mat-select-trigger>
+               <span class="example-additional-selection">
+                  {{ getSelectedLabel() }}
+               </span>
+            </mat-select-trigger>
+
+            @if (control.formAction.autocomplete) {
+            <div class="search-container border-bottom my-auto py-0" [fixSearchBox]="true" [appStickyOffset]="'-7px'">
+
+               <span class="search-icon my-auto">
+                  <mat-icon class="m-auto">search</mat-icon>
+               </span>
+
+               <input #filterInput matInput class="ps-5 py-0" [matTooltip]="control.formAction?.tipContent || null"
+                  [placeholder]="control.formAction.placeholder || ''" (click)="$event.stopPropagation()"
+                  (keydown)="$event.stopPropagation()" (input)="onInputChange(filterInput.value)" />
+
+               @if (signalStore.getIsLoading()) {
+               <div class="loading-bar-container">
+                  <div class="loading-bar"></div>
+               </div>
+               }
+            </div>
             }
 
-            <mat-select
-               #selectRef
-               class="py-0 my-0"
-               [matTooltip]="control.formAction.multiple ? signalStore.getConcatStringDescription() : null"
-               [formControl]="$any(control.formAction.formControl)"
-               [multiple]="control.formAction.multiple"
-               (openedChange)="onOpenedChange($event)"
-               (focus)="emitFocus()"
-               (blur)="emitBlur()">
+            @for (option of signalStore.getDefaultOptions(); track option.id) {
+            <mat-option [value]="getOptionValue(option)" [disabled]="true" [class.d-none]="option.hide">
 
-               <mat-select-trigger>
-                  <span class="example-additional-selection">
-                     {{ getSelectedLabel() }}
-                  </span>
-               </mat-select-trigger>
-
-               @if (control.formAction.autocomplete) {
-                  <div
-                     class="search-container border-bottom my-auto py-0"
-                     [fixSearchBox]="true"
-                     [appStickyOffset]="'-7px'">
-
-                     <span class="search-icon my-auto">
-                        <mat-icon class="m-auto">search</mat-icon>
-                     </span>
-
-                     <input
-                        #filterInput
-                        matInput
-                        class="ps-5 py-0"
-                        [matTooltip]="control.formAction?.tipContent || null"
-                        [placeholder]="control.formAction.placeholder || ''"
-                        (click)="$event.stopPropagation()"
-                        (keydown)="$event.stopPropagation()"
-                        (input)="onInputChange(filterInput.value)" />
-
-                     @if (signalStore.getIsLoading()) {
-                        <div class="loading-bar-container">
-                           <div class="loading-bar"></div>
-                        </div>
-                     }
+               <div class="d-flex justify-content-between align-items-center w-100">
+                  <div class="flex-grow-1">
+                     {{ option.description }}
                   </div>
-               }
 
-               @for (option of signalStore.getDefaultOptions(); track option.id) {
-                  <mat-option
-                     [value]="getOptionValue(option)"
-                     [disabled]="true"
-                     [class.d-none]="option.hide">
+                  @if (option?.tag) {
+                  <div class="justify-content-end">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="30" viewBox="0 0 80 30">
+                        <rect x="0" y="0" width="100%" height="30" rx="15" ry="15" [ngClass]="option?.tag.bgTag" />
 
-                     <div class="d-flex justify-content-between align-items-center w-100">
-                        <div class="flex-grow-1">
-                           {{ option.description }}
-                        </div>
-
-                        @if (option?.tag) {
-                           <div class="justify-content-end">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="30" viewBox="0 0 80 30">
-                                 <rect
-                                    x="0"
-                                    y="0"
-                                    width="100%"
-                                    height="30"
-                                    rx="15"
-                                    ry="15"
-                                    [ngClass]="option?.tag.bgTag" />
-
-                                 <text
-                                    x="50%"
-                                    y="50%"
-                                    font-size="10"
-                                    font-family="Arial, sans-serif"
-                                    [ngClass]="option?.tag.bgText">
-                                    {{ option?.tag?.name }}
-                                 </text>
-                              </svg>
-                           </div>
-                        }
-                     </div>
-                  </mat-option>
-               }
-
-               @for (option of signalStore.getFilterOption(); track option.id) {
-                  <mat-option
-                     class="w-100"
-                     [value]="getOptionValue(option)"
-                     [disabled]="(signalStore.getDisabledOptions() || []).indexOf(option.id) > -1"
-                     [class.d-none]="option.hide"
-                     (click)="toggleOption(option, $event)">
-
-                     <div class="d-flex justify-content-between align-items-center w-100">
-                        <div class="flex-grow-1">
-                           {{ option.description }}
-                        </div>
-
-                        @if (option?.tag) {
-                           <div class="justify-content-end">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="30" viewBox="0 0 80 30">
-                                 <rect
-                                    x="0"
-                                    y="0"
-                                    rx="15"
-                                    ry="15"
-                                    [ngClass]="option?.tag.bgTag" />
-
-                                 <text
-                                    x="50%"
-                                    y="50%"
-                                    [ngClass]="option?.tag.bgText">
-                                    {{ option?.tag?.name }}
-                                 </text>
-                              </svg>
-                           </div>
-                        }
-                     </div>
-                  </mat-option>
-               }
-
-               @if (showOptionDefault) {
-                  <mat-option class="d-none"></mat-option>
-               }
-            </mat-select>
-
-            @if (control.formAction?.resetButton && control.formAction.formControl.value != null) {
-               <button
-                  matSuffix
-                  mat-icon-button
-                  aria-label="Clear"
-                  type="button"
-                  (click)="$event.stopPropagation(); control.formAction.formControl.reset(); signalStore.setSelectedOptions([])">
-                  <mat-icon>close</mat-icon>
-               </button>
+                        <text x="50%" y="50%" font-size="10" font-family="Arial, sans-serif"
+                           [ngClass]="option?.tag.bgText">
+                           {{ option?.tag?.name }}
+                        </text>
+                     </svg>
+                  </div>
+                  }
+               </div>
+            </mat-option>
             }
-         </mat-form-field>
 
-         <div #dynamicContainer class=""></div>
-      </div>
+            @for (option of signalStore.getFilterOption(); track option.id) {
+            <mat-option class="w-100" [value]="getOptionValue(option)"
+               [disabled]="(signalStore.getDisabledOptions() || []).indexOf(option.id) > -1"
+               [class.d-none]="option.hide" (click)="toggleOption(option, $event)">
 
-      @for (error of getErrorFormControl($any(control.formAction?.formControl)); track $index) {
-         <mat-error>{{ error }}</mat-error>
-      }
-   </ng-container>
+               <div class="d-flex justify-content-between align-items-center w-100">
+                  <div class="flex-grow-1">
+                     {{ option.description }}
+                  </div>
+
+                  @if (option?.tag) {
+                  <div class="justify-content-end">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="30" viewBox="0 0 80 30">
+                        <rect x="0" y="0" rx="15" ry="15" [ngClass]="option?.tag.bgTag" />
+
+                        <text x="50%" y="50%" [ngClass]="option?.tag.bgText">
+                           {{ option?.tag?.name }}
+                        </text>
+                     </svg>
+                  </div>
+                  }
+               </div>
+            </mat-option>
+            }
+
+            @if (showOptionDefault) {
+            <mat-option class="d-none"></mat-option>
+            }
+         </mat-select>
+
+         @if (control.formAction?.resetButton && control.formAction.formControl.value != null) {
+         <button matSuffix mat-icon-button aria-label="Clear" type="button"
+            (click)="$event.stopPropagation(); control.formAction.formControl.reset(); signalStore.setSelectedOptions([])">
+            <mat-icon>close</mat-icon>
+         </button>
+         }
+      </mat-form-field>
+
+      <div #dynamicContainer class=""></div>
+   </div>
+
+   @for (error of getErrorFormControl($any(control.formAction?.formControl)); track $index) {
+   <mat-error>{{ error }}</mat-error>
+   }
+</ng-container>
 }

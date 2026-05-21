@@ -1,24 +1,32 @@
 /**
  * @format
  */
-
+import {   Observable } from 'rxjs';
+import { Signal } from '@angular/core';
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  EffectRef,
-  ElementRef,
-  inject,
-  Injector,
-  signal,
-  untracked,
-  viewChild,
-  ViewChild,
+   AfterViewInit,
+   ChangeDetectionStrategy,
+   Component,
+   EffectRef,
+   ElementRef,
+   inject,
+   Injector,
+   signal,
+   untracked,
+   viewChild,
+   ViewChild,
 } from '@angular/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { FormControl } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
-import { debounceTime, distinctUntilChanged, fromEvent, Subject, takeUntil } from 'rxjs';
+import {
+   debounceTime,
+   distinctUntilChanged,
+   fromEvent,
+   isObservable,
+   Subject,
+   takeUntil,
+} from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { BaseComponent } from '../base-component.component';
@@ -26,444 +34,496 @@ import { TYPE_CONTROL_FORM } from '../../dynamic-form.interface';
 import { Store } from './store';
 
 @Component({
-  selector: 'app-combo',
-  templateUrl: './combo.component.html',
-  standalone: false,
-  styleUrls: ['../../dynamic-form.component.scss', './combo.component.css'],
-  providers: [Store],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+   selector: 'app-combo',
+   templateUrl: './combo.component.html',
+   standalone: false,
+   styleUrls: ['../../dynamic-form.component.scss', './combo.component.css'],
+   providers: [Store],
+   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ComboComponent extends BaseComponent implements AfterViewInit {
-  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+   readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
-  private reachedEnd: boolean = false;
-  private resetOption = false;
-  private inputSubject = new Subject<string>();
-  private effectStore: Array<EffectRef> = [];
-  private scrollTop = 0;
-  private currentSearchValue: string | null = null;
+   private reachedEnd = false;
+   private resetOption = false;
+   private inputSubject = new Subject<string>();
+   private effectStore: Array<EffectRef> = [];
+   private scrollTop = 0;
+   private currentSearchValue: string | null = null;
+private removeScrollListener: (() => void) | null = null;
+private scrollBindRetry = 0;
+   public onPanelCloseObs = new Subject<void>();
+   public showOptionDefault = true;
 
-  public onPanelCloseObs = new Subject<void>();
-  public showOptionDefault = true;
+   private filterInput = viewChild('filterInput', {
+      read: ElementRef<HTMLInputElement>,
+   });
 
-  private filterInput = viewChild('filterInput', {
-    read: ElementRef<HTMLInputElement>,
-  });
+   public signalStore = inject(Store);
+   public loaderss = signal(false);
 
-  public signalStore = inject(Store);
-  public loaderss = signal(false);
+   @ViewChild('selectRef') selectRef: MatSelect;
 
-  @ViewChild('selectRef') selectRef: MatSelect;
+   constructor(
+      protected override injector: Injector,
+      protected override element: ElementRef,
+   ) {
+      super(injector, element);
+      super.signalStoreValue = this.signalStore;
 
-  constructor(
-    protected override injector: Injector,
-    protected override element: ElementRef,
-  ) {
-    super(injector, element);
-    super.signalStoreValue = this.signalStore;
+      this.inputSubject
+         .pipe(
+            debounceTime(300),
+            distinctUntilChanged(),
+            takeUntilDestroyed(this.destroyRef),
+         )
+         .subscribe(valueSearch => {
+            if (!this.isReady()) {
+               return;
+            }
 
-    this.inputSubject
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(valueSearch => {
-        if (!this.isReady()) {
-          return;
-        }
+            this.search(valueSearch ?? '');
+         });
+   }
 
-        this.search(valueSearch ?? '');
-      });
-  }
+   private isReady(): boolean {
+      return !!this.control?.formAction?.formControl;
+   }
 
-  private isReady(): boolean {
-    return !!this.control?.formAction?.formControl;
-  }
+   private getOptionsValue(): any[] | { items: any[]; totalCount: number } {
+      const options = this.control?.formAction?.options;
+      const value = typeof options === 'function' ? options() : options;
 
-  private distinctArray(array: any[] | null | undefined): any[] {
-    const seenIds = new Set();
-
-    return (Array.isArray(array) ? [...array] : []).filter(item => {
-      const key = item && typeof item === 'object' ? item.id : item;
-
-      if (seenIds.has(key)) {
-        return false;
+      if (
+         value &&
+         typeof value === 'object' &&
+         !Array.isArray(value) &&
+         Array.isArray((value as any).items)
+      ) {
+         return value as any;
       }
 
-      seenIds.add(key);
-      return true;
-    });
-  }
+      return Array.isArray(value) ? value : [];
+   }
 
-  private getOptionsValue(): any[] | { items: any[]; totalCount: number } {
-    const options = this.control?.formAction?.options;
-    const value = typeof options === 'function' ? options() : options;
-
-    if (
-      value &&
-      typeof value === 'object' &&
-      !Array.isArray(value) &&
-      Array.isArray((value as any).items)
-    ) {
-      return value as any;
-    }
-
-    return Array.isArray(value) ? value : [];
-  }
-
-  areJsonEqual(json1: any, json2: any): boolean {
-    if (typeof json1 !== typeof json2) {
-      return false;
-    }
-
-    if (Array.isArray(json1) && Array.isArray(json2)) {
-      if (json1.length !== json2.length) {
-        return false;
+   areJsonEqual(json1: any, json2: any): boolean {
+      if (typeof json1 !== typeof json2) {
+         return false;
       }
 
-      return json1.every((item, index) => this.areJsonEqual(item, json2[index]));
-    }
+      if (Array.isArray(json1) && Array.isArray(json2)) {
+         if (json1.length !== json2.length) {
+            return false;
+         }
 
-    if (typeof json1 === 'object' && json1 !== null && json2 !== null) {
-      const keys1 = Object.keys(json1);
-      const keys2 = Object.keys(json2);
-
-      if (keys1.length !== keys2.length) {
-        return false;
+         return json1.every((item, index) => this.areJsonEqual(item, json2[index]));
       }
 
-      for (const key of keys1) {
-        if (!keys2.includes(key) || !this.areJsonEqual(json1[key], json2[key])) {
-          return false;
-        }
+      if (typeof json1 === 'object' && json1 !== null && json2 !== null) {
+         const keys1 = Object.keys(json1);
+         const keys2 = Object.keys(json2);
+
+         if (keys1.length !== keys2.length) {
+            return false;
+         }
+
+         for (const key of keys1) {
+            if (!keys2.includes(key) || !this.areJsonEqual(json1[key], json2[key])) {
+               return false;
+            }
+         }
+
+         return true;
       }
 
-      return true;
-    }
+      return json1 === json2;
+   }
 
-    return json1 === json2;
-  }
+   /***********************************************************************************************************************************
+    * OPEN / CLOSE
+    ***********************************************************************************************************************************/
 
-  /***********************************************************************************************************************************
-   * OPEN / CLOSE
-   ***********************************************************************************************************************************/
+   onOpenedChange(opened: boolean): void {
+      if (opened) {
+         this.onPanelOpen();
+      } else {
+         this.clearInput();
+         this.onPanelClose();
+      }
+   }
 
-  onOpenedChange(opened: boolean): void {
-    if (opened) {
-      this.onPanelOpen();
-    } else {
-      this.clearInput();
-      this.onPanelClose();
-    }
-  }
-
-  onPanelOpen(): void {
-    if (!this.isReady()) {
+   onPanelOpen(): void {
+   if (!this.isReady()) {
       return;
-    }
+   }
 
-    try {
+   try {
       this.signalStore.setIsLoading(false);
-
       this.emitOpened();
 
       queueMicrotask(() => {
-        const input = this.filterInput();
-        input?.nativeElement?.focus();
+         const input = this.filterInput();
+         input?.nativeElement?.focus();
       });
 
       if (this.control.formAction.type === TYPE_CONTROL_FORM.COMBO) {
-        const filtered = this._filter('');
+         const filtered = this._filter('');
 
-        this.signalStore.setFilteredOptions(
-          filtered,
-          this.control.formAction.keyCombo,
-          false,
-        );
+         this.signalStore.setFilteredOptions(
+            filtered,
+            this.control.formAction.keyCombo,
+            false,
+         );
 
-        this.signalStore.setIsLoading(false);
-        return;
+         this.signalStore.setIsLoading(false);
+         return;
       }
 
       if (this.control.formAction.type === TYPE_CONTROL_FORM.COMBOPAGINATE) {
-        this.search('');
+         this.search('');
 
-        if (this.control.formAction?.enableInfiniteScroll === true) {
-          this.addEventScroll();
-        }
+         if (this.control.formAction?.enableInfiniteScroll === true) {
+            this.bindPanelScrollWithRetry();
+         }
 
-        return;
+         return;
       }
 
       this.signalStore.setIsLoading(false);
-    } catch (e) {
+   } catch (e) {
       throw new Error(e as any);
-    }
-  }
+   }
+}
 
-  onPanelClose(): void {
-    if (!this.isReady()) {
+   onPanelClose(): void {
+   if (!this.isReady()) {
       return;
-    }
+   }
 
-    try {
+   try {
       this.signalStore.setIsLoading(false);
+
+      this.removePanelScrollListener();
 
       this.effectStore.forEach(m => m.destroy());
       this.effectStore = [];
 
       this.showOptionDefault = true;
       this.reachedEnd = false;
+      this.scrollBindRetry = 0;
       this.onPanelCloseObs.next();
 
       if (this.control.formAction.type === TYPE_CONTROL_FORM.COMBOPAGINATE) {
-        this.signalStore.setFilteredOptions(
-          [],
-          this.control.formAction.keyCombo,
-          false,
-        );
+         this.signalStore.setFilteredOptions(
+            [],
+            this.control.formAction.keyCombo,
+            false,
+         );
 
-        this.signalStore.setTotalOptions(
-          untracked(() => this.signalStore.getSelectedOptions()),
-        );
+         this.signalStore.setTotalOptions(
+            untracked(() => this.signalStore.getSelectedOptions()),
+            this.control.formAction.keyCombo,
+         );
 
-        this.control.formAction.paging = {
-          ...this.initPagination,
-        };
+         this.control.formAction.paging = {
+            ...this.initPagination,
+         };
       }
 
       this.emitClosed();
-    } catch (e) {
+   } catch (e) {
       throw new Error(e as any);
-    }
-  }
+   }
+}
 
-  clearInput = (): void => {
-    try {
-      const input = this.filterInput();
+   clearInput = (): void => {
+      try {
+         const input = this.filterInput();
 
-      if (input) {
-        input.nativeElement.value = '';
+         if (input) {
+            input.nativeElement.value = '';
+         }
+      } catch (e) {
+         throw new Error(e as any);
       }
-    } catch (e) {
-      throw new Error(e as any);
-    }
-  };
+   };
 
-  /***********************************************************************************************************************************
-   * SEARCH
-   ***********************************************************************************************************************************/
+   /***********************************************************************************************************************************
+    * SEARCH
+    ***********************************************************************************************************************************/
 
-  onInputChange(value: string): void {
-    this.inputSubject.next(value ?? '');
-  }
+   onInputChange(value: string): void {
+      this.inputSubject.next(value ?? '');
+   }
 
-  search(value: string | null): void {
-    if (!this.isReady()) {
-      return;
-    }
-
-    const valueSearch = value ?? '';
-
-    this.emitSearch(valueSearch);
-
-    this.signalStore.setIsLoading(true);
-    this.resetOption = valueSearch.trim() !== '';
-
-    if (
-      this.control.formAction.remoteData &&
-      this.control.formAction.type === TYPE_CONTROL_FORM.COMBOPAGINATE
-    ) {
-      const searchValue = this.resetOption ? valueSearch.trim() : null;
-      const currentPaging = this.control.formAction?.paging || this.initPagination;
-      const count =
-        currentPaging?.count ??
-        this.control.formAction?.pageSize ??
-        this.initPagination.count;
-
-      this.currentSearchValue = searchValue;
-      this.reachedEnd = false;
-      this.scrollTop = 0;
-
-      this.control.formAction.paging = {
-        ...currentPaging,
-        page: 1,
-        count,
-        totalCount: 0,
-      };
-
-      this.callRemoteData({
-        ...this.getRemoteParams(),
-        ...this.control.formAction.paging,
-        [this.getSearchKey()]: searchValue,
-        append: false,
-      });
-
-      queueMicrotask(() => {
-        const panel = this.selectRef?.panel?.nativeElement;
-
-        if (panel) {
-          panel.scrollTop = 0;
-        }
-      });
-
-      return;
-    }
-
-    if (this.control.formAction.type === TYPE_CONTROL_FORM.COMBO) {
-      const filtered = this._filter(valueSearch);
-
-      this.signalStore.setFilteredOptions(
-        filtered,
-        this.control.formAction.keyCombo,
-        !this.resetOption,
-      );
-
-      this.signalStore.setIsLoading(false);
-      return;
-    }
-
-    this.signalStore.setIsLoading(false);
-  }
-
-  /***********************************************************************************************************************************
-   * SCROLL PAGINATO
-   ***********************************************************************************************************************************/
-
-  addEventScroll(): void {
-    try {
-      const panel = this.selectRef?.panel?.nativeElement;
-
-      if (!panel) {
-        return;
+   search(value: string | null): void {
+      if (!this.isReady()) {
+         return;
       }
 
-      fromEvent(panel, 'scroll')
-        .pipe(debounceTime(40), takeUntil(this.onPanelCloseObs))
-        .subscribe(() => {
-          if (this.control.formAction.type !== TYPE_CONTROL_FORM.COMBOPAGINATE) {
-            return;
-          }
+      const valueSearch = value ?? '';
 
-          if (this.signalStore.getIsLoading()) {
-            return;
-          }
+      this.emitSearch(valueSearch);
 
-          const currentPanel = this.selectRef?.panel?.nativeElement;
+      this.signalStore.setIsLoading(true);
+      this.resetOption = valueSearch.trim() !== '';
 
-          if (!currentPanel) {
-            return;
-          }
+      if (
+         this.control.formAction.remoteData &&
+         this.control.formAction.type === TYPE_CONTROL_FORM.COMBOPAGINATE
+      ) {
+         const searchValue = this.resetOption ? valueSearch.trim() : null;
+         const currentPaging = this.control.formAction?.paging || this.initPagination;
 
-          this.scrollTop = currentPanel.scrollTop;
+         const count =
+            currentPaging?.count ??
+            this.control.formAction?.pageSize ??
+            this.initPagination.count;
 
-          const distanceFromBottom =
-            currentPanel.scrollHeight -
-            this.scrollTop -
-            currentPanel.clientHeight;
+         this.currentSearchValue = searchValue;
+         this.reachedEnd = false;
+         this.scrollTop = 0;
 
-          const threshold = this.control.formAction?.scrollThreshold ?? 48;
+         this.control.formAction.paging = {
+            ...currentPaging,
+            page: 1,
+            count,
+            totalCount: 0,
+         };
 
-          if (distanceFromBottom > threshold) {
-            this.reachedEnd = false;
-            return;
-          }
-
-          if (this.reachedEnd || !this.canLoadNextPage()) {
-            return;
-          }
-
-          this.reachedEnd = true;
-
-          const paging = this.control.formAction?.paging || this.initPagination;
-          const nextPage = (paging?.page ?? 0) + 1;
-
-          this.control.formAction.paging = {
-            ...paging,
-            page: nextPage,
-          };
-
-          this.emitScrollEnd(this.control.formAction.paging);
-
-          this.callRemoteData({
+         this.callRemoteData({
             ...this.getRemoteParams(),
             ...this.control.formAction.paging,
-            [this.getSearchKey()]:
-              this.currentSearchValue ?? this.getSearchValue(),
-            append: true,
-          });
-        });
-    } catch (e) {
-      throw new Error(e as any);
-    }
-  }
+            [this.getSearchKey()]: searchValue,
+            append: false,
+         });
 
-  private canLoadNextPage(): boolean {
-    const paging = this.control.formAction?.paging || this.initPagination;
-    const page = paging?.page ?? 0;
-    const count = paging?.count ?? 25;
-    const totalCount = paging?.totalCount ?? 0;
+         queueMicrotask(() => {
+            const panel = this.selectRef?.panel?.nativeElement;
 
-    if (!totalCount || totalCount <= 0) {
-      return true;
-    }
+            if (panel) {
+               panel.scrollTop = 0;
+            }
+         });
 
-    const loaded = page * count;
+         return;
+      }
 
-    return loaded < totalCount;
-  }
+      if (this.control.formAction.type === TYPE_CONTROL_FORM.COMBO) {
+         const filtered = this._filter(valueSearch);
 
-  /***********************************************************************************************************************************
-   * REMOTE DATA
-   ***********************************************************************************************************************************/
+         this.signalStore.setFilteredOptions(
+            filtered,
+            this.control.formAction.keyCombo,
+            !this.resetOption,
+         );
 
-  private getSearchKey(): string {
-    const keySearch = this.control?.formAction?.keyCombo?.keySearch;
+         this.signalStore.setIsLoading(false);
+         return;
+      }
 
-    return typeof keySearch === 'string' ? keySearch : 'search';
-  }
-
-  private getSearchValue(): string | null {
-    const value = this.filterInput()?.nativeElement?.value?.trim();
-
-    return value ? value : null;
-  }
-
-  private getRemoteParams(): Record<string, any> {
-    const params = this.control?.formAction?.paramsForRemoteData;
-
-    if (typeof params === 'function') {
-      return params() || {};
-    }
-
-    return params || {};
-  }
-
-  private compactParams(params: Record<string, any>): Record<string, any> {
-    return Object.entries(params || {}).reduce(
-      (acc, [key, value]) => {
-        if (value !== null && value !== undefined && value !== '') {
-          acc[key] = value;
-        }
-
-        return acc;
-      },
-      {} as Record<string, any>,
-    );
-  }
-
-  private callRemoteData(param: Record<string, any>): void {
-    const remoteData = this.control?.formAction?.remoteData;
-
-    if (!remoteData) {
       this.signalStore.setIsLoading(false);
+   }
+
+   /***********************************************************************************************************************************
+    * SCROLL PAGINATO
+    ***********************************************************************************************************************************/
+
+   addEventScroll(): void {
+   this.bindPanelScrollWithRetry();
+}
+
+   private canLoadNextPage(): boolean {
+      const paging = this.control.formAction?.paging || this.initPagination;
+      const page = paging?.page ?? 0;
+      const count = paging?.count ?? 25;
+      const totalCount = paging?.totalCount ?? 0;
+
+      if (!totalCount || totalCount <= 0) {
+         return true;
+      }
+
+      return page * count < totalCount;
+   }
+private bindPanelScrollWithRetry(): void {
+   this.removePanelScrollListener();
+
+   this.scrollBindRetry = 0;
+
+   const tryBind = () => {
+      const panel = this.getSelectPanelElement();
+
+      if (!panel) {
+         this.scrollBindRetry++;
+
+         if (this.scrollBindRetry <= 10) {
+            setTimeout(tryBind, 50);
+         }
+
+         return;
+      }
+
+      this.bindPanelScroll(panel);
+   };
+
+   setTimeout(tryBind, 0);
+}
+
+private getSelectPanelElement(): HTMLElement | null {
+   const directPanel = this.selectRef?.panel?.nativeElement as HTMLElement | undefined;
+
+   if (directPanel) {
+      return directPanel;
+   }
+
+   return document.querySelector('.df-combo-scroll-panel') as HTMLElement | null;
+}
+
+private bindPanelScroll(panel: HTMLElement): void {
+   const onScroll = () => {
+      this.handlePanelScroll(panel);
+   };
+
+   panel.addEventListener('scroll', onScroll, {
+      passive: true,
+   });
+
+   this.removeScrollListener = () => {
+      panel.removeEventListener('scroll', onScroll);
+   };
+
+   console.log('[COMBOPAGINATE] scroll listener agganciato', {
+      scrollHeight: panel.scrollHeight,
+      clientHeight: panel.clientHeight,
+      scrollTop: panel.scrollTop,
+      options: this.signalStore.getFilterOption?.()?.length,
+   });
+}
+
+private removePanelScrollListener(): void {
+   if (this.removeScrollListener) {
+      this.removeScrollListener();
+      this.removeScrollListener = null;
+   }
+}
+
+private handlePanelScroll(panel: HTMLElement): void {
+   if (this.control.formAction.type !== TYPE_CONTROL_FORM.COMBOPAGINATE) {
       return;
-    }
+   }
 
-    this.signalStore.setIsLoading(true);
+   if (this.signalStore.getIsLoading()) {
+      return;
+   }
 
-    remoteData({
+   this.scrollTop = panel.scrollTop;
+
+   const distanceFromBottom =
+      panel.scrollHeight -
+      panel.scrollTop -
+      panel.clientHeight;
+
+   const threshold = this.control.formAction?.scrollThreshold ?? 64;
+
+   if (distanceFromBottom > threshold) {
+      this.reachedEnd = false;
+      return;
+   }
+
+   if (this.reachedEnd) {
+      return;
+   }
+
+   if (!this.canLoadNextPage()) {
+      console.log('[COMBOPAGINATE] fine dati raggiunta', {
+         paging: this.control.formAction.paging,
+      });
+      return;
+   }
+
+   this.reachedEnd = true;
+   this.loadNextPage();
+}
+
+private loadNextPage(): void {
+   const paging = this.control.formAction?.paging || this.initPagination;
+
+   const nextPage = Number(paging?.page ?? 1) + 1;
+   const count =
+      Number(paging?.count) ||
+      Number(this.control.formAction?.pageSize) ||
+      Number(this.initPagination.count) ||
+      10;
+
+   this.control.formAction.paging = {
+      ...paging,
+      page: nextPage,
+      count,
+   };
+
+   console.log('[COMBOPAGINATE] load next page', {
+      paging: this.control.formAction.paging,
+      search: this.currentSearchValue ?? this.getSearchValue(),
+   });
+
+   this.emitScrollEnd(this.control.formAction.paging);
+
+   this.callRemoteData({
+      ...this.getRemoteParams(),
+      ...this.control.formAction.paging,
+      [this.getSearchKey()]: this.currentSearchValue ?? this.getSearchValue(),
+      append: true,
+   });
+}
+   /***********************************************************************************************************************************
+    * REMOTE DATA
+    ***********************************************************************************************************************************/
+
+   private getSearchKey(): string {
+      const keySearch = this.control?.formAction?.keyCombo?.keySearch;
+      return typeof keySearch === 'string' ? keySearch : 'search';
+   }
+
+   private getSearchValue(): string | null {
+      const value = this.filterInput()?.nativeElement?.value?.trim();
+      return value ? value : null;
+   }
+
+   private getRemoteParams(): Record<string, any> {
+      const params = this.control?.formAction?.paramsForRemoteData;
+
+      if (typeof params === 'function') {
+         return params() || {};
+      }
+
+      return params || {};
+   }
+
+   private compactParams(params: Record<string, any>): Record<string, any> {
+      return Object.entries(params || {}).reduce(
+         (acc, [key, value]) => {
+            if (value !== null && value !== undefined && value !== '') {
+               acc[key] = value;
+            }
+
+            return acc;
+         },
+         {} as Record<string, any>,
+      );
+   }
+
+   private callRemoteData(param: Record<string, any>): void {
+   const remoteData = this.control?.formAction?.remoteData;
+
+   if (!remoteData) {
+      this.signalStore.setIsLoading(false);
+      this.reachedEnd = false;
+      return;
+   }
+
+   this.signalStore.setIsLoading(true);
+
+   const payload = {
       param: this.compactParams(param),
       externalStore: this.signalStore,
       setInitialOption: this.setInitialOption,
@@ -471,205 +531,433 @@ export class ComboComponent extends BaseComponent implements AfterViewInit {
       formAction: this.control?.formAction,
       formGroup: this.group,
       instance: this,
-    });
-  }
+   };
 
-  /***********************************************************************************************************************************
-   * SELECTED LABEL
-   ***********************************************************************************************************************************/
+   try {
+      const result = this.resolveRemoteData(remoteData, payload);
 
-  getValueCombo(formControl: FormControl, smal: boolean): string {
-    return this.getSelectedLabel(smal);
-  }
+      this.handleRemoteDataResult(result, param);
+   } catch (error) {
+      console.error('[COMBOPAGINATE] remoteData error', error);
+      this.signalStore.setIsLoading(false);
+      this.reachedEnd = false;
+   }
+}
 
-  getSelectedLabel(small = true): string {
-    if (!this.isReady()) {
-      return '';
-    }
+private resolveRemoteData(remoteData: any, payload: any): any {
+   /**
+    * Caso RxMethod / funzione classica:
+    * remoteData({ param, externalStore, ... })
+    */
+   if (typeof remoteData === 'function') {
+      /**
+       * Se è una Signal Angular, chiamarla senza argomenti restituisce il valore.
+       * Ma una funzione remota normale accetta payload.
+       *
+       * Strategia:
+       * - provo prima come funzione remota con payload
+       * - se esplode, provo come signal senza payload
+       */
+      try {
+         return remoteData(payload);
+      } catch (errorWithPayload) {
+         try {
+            return remoteData();
+         } catch {
+            throw errorWithPayload;
+         }
+      }
+   }
 
-    const value = this.control.formAction.formControl.value;
+   /**
+    * Caso Promise già pronta.
+    */
+   if (remoteData && typeof remoteData.then === 'function') {
+      return remoteData;
+   }
 
-    if (value === null || value === undefined || value === '') {
-      return '';
-    }
+   /**
+    * Caso Observable già pronto.
+    */
+   if (isObservable(remoteData)) {
+      return remoteData;
+   }
 
-    const options = this.getAllKnownOptionsSafe();
+   /**
+    * Caso array diretto oppure oggetto { items, totalCount }.
+    */
+   return remoteData;
+}
 
-    if (this.control.formAction.multiple) {
-      const values = Array.isArray(value) ? value : [];
+private handleRemoteDataResult(result: any, param: Record<string, any>): void {
+   /**
+    * Observable
+    */
+   if (isObservable(result)) {
+      result.subscribe({
+         next: response => this.handleRemoteDataResult(response, param),
+         error: error => {
+            console.error('[COMBOPAGINATE] remoteData observable error', error);
+            this.signalStore.setIsLoading(false);
+            this.reachedEnd = false;
+         },
+      });
 
-      const descriptions = values
-        .map(id => this.findOptionDescriptionByValue(id, options))
-        .filter(description => !!description);
+      return;
+   }
 
-      if (!small) {
-        return descriptions.join('; ');
+   /**
+    * Promise
+    */
+   if (result && typeof result.then === 'function') {
+      result
+         .then((response: any) => this.handleRemoteDataResult(response, param))
+         .catch((error: any) => {
+            console.error('[COMBOPAGINATE] remoteData promise error', error);
+            this.signalStore.setIsLoading(false);
+            this.reachedEnd = false;
+         });
+
+      return;
+   }
+
+   /**
+    * Signal Angular già risolta male:
+    * può capitare che result sia ancora una funzione senza argomenti.
+    */
+   if (typeof result === 'function') {
+      try {
+         const signalValue = result();
+         this.handleRemoteDataResult(signalValue, param);
+         return;
+      } catch (error) {
+         console.error('[COMBOPAGINATE] remoteData signal error', error);
+         this.signalStore.setIsLoading(false);
+         this.reachedEnd = false;
+         return;
+      }
+   }
+
+   /**
+    * Array / object / undefined
+    */
+   this.applyRemoteDataResponse(result, param);
+}
+
+   private applyRemoteDataResponse(response: any, param: Record<string, any>): void {
+      const append = param?.append === true;
+      const keyCombo = this.control?.formAction?.keyCombo;
+
+      /**
+       * Caso vecchio:
+       * remoteData aggiorna già lo store e non ritorna nulla.
+       */
+      if (response === undefined || response === null) {
+         this.signalStore.setIsLoading(false);
+         this.reachedEnd = false;
+         return;
       }
 
-      return descriptions.length <= this.combotext.maxElementShow
-        ? descriptions.join('; ')
-        : `${descriptions
-          .slice(0, this.combotext.maxElementShow)
-          .join('; ')} + ${descriptions.length - this.combotext.maxElementShow}`;
-    }
+      const normalized = this.normalizeRemoteResponse(response);
+      const items = normalized.items;
+      const totalCount = normalized.totalCount ?? items.length;
 
-    return this.findOptionDescriptionByValue(value, options);
-  }
+      this.control.formAction.paging = {
+         ...(this.control.formAction.paging || this.initPagination),
+         totalCount,
+      };
 
-  private findOptionDescriptionByValue(value: any, options: any[]): string {
-    const option = options.find(item => this.optionEqualsValue(item, value));
+      this.signalStore.setFilteredOptions(
+         {
+            items,
+            totalCount,
+         },
+         keyCombo,
+         append,
+      );
 
-    if (!option) {
-      return typeof value === 'object' ? '' : String(value ?? '');
-    }
+      const currentTotal = append
+         ? [
+              ...(this.signalStore.getTotalOptions?.() || []),
+              ...items,
+           ]
+         : items;
 
-    return option.description || this.getOptionDescription(option);
-  }
+      this.signalStore.setTotalOptions(
+         {
+            items: currentTotal,
+            totalCount,
+         },
+         keyCombo,
+      );
 
-  private optionEqualsValue(option: any, value: any): boolean {
-    if (
-      option === null ||
-      option === undefined ||
-      value === null ||
-      value === undefined
-    ) {
-      return false;
-    }
+this.signalStore.setIsLoading(false);
+this.reachedEnd = false;
 
-    const optionValue = this.getOptionValue(option);
+queueMicrotask(() => {
+   const panel = this.selectRef?.panel?.nativeElement;
 
-    if (typeof value === 'object') {
+   if (panel && append) {
+      panel.scrollTop = this.scrollTop;
+   }
+});
+
+queueMicrotask(() => {
+   if (
+      this.control.formAction.type === TYPE_CONTROL_FORM.COMBOPAGINATE &&
+      this.control.formAction?.enableInfiniteScroll === true
+   ) {
+      this.bindPanelScrollWithRetry();
+   }
+});
+   }
+
+   private normalizeRemoteResponse(response: any): {
+      items: Array<any>;
+      totalCount?: number;
+   } {
+      if (Array.isArray(response)) {
+         return {
+            items: response,
+            totalCount: response.length,
+         };
+      }
+
+      if (response?.items && Array.isArray(response.items)) {
+         return {
+            items: response.items,
+            totalCount:
+               response.totalCount ??
+               response.total ??
+               response.countTotal ??
+               response.items.length,
+         };
+      }
+
+      if (response?.data && Array.isArray(response.data)) {
+         return {
+            items: response.data,
+            totalCount:
+               response.totalCount ??
+               response.total ??
+               response.countTotal ??
+               response.data.length,
+         };
+      }
+
+      if (response?.result && Array.isArray(response.result)) {
+         return {
+            items: response.result,
+            totalCount:
+               response.totalCount ??
+               response.total ??
+               response.countTotal ??
+               response.result.length,
+         };
+      }
+
+      return {
+         items: [],
+         totalCount: 0,
+      };
+   }
+
+   /***********************************************************************************************************************************
+    * SELECTED LABEL
+    ***********************************************************************************************************************************/
+
+   getValueCombo(formControl: FormControl, smal: boolean): string {
+      return this.getSelectedLabel(smal);
+   }
+
+   getSelectedLabel(small = true): string {
+      if (!this.isReady()) {
+         return '';
+      }
+
+      const value = this.control.formAction.formControl.value;
+
+      if (value === null || value === undefined || value === '') {
+         return '';
+      }
+
+      const options = this.getAllKnownOptionsSafe();
+
+      if (this.control.formAction.multiple) {
+         const values = Array.isArray(value) ? value : [];
+
+         const descriptions = values
+            .map(id => this.findOptionDescriptionByValue(id, options))
+            .filter(description => !!description);
+
+         if (!small) {
+            return descriptions.join('; ');
+         }
+
+         return descriptions.length <= this.combotext.maxElementShow
+            ? descriptions.join('; ')
+            : `${descriptions
+                 .slice(0, this.combotext.maxElementShow)
+                 .join('; ')} + ${descriptions.length - this.combotext.maxElementShow}`;
+      }
+
+      return this.findOptionDescriptionByValue(value, options);
+   }
+
+   private findOptionDescriptionByValue(value: any, options: any[]): string {
+      const option = options.find(item => this.optionEqualsValue(item, value));
+
+      if (!option) {
+         return typeof value === 'object' ? '' : String(value ?? '');
+      }
+
+      return option.description || this.getOptionDescription(option);
+   }
+
+   private optionEqualsValue(option: any, value: any): boolean {
+      if (
+         option === null ||
+         option === undefined ||
+         value === null ||
+         value === undefined
+      ) {
+         return false;
+      }
+
+      const optionValue = this.getOptionValue(option);
+
+      if (typeof value === 'object') {
+         const keyId = this.control?.formAction?.keyCombo?.keyId ?? 'id';
+
+         if (Array.isArray(keyId)) {
+            const valueKey = keyId
+               .map(key => value?.[key])
+               .filter(v => v !== null && v !== undefined)
+               .join('|');
+
+            return optionValue == valueKey;
+         }
+
+         return optionValue == value?.[keyId];
+      }
+
+      return optionValue == value;
+   }
+
+   private getAllKnownOptionsSafe(): any[] {
+      const fromTotal = this.signalStore?.getTotalOptions?.() || [];
+      const fromSelected = this.signalStore?.getSelectedOptions?.() || [];
+      const fromDefault = this.signalStore?.getDefaultOptions?.() || [];
+      const fromFiltered = this.signalStore?.getFilterOption?.() || [];
+      const fromAction = this.normalizeActionOptions(this.getOptionsValue());
+
+      const key = this.control?.formAction?.keyCombo?.keyId ?? 'id';
+      const map = new Map<any, any>();
+
+      for (const item of [
+         ...fromTotal,
+         ...fromSelected,
+         ...fromDefault,
+         ...fromFiltered,
+         ...fromAction,
+      ]) {
+         if (!item) {
+            continue;
+         }
+
+         const normalized = this.normalizeOption(item);
+         const mapKey = this.resolveOptionKey(normalized, key);
+
+         map.set(mapKey, normalized);
+      }
+
+      return Array.from(map.values());
+   }
+
+   /***********************************************************************************************************************************
+    * OPTIONS HELPERS
+    ***********************************************************************************************************************************/
+
+   getOptionValue(option: any): any {
       const keyId = this.control?.formAction?.keyCombo?.keyId ?? 'id';
 
       if (Array.isArray(keyId)) {
-        const valueKey = keyId
-          .map(key => value?.[key])
-          .filter(v => v !== null && v !== undefined)
-          .join('|');
-
-        return optionValue == valueKey;
+         return keyId
+            .map(key => option?.[key])
+            .filter(value => value !== null && value !== undefined)
+            .join('|');
       }
 
-      return optionValue == value?.[keyId];
-    }
+      return option?.[keyId] ?? option?.id;
+   }
 
-    return optionValue == value;
-  }
-
-  private getAllKnownOptionsSafe(): any[] {
-    const fromTotal = this.signalStore?.getTotalOptions?.() || [];
-    const fromSelected = this.signalStore?.getSelectedOptions?.() || [];
-    const fromDefault = this.signalStore?.getDefaultOptions?.() || [];
-    const fromFiltered = this.signalStore?.getFilterOption?.() || [];
-    const fromAction = this.normalizeActionOptions(this.getOptionsValue());
-
-    const key = this.control?.formAction?.keyCombo?.keyId ?? 'id';
-    const map = new Map<any, any>();
-
-    for (const item of [
-      ...fromTotal,
-      ...fromSelected,
-      ...fromDefault,
-      ...fromFiltered,
-      ...fromAction,
-    ]) {
-      if (!item) {
-        continue;
+   getOptionDescription(option: any): string {
+      if (!option) {
+         return '';
       }
 
-      const normalized = this.normalizeOption(item);
-      const mapKey = this.resolveOptionKey(normalized, key);
+      const keys =
+         this.control?.formAction?.keyCombo?.keyDescription ?? ['description'];
 
-      map.set(mapKey, normalized);
-    }
+      const keyList = Array.isArray(keys) ? keys : [keys];
 
-    return Array.from(map.values());
-  }
+      return keyList
+         .map((key: string) => option?.[key])
+         .filter((value: any) => value !== null && value !== undefined && value !== '')
+         .join(' - ');
+   }
 
-  /***********************************************************************************************************************************
-   * OPTIONS HELPERS
-   ***********************************************************************************************************************************/
+   private normalizeActionOptions(
+      value: any[] | { items: any[]; totalCount: number },
+   ): any[] {
+      if (
+         value &&
+         typeof value === 'object' &&
+         !Array.isArray(value) &&
+         Array.isArray(value.items)
+      ) {
+         return value.items.map(item => this.normalizeOption(item));
+      }
 
-  getOptionValue(option: any): any {
-    const keyId = this.control?.formAction?.keyCombo?.keyId ?? 'id';
+      return Array.isArray(value)
+         ? value.map(item => this.normalizeOption(item))
+         : [];
+   }
 
-    if (Array.isArray(keyId)) {
-      return keyId
-        .map(key => option?.[key])
-        .filter(value => value !== null && value !== undefined)
-        .join('|');
-    }
+   private normalizeOption(option: any): any {
+      if (!option) {
+         return option;
+      }
 
-    return option?.[keyId] ?? option?.id;
-  }
+      return {
+         ...option,
+         id: option.id ?? this.getOptionValue(option),
+         description: option.description ?? this.getOptionDescription(option),
+      };
+   }
 
-  getOptionDescription(option: any): string {
-    if (!option) {
-      return '';
-    }
+   private resolveOptionKey(option: any, key: string | string[]): any {
+      if (Array.isArray(key)) {
+         return key
+            .map(k => option?.[k])
+            .filter(value => value !== null && value !== undefined)
+            .join('|');
+      }
 
-    const keys =
-      this.control?.formAction?.keyCombo?.keyDescription ?? ['description'];
+      return option?.[key] ?? option?.id ?? JSON.stringify(option);
+   }
 
-    const keyList = Array.isArray(keys) ? keys : [keys];
+   toggleOption(option: any, event: Event): void {
+      if (this.control.formAction.multiple) {
+         event.stopPropagation();
+      }
 
-    return keyList
-      .map((key: string) => option?.[key])
-      .filter((value: any) => value !== null && value !== undefined && value !== '')
-      .join(' - ');
-  }
+      const optionValue = this.getOptionValue(option);
 
-  private normalizeActionOptions(
-    value: any[] | { items: any[]; totalCount: number },
-  ): any[] {
-    if (
-      value &&
-      typeof value === 'object' &&
-      !Array.isArray(value) &&
-      Array.isArray(value.items)
-    ) {
-      return value.items.map(item => this.normalizeOption(item));
-    }
-
-    return Array.isArray(value)
-      ? value.map(item => this.normalizeOption(item))
-      : [];
-  }
-
-  private normalizeOption(option: any): any {
-    if (!option) {
-      return option;
-    }
-
-    return {
-      ...option,
-      id: option.id ?? this.getOptionValue(option),
-      description: option.description ?? this.getOptionDescription(option),
-    };
-  }
-
-  private resolveOptionKey(option: any, key: string | string[]): any {
-    if (Array.isArray(key)) {
-      return key
-        .map(k => option?.[k])
-        .filter(value => value !== null && value !== undefined)
-        .join('|');
-    }
-
-    return option?.[key] ?? option?.id ?? JSON.stringify(option);
-  }
-
-  toggleOption(option: any, event: Event): void {
-    if (this.control.formAction.multiple) {
-      event.stopPropagation();
-    }
-
-    const optionValue = this.getOptionValue(option);
-
-    this.signalStore.updateOptionSelected(
-      optionValue,
-      !option.selected,
-      this.control.formAction.multiple,
-    );
-  }
+      this.signalStore.updateOptionSelected(
+         optionValue,
+         !option.selected,
+         this.control.formAction.multiple,
+      );
+   }
 }

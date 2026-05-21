@@ -7,6 +7,7 @@ import {
    TYPE_CONTROL_FORM,
 } from '../dynamic-form.interface';
 import { signal } from '@angular/core';
+import { delay, of } from 'rxjs';
 
 function logEvent(name: string, data?: any): void {
    console.groupCollapsed(
@@ -17,35 +18,46 @@ function logEvent(name: string, data?: any): void {
    console.groupEnd();
 }
 
-function createPagedOptions(
-   prefix: string,
-   page: number,
-   count: number,
-   search?: string | null,
-): Array<any> {
-   const start = (page - 1) * count;
-   const cleanSearch = search?.trim();
-
-   return Array.from({ length: count }).map((_, index) => {
-      const id = start + index + 1;
+ 
+ function createFullMockDataset(prefix: string, totalCount = 250): Array<any> {
+   return Array.from({ length: totalCount }).map((_, index) => {
+      const id = index + 1;
 
       return {
          id,
-         description: cleanSearch
-            ? `${prefix} ${id} - ricerca: ${cleanSearch}`
-            : `${prefix} ${id}`,
+         description: `${prefix} ${id}`,
       };
    });
 }
 
-function createMockRemoteData(prefix: string, totalCount = 250) {
-   return ({ param, externalStore }: any) => {
-      const page = Number(param?.page ?? 1);
-      const count = Number(param?.count ?? 25);
-      const search = param?.search ?? param?.description ?? null;
-      const append = param?.append === true;
+function paginateItems<T>(items: T[], page: number, count: number): T[] {
+   const start = (page - 1) * count;
+   return items.slice(start, start + count);
+}
 
-      const items = createPagedOptions(prefix, page, count, search);
+function createMockRemoteData(prefix: string, totalCount = 250) {
+   const fullDataset = createFullMockDataset(prefix, totalCount);
+
+   return ({ param }: any) => {
+      const page = Number(param?.page ?? 1);
+      const count = Number(param?.count ?? 10);
+
+      const search =
+         param?.search ??
+         param?.description ??
+         param?.q ??
+         '';
+
+      const cleanSearch = String(search ?? '').trim().toLowerCase();
+
+      const filteredDataset = cleanSearch
+         ? fullDataset.filter(item =>
+              String(item.description).toLowerCase().includes(cleanSearch) ||
+              String(item.id).includes(cleanSearch),
+           )
+         : fullDataset;
+
+      const items = paginateItems(filteredDataset, page, count);
 
       console.groupCollapsed(
          `%c[REMOTE DATA] ${prefix}`,
@@ -55,44 +67,13 @@ function createMockRemoteData(prefix: string, totalCount = 250) {
       console.log('page:', page);
       console.log('count:', count);
       console.log('search:', search);
-      console.log('append:', append);
+      console.log('filtered total:', filteredDataset.length);
       console.log('items:', items);
       console.groupEnd();
 
-      if (append) {
-         const current = externalStore.getFilterOption?.() ?? [];
-         const merged = [...current, ...items];
-
-         externalStore.setFilteredOptions?.(merged, {
-            keyId: 'id',
-            keyDescription: 'description',
-            keySearch: 'description',
-         });
-
-         externalStore.setTotalOptions?.(merged, {
-            keyId: 'id',
-            keyDescription: 'description',
-            keySearch: 'description',
-         });
-      } else {
-         externalStore.setFilteredOptions?.(items, {
-            keyId: 'id',
-            keyDescription: 'description',
-            keySearch: 'description',
-         });
-
-         externalStore.setTotalOptions?.(items, {
-            keyId: 'id',
-            keyDescription: 'description',
-            keySearch: 'description',
-         });
-      }
-
-      externalStore.setIsLoading?.(false);
-
       return {
          items,
-         totalCount,
+         totalCount: filteredDataset.length,
          page,
          count,
       };
@@ -785,166 +766,195 @@ function createFormConfiguration(): any[] {
          },
       } as FormAction),
       field({
-         title: 'Città paginata',
-         translateId: 'test-city-paginated',
-         placeholder: 'Cerca città',
+   title: 'Città paginata',
+   translateId: 'test-city-paginated',
+   placeholder: 'Cerca città',
 
-         css: {
-            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
-         },
+   css: {
+      class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+   },
 
-         formControl: new FormControl(
-            { value: null, disabled: false },
-            {
-               updateOn: 'change',
-               validators: [],
-            },
-         ),
+   formControl: new FormControl(
+      { value: null, disabled: false },
+      {
+         updateOn: 'change',
+         validators: [],
+      },
+   ),
 
-         formName: 'cityId',
-         type: TYPE_CONTROL_FORM.COMBOPAGINATE,
-         resetButton: true,
-         autocomplete: true,
-         enableInfiniteScroll: true,
-         pageSize: 25,
-         scrollThreshold: 48,
+   formName: 'cityId',
+   type: TYPE_CONTROL_FORM.COMBOPAGINATE,
+   resetButton: true,
+   autocomplete: true,
+   enableInfiniteScroll: true,
+   pageSize: 10,
+   scrollThreshold: 80,
 
-         keyCombo: {
-            keyId: 'id',
-            keyDescription: 'description',
-            keySearch: 'description',
-         },
+   keyCombo: {
+      keyId: 'id',
+      keyDescription: 'description',
+      keySearch: 'search',
+   },
 
-         options: signal([]),
+   options: signal([]),
 
-         paramsForRemoteData: signal({
-            page: 1,
-            count: 25,
-         }),
+   paramsForRemoteData: signal({
+      page: 1,
+      count: 10,
+   }),
 
-         paging: {
-            page: 1,
-            count: 25,
-            totalCount: 250,
-         },
+   paging: {
+      page: 1,
+      count: 10,
+      totalCount: 250,
+   },
 
-         remoteData: createMockRemoteData('Città', 250),
+   remoteData:  ({ param }: any) => {
+   return new Promise(resolve => {
+      setTimeout(() => {
+         const page = Number(param?.page ?? 1);
+         const count = Number(param?.count ?? 10);
+         const search = String(param?.search ?? '').toLowerCase();
 
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
-         ) {
-            logEvent('cityId:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-               paging,
-               onOptionSetted,
-            });
-         },
+         const all = Array.from({ length: 250 }).map((_, index) => {
+            const id = index + 1;
+            return {
+               id,
+               description: `Cliente ${id}`,
+            };
+         });
 
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('cityId:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-               valid: formControl.valid,
-               errors: formControl.errors,
-            });
-         },
+         const filtered = search
+            ? all.filter(x =>
+                 x.description.toLowerCase().includes(search) ||
+                 String(x.id).includes(search),
+              )
+            : all;
 
-         opened(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            allGroup,
-            utility,
-         ) {
-            logEvent('cityId:opened', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
+         const start = (page - 1) * count;
 
-         closed(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            allGroup,
-            utility,
-         ) {
-            logEvent('cityId:closed', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
+         resolve({
+            items: filtered.slice(start, start + count),
+            totalCount: filtered.length,
+         });
+      }, 500);
+   });
+},
 
-         onSearch(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            search,
-            utility,
-         ) {
-            logEvent('cityId:onSearch', {
-               idGroup,
-               idForm,
-               formName,
-               search,
-               value: formControl.value,
-            });
-         },
+   onInitialize(
+      idGroup,
+      idForm,
+      formControl,
+      formName,
+      formGroup,
+      type,
+      allGroup,
+      paging,
+      onOptionSetted,
+      utility,
+   ) {
+      logEvent('cityId:onInitialize', {
+         idGroup,
+         idForm,
+         formName,
+         value: formControl.value,
+         type,
+         paging,
+      });
+   },
 
-         onScrollEnd(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            paging,
-            utility,
-         ) {
-            logEvent('cityId:onScrollEnd', {
-               idGroup,
-               idForm,
-               formName,
-               paging,
-               value: formControl.value,
-            });
-         },
-      } as FormAction),
+   onChange(
+      idGroup,
+      idForm,
+      formControl,
+      formName,
+      formGroup,
+      type,
+      prevValue,
+      allGroup,
+      utility,
+   ) {
+      logEvent('cityId:onChange', {
+         idGroup,
+         idForm,
+         formName,
+         value: formControl.value,
+         prevValue,
+         valid: formControl.valid,
+         errors: formControl.errors,
+      });
+   },
+
+   opened(
+      idGroup,
+      idForm,
+      formControl,
+      formName,
+      formGroup,
+      allGroup,
+      utility,
+   ) {
+      logEvent('cityId:opened', {
+         idGroup,
+         idForm,
+         formName,
+         value: formControl.value,
+      });
+   },
+
+   closed(
+      idGroup,
+      idForm,
+      formControl,
+      formName,
+      formGroup,
+      allGroup,
+      utility,
+   ) {
+      logEvent('cityId:closed', {
+         idGroup,
+         idForm,
+         formName,
+         value: formControl.value,
+      });
+   },
+
+   onSearch(
+      idGroup,
+      idForm,
+      formControl,
+      formName,
+      formGroup,
+      search,
+      utility,
+   ) {
+      logEvent('cityId:onSearch', {
+         idGroup,
+         idForm,
+         formName,
+         search,
+         value: formControl.value,
+      });
+   },
+
+   onScrollEnd(
+      idGroup,
+      idForm,
+      formControl,
+      formName,
+      formGroup,
+      paging,
+      utility,
+   ) {
+      logEvent('cityId:onScrollEnd', {
+         idGroup,
+         idForm,
+         formName,
+         paging,
+         value: formControl.value,
+      });
+   },
+} as FormAction),
       field({
          title: 'Contratto attivo',
          translateId: 'test-active',

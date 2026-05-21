@@ -1,68 +1,58 @@
 <!-- @format -->
 
 @if (!control.formAction?.css?.hide) {
-   <ng-container>
-      <div class="d-flex w-100">
-         <mat-form-field class="w-100 customMY">
-            <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">
-               {{ control.formAction.title }}
+<ng-container>
+   <div class="d-flex w-100">
+      <mat-form-field class="w-100 customMY">
+         <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">
+            {{ control.formAction.title }}
 
-               @if (control.formAction?.info) {
-                  <mat-icon
-                     [matTooltip]="control.formAction?.info.msg"
-                     [style.color]="control.formAction?.info.color"
-                     class="mx-1">
-                     info_outline
-                  </mat-icon>
-               }
-            </mat-label>
-
-            <mat-icon matIconPrefix>
-               access_time
+            @if (control.formAction?.info) {
+            <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color"
+               class="mx-1">
+               info_outline
             </mat-icon>
-
-            <mat-select
-               [matTooltip]="control.formAction?.tipContent || null"
-               [formControl]="$any(control.formAction?.formControl)"
-               [multiple]="control.formAction?.multiple"
-               [placeholder]="control.formAction.placeholder || ''"
-               (openedChange)="onOpenedChange($event)"
-               (focus)="emitFocus()"
-               (blur)="emitBlur()">
-
-               @for (hour of getOptions(); track hour.id) {
-                  @if (isHourVisible(hour)) {
-                     <mat-option [value]="hour.id">
-                        <span>
-                           {{ hour.description }}
-                        </span>
-                     </mat-option>
-                  }
-               }
-
-            </mat-select>
-
-            @if (control.formAction?.resetButton && control.formAction.formControl.value != null) {
-               <button
-                  matSuffix
-                  mat-icon-button
-                  aria-label="Clear"
-                  type="button"
-                  (click)="$event.stopPropagation(); control.formAction.formControl.reset()">
-                  <mat-icon>close</mat-icon>
-               </button>
             }
-         </mat-form-field>
+         </mat-label>
 
-         <div #dynamicContainer class=""></div>
-      </div>
+         <mat-icon matPrefix class="df-time-prefix-icon">
+            access_time
+         </mat-icon>
 
-      @for (error of getErrorFormControl($any(control.formAction?.formControl)); track error) {
-         <mat-error>{{ error }}</mat-error>
-      }
+         <mat-select [matTooltip]="control.formAction?.tipContent || null"
+            [formControl]="$any(control.formAction?.formControl)" [multiple]="control.formAction?.multiple"
+            [placeholder]="control.formAction.placeholder || ''" (openedChange)="onOpenedChange($event)"
+            (focus)="emitFocus()" (blur)="emitBlur()">
 
-      @if (control?.formAction?.hint) {
-         <mat-hint>{{ control.formAction.hint }}</mat-hint>
-      }
-   </ng-container>
+            @for (hour of getOptions(); track hour.id) {
+            @if (isHourVisible(hour)) {
+            <mat-option [value]="hour.id">
+               <span>
+                  {{ hour.description }}
+               </span>
+            </mat-option>
+            }
+            }
+
+         </mat-select>
+
+         @if (control.formAction?.resetButton && control.formAction.formControl.value != null) {
+         <button matSuffix mat-icon-button aria-label="Clear" type="button"
+            (click)="$event.stopPropagation(); control.formAction.formControl.reset()">
+            <mat-icon>close</mat-icon>
+         </button>
+         }
+      </mat-form-field>
+
+      <div #dynamicContainer class=""></div>
+   </div>
+
+   @for (error of getErrorFormControl($any(control.formAction?.formControl)); track error) {
+   <mat-error>{{ error }}</mat-error>
+   }
+
+   @if (control?.formAction?.hint) {
+   <mat-hint>{{ control.formAction.hint }}</mat-hint>
+   }
+</ng-container>
 }

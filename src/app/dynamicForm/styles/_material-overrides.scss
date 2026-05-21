@@ -59,3 +59,121 @@
   border-radius: $df-radius-lg !important;
   box-shadow: $df-shadow-md !important;
 }
+
+/* =========================================================
+   DYNAMIC FORM - FIX MDC ICON ALIGNMENT
+   date / year / date-range / input-time
+   ========================================================= */
+
+.df-theme-elegant,
+.df-theme-my-company,
+.dynamic-form,
+app-dynamic-form {
+
+  app-date,
+  app-date-range,
+  app-year,
+  app-input-time,
+  app-date-time {
+    .mat-mdc-form-field {
+      --df-icon-button-size: 32px;
+      --df-icon-size: 18px;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      min-height: var(--df-field-height, 48px);
+      display: flex;
+      align-items: center;
+    }
+
+    .mat-mdc-form-field-flex {
+      min-height: var(--df-field-height, 48px);
+      display: flex;
+      align-items: center;
+    }
+
+    .mat-mdc-form-field-infix {
+      min-height: var(--df-field-height, 48px);
+      display: flex;
+      align-items: center;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .mat-mdc-form-field-icon-prefix,
+    .mat-mdc-form-field-icon-suffix {
+      height: var(--df-field-height, 48px);
+      min-height: var(--df-field-height, 48px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+      padding: 0 6px;
+      margin: 0;
+    }
+
+    .mat-datepicker-toggle {
+      height: var(--df-field-height, 48px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mat-datepicker-toggle .mat-mdc-icon-button,
+    .mat-mdc-form-field-icon-prefix .mat-mdc-icon-button,
+    .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button {
+      width: var(--df-icon-button-size);
+      height: var(--df-icon-button-size);
+      min-width: var(--df-icon-button-size);
+      min-height: var(--df-icon-button-size);
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      margin: 0;
+    }
+
+    .mat-mdc-icon-button .mat-mdc-button-touch-target {
+      width: var(--df-icon-button-size);
+      height: var(--df-icon-button-size);
+    }
+
+    .mat-datepicker-toggle-default-icon,
+    .mat-mdc-form-field-icon-prefix mat-icon,
+    .mat-mdc-form-field-icon-suffix mat-icon,
+    .df-time-prefix-icon {
+      width: var(--df-icon-size);
+      height: var(--df-icon-size);
+      font-size: var(--df-icon-size);
+      line-height: var(--df-icon-size);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--df-muted-text, #6b7280);
+      opacity: 0.85;
+    }
+
+    .mat-mdc-select {
+      display: flex;
+      align-items: center;
+      min-height: 24px;
+    }
+
+    .mat-mdc-select-trigger {
+      height: 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    .mat-mdc-select-arrow-wrapper {
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
