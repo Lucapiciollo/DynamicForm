@@ -9,6 +9,7 @@ import {
   ElementRef,
   inject,
   Injector,
+  OnInit,
   isSignal,
   signal,
   untracked,
@@ -34,11 +35,11 @@ import { Store } from "./store";
   selector: "app-combo",
   templateUrl: "./combo.component.html",
   standalone: false,
-  styleUrls: ["../../dynamic-form.component.scss", "./combo.component.css"],
+  styleUrls: ["../../dynamic-form.component.scss", "./combo.component.scss"],
   providers: [Store],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ComboComponent extends BaseComponent {
+export class ComboComponent extends BaseComponent implements OnInit {
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
   private reachedEnd = false;
@@ -62,10 +63,6 @@ export class ComboComponent extends BaseComponent {
   private readonly checkboxSelectFakeControl = new FormControl<string>(
     this.CHECKBOX_SELECT_VALUE,
   );
-
-  getCheckboxOptionTechnicalValue(option: any): string {
-   return `__checkbox_option_${option?.id ?? this.getOptionValue(option)}`;
-}
 
   /** Testo visuale forzato per il trigger della checkbox select. */
   public readonly selectedLabelText = signal<string>("");
@@ -99,6 +96,39 @@ export class ComboComponent extends BaseComponent {
         }
 
         this.search(valueSearch ?? "");
+      });
+  }
+
+
+  ngOnInit(): void {
+    /**
+     * Mantiene eventuali lifecycle ereditati da BaseComponent senza legarci
+     * alla firma reale della classe base.
+     */
+    const baseNgOnInit = Object.getPrototypeOf(ComboComponent.prototype)?.ngOnInit;
+
+    if (typeof baseNgOnInit === "function") {
+      baseNgOnInit.call(this);
+    }
+
+    queueMicrotask(() => {
+      if (!this.isReady()) {
+        return;
+      }
+
+      this.normalizeControlValueForMultiple();
+      this.syncCheckboxSelectFakeControl();
+      this.refreshSelectedView();
+      this.cdr.markForCheck();
+    });
+
+    this.control?.formAction?.formControl?.valueChanges
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      ?.subscribe(() => {
+        this.normalizeControlValueForMultiple();
+        this.syncCheckboxSelectFakeControl();
+        this.refreshSelectedView();
+        this.cdr.markForCheck();
       });
   }
 
@@ -139,8 +169,13 @@ export class ComboComponent extends BaseComponent {
       return;
     }
 
-    this.syncCheckboxSelectFakeControl();
-    this.selectedLabelText.set(this.getSelectedLabel(true));
+    const label = this.getSelectedLabel(true);
+    this.selectedLabelText.set(label);
+
+    if (this.isCheckboxSelect()) {
+      this.syncCheckboxSelectFakeControl();
+    }
+
     this.cdr.markForCheck();
   }
 
@@ -393,6 +428,7 @@ export class ComboComponent extends BaseComponent {
         false,
       );
 
+      this.refreshSelectedView();
       this.signalStore.setIsLoading(false);
       return;
     }
@@ -882,6 +918,66 @@ export class ComboComponent extends BaseComponent {
   }
 
   /***********************************************************************************************************************************
+   * VISIBLE OPTIONS / CHECKBOX LIST
+   ***********************************************************************************************************************************/
+
+  getVisibleOptions(): any[] {
+    const defaultOptions = this.signalStore?.getDefaultOptions?.() || [];
+    const filterOptions = this.signalStore?.getFilterOption?.() || [];
+    const totalOptions = this.signalStore?.getTotalOptions?.() || [];
+    const actionOptions = this.normalizeActionOptions(this.getOptionsValue());
+
+    /**
+     * Per COMBO statiche la lista vera spesso è in default/action options.
+     * Per COMBOPAGINATE la lista vera è in filter/total options.
+     * Non usiamo selectedOptions come sorgente della lista, altrimenti quando
+     * prevalorizzi il controllo restano visibili solo i selezionati.
+     */
+    const source = [
+      ...defaultOptions,
+      ...filterOptions,
+      ...totalOptions,
+      ...actionOptions,
+    ];
+
+    return this.distinctOptionsByValue(source)
+      .map((option) => this.normalizeOption(option))
+      .filter((option) => !!option && option.hide !== true);
+  }
+
+  private distinctOptionsByValue(options: any[]): any[] {
+    const map = new Map<string, any>();
+
+    for (const option of options || []) {
+      if (!option) {
+        continue;
+      }
+
+      const normalized = this.normalizeOption(option);
+      const value = this.getOptionValue(normalized);
+      map.set(this.toCompareKey(value), normalized);
+    }
+
+    return Array.from(map.values());
+  }
+
+  private toCompareKey(value: any): string {
+    if (value === null || value === undefined) {
+      return String(value);
+    }
+
+    if (typeof value === "object") {
+      try {
+        return JSON.stringify(value);
+      } catch {
+        return String(value);
+      }
+    }
+
+    return String(value);
+  }
+
+  /***********************************************************************************************************************************
    * SELECTED LABEL
    ***********************************************************************************************************************************/
 
@@ -897,17 +993,29 @@ export class ComboComponent extends BaseComponent {
     const value = this.control.formAction.formControl.value;
 
     if (value === null || value === undefined || value === "") {
-      return "";
+      return this.control?.formAction?.placeholder ?? "";
     }
 
     const options = this.getAllKnownOptionsSafe();
 
     if (this.isMultipleSelection()) {
-      const values = Array.isArray(value) ? value : [value];
+      const values = Array.isArray(value)
+        ? value
+        : value === null || value === undefined || value === ""
+          ? []
+          : [value];
+
+      if (!values.length) {
+        return this.control?.formAction?.placeholder ?? "";
+      }
 
       const descriptions = values
         .map((id) => this.findOptionDescriptionByValue(id, options))
         .filter((description) => !!description);
+
+      if (!descriptions.length) {
+        return `${values.length} selezionati`;
+      }
 
       if (!small) {
         return descriptions.join("; ");
@@ -922,7 +1030,11 @@ export class ComboComponent extends BaseComponent {
             )} + ${descriptions.length - this.combotext.maxElementShow}`;
     }
 
-    return this.findOptionDescriptionByValue(value, options);
+    return (
+      this.findOptionDescriptionByValue(value, options) ||
+      this.control?.formAction?.placeholder ||
+      ""
+    );
   }
 
   private findOptionDescriptionByValue(value: any, options: any[]): string {

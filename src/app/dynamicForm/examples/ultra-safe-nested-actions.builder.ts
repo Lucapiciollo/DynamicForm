@@ -135,8 +135,26 @@ function getFormRawValue(formGroup: FormGroup | FormArray | any): any {
    return formGroup?.value ?? null;
 }
 
-function printJsonFromForm(formGroup: FormGroup | FormArray | any): void {
-   const json = getFormRawValue(formGroup);
+function printJsonFromForm(source: FormGroup | FormArray | FormControl | any): void {
+   let json: any = null;
+
+   if (source instanceof FormGroup || source instanceof FormArray) {
+      json = source.getRawValue();
+   } else if (source instanceof FormControl) {
+      const parent = source.parent;
+
+      if (parent instanceof FormGroup || parent instanceof FormArray) {
+         json = parent.getRawValue();
+      } else {
+         json = source.value;
+      }
+   } else if (source?.getRawValue) {
+      json = source.getRawValue();
+   } else if (source?.value !== undefined) {
+      json = source.value;
+   } else {
+      json = source ?? null;
+   }
 
    console.groupCollapsed(
       '%c[FORM TEST] JSON FINALE',
@@ -1490,21 +1508,15 @@ function createFormConfiguration(): any[] {
          type: firstType(['LINK', 'BUTTON'], TYPE_CONTROL_FORM.TEXT),
          resetButton: false,
 
-         action: (
-            formControl: FormControl | FormArray | FormGroup,
-            idGroup?: number,
-            idForm?: number,
-            formName?: string,
-            currentFormGroup?: FormGroup | FormArray,
-         ) => {
-            logEvent('ACTION:Inline print JSON', {
-               formControl,
-               idGroup,
-               idForm,
-               formName,
-            });
-            printJsonFromForm(currentFormGroup);
-         },
+      action: (
+         formControl: FormControl | FormArray | FormGroup,
+         idGroup?: number,
+         idForm?: number,
+         formName?: string,
+         currentFormGroup?: FormGroup | FormArray,
+      ) => {
+         printJsonFromForm(currentFormGroup ?? formControl);
+      },
       } as FormAction),
    );
 
