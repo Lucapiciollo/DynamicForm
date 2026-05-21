@@ -14,6 +14,7 @@ import {BaseComponent} from '../base-component.component';
    selector: 'app-input-text',
    templateUrl: './input-text.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class InputTextComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */

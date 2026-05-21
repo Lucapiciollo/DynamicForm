@@ -8,6 +8,7 @@ declare var window: any;
    selector: 'app-date-range',
    templateUrl: './date-range.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class DateRangeComponent extends BaseComponent implements OnInit {
    /************************************************************************************************************************************************************************ */

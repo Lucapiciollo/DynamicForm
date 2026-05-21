@@ -3,6 +3,7 @@
 import {AfterViewInit, Directive, ElementRef, Input, Renderer2} from '@angular/core';
 @Directive({
    selector: '[fixSearchBox]',
+   standalone: false,
 })
 export class FixSearchBox implements AfterViewInit {
    @Input() appStickyOffset: string = '-1px';

@@ -11,6 +11,7 @@ import {fromEvent, throttleTime} from 'rxjs';
 
 @Directive({
    selector: '[camscan]',
+   standalone: false,
 })
 @Unsubscribe()
 export class CamScanDirective {

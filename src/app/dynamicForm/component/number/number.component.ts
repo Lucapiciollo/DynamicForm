@@ -14,6 +14,7 @@ import {BaseComponent} from '../base-component.component';
    selector: 'app-number',
    templateUrl: './number.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class NumberComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */

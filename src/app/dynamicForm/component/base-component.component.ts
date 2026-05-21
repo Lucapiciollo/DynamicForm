@@ -22,6 +22,7 @@ import { COMBO_PAING_INIT, MAX_ELEMENT_COMBO_SHOW } from '../dynamic-form.module
 @Component({
    selector: '',
    template: ``,
+   standalone: false,
 })
 export class BaseComponent implements IBaseComponent {
    @Output() onCaptureCam: EventEmitter<File> = new EventEmitter<File>();

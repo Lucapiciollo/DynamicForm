@@ -14,6 +14,7 @@ import {BaseComponent} from '../base-component.component';
    selector: 'app-currency',
    templateUrl: './currency.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class CurrencyComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */

@@ -19,6 +19,7 @@ declare var window: any;
    selector: 'app-date',
    templateUrl: './date.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class DateComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */

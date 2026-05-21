@@ -9,6 +9,7 @@ type SortDirection = 'ASC' | 'DESC';
    selector: 'app-sort-action',
    templateUrl: './sort-action.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class SortActionComponent extends BaseComponent {
    constructor(

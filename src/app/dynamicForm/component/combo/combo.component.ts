@@ -38,6 +38,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'app-combo',
   templateUrl: './combo.component.html',
+  standalone: false,
   styleUrls: ['../../dynamic-form.component.scss', './combo.component.css'],
   providers: [Store],
   changeDetection: ChangeDetectionStrategy.OnPush,

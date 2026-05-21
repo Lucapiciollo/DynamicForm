@@ -32,6 +32,7 @@ export const YEAR_MODE_FORMATS = {
    selector: 'app-year',
    templateUrl: './date-year.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
    providers: [
       {provide: MAT_DATE_LOCALE, useValue: 'it'},
       {

@@ -11,6 +11,7 @@ import {Directive, ViewContainerRef} from '@angular/core';
 
 @Directive({
    selector: '[loadChild]',
+   standalone: false,
 })
 export class LoadChildDirective {
    constructor(public viewContainerRef: ViewContainerRef) {}

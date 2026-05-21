@@ -12,6 +12,7 @@ import {DynamicFormJsonMapperService} from './services/dynamic-form-json-mapper.
    selector: 'app-dynamic-form',
    templateUrl: './dynamic-form.component.html',
    providers: [StepperService],
+   standalone: false,
 })
 export class DynamicFormComponent {
    public _questions: ConfigForm = null;

@@ -9,6 +9,7 @@ import {BaseComponent} from '../base-component.component';
    selector: 'app-radiobutton',
    templateUrl: './question-radion-button.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class QuestionRadioButtonComponent extends BaseComponent {
    constructor(

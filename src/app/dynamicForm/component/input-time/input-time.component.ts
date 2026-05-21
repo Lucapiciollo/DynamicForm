@@ -15,6 +15,7 @@ import moment from 'moment';
    selector: 'app-input-time',
    templateUrl: './input-time.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class InputTimeComponent extends BaseComponent {
    public hours = [];

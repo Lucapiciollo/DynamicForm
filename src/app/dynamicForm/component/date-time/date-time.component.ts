@@ -16,6 +16,7 @@ import {BaseComponent} from '../base-component.component';
    templateUrl: './date-time.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
    providers: [DatePipe],
+   standalone: false,
 })
 export class DateTimeComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */

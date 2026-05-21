@@ -15,6 +15,7 @@ import {BaseComponent} from '../base-component.component';
    selector: 'app-checkbox',
    templateUrl: './checkbox.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class CheckboxComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */

@@ -14,6 +14,7 @@ import {BaseComponent} from '../base-component.component';
    selector: 'app-textarea',
    templateUrl: './textarea.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class TextareaComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */

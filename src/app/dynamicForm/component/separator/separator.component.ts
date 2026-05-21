@@ -14,6 +14,7 @@ import {BaseComponent} from '../base-component.component';
    selector: 'app-separator',
    templateUrl: './separator.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class SeparatorComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */

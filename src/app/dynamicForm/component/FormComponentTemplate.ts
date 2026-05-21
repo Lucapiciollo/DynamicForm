@@ -6,6 +6,7 @@ import {ConfigForm, FormAction} from '../dynamic-form.interface';
 
 @Component({
    template: '',
+   standalone: false,
 })
 export abstract class FormComponentTemplate {
    public getFormControl: () => FormControl | FormGroup | FormArray;

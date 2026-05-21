@@ -14,6 +14,7 @@ import {BaseComponent} from '../base-component.component';
    selector: 'app-link',
    templateUrl: './link.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class LinkComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */

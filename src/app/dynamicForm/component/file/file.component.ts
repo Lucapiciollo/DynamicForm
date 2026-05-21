@@ -16,6 +16,7 @@ import {AbstractControl, FormControl, ValidationErrors} from '@angular/forms';
    selector: 'app-file',
    templateUrl: './file.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class FileComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */

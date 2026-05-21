@@ -14,6 +14,7 @@ import {BaseComponent} from '../base-component.component';
    selector: 'app-label',
    templateUrl: './label.component.html',
    styleUrls: ['../../dynamic-form.component.scss'],
+   standalone: false,
 })
 export class LabelComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */

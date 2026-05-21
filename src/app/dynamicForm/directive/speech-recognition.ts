@@ -4,6 +4,7 @@ import {Directive, ElementRef, HostListener, Input, Renderer2} from '@angular/co
 
 @Directive({
    selector: '[speech]',
+   standalone: false,
 })
 export class SpeechDirective {
    private recognition: any = null;
