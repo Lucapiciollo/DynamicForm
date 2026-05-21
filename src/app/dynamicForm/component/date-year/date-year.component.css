@@ -1,0 +1,25 @@
+/** @format */
+
+.bottomLabel {
+   margin-top: 0px;
+   font-size: 0.7rem;
+}
+
+label {
+   display: inline-block;
+   margin-bottom: 5px;
+   font-weight: bold;
+   max-width: 100%;
+   font-size: 12px;
+   color: #666;
+}
+
+.mat-mdc-error {
+   color: #f44336;
+   font-style: italic;
+   font-size: 0.6rem;
+}
+
+.mat-mdc-form-field-infix {
+   width: min-content !important;
+}

@@ -10,8 +10,7 @@ import {Unsubscribe} from 'pl-decorator';
 import {fromEvent, throttleTime} from 'rxjs';
 
 @Directive({
-   
-  standalone: false,selector: '[camscan]',
+   selector: '[camscan]',
 })
 @Unsubscribe()
 export class CamScanDirective {
@@ -119,4 +118,3 @@ export class CamScanDirective {
             });
    }
 }
-

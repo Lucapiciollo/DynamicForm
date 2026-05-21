@@ -5,8 +5,7 @@ import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {ConfigForm, FormAction} from '../dynamic-form.interface';
 
 @Component({
-   
-  standalone: false,template: '',
+   template: '',
 })
 export abstract class FormComponentTemplate {
    public getFormControl: () => FormControl | FormGroup | FormArray;
@@ -15,4 +14,3 @@ export abstract class FormComponentTemplate {
    public getQuestions: () => ConfigForm;
    public initialize() {}
 }
-

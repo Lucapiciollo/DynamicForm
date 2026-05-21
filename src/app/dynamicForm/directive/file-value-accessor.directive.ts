@@ -11,8 +11,7 @@ import {Directive, ElementRef, HostListener, Renderer2} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 @Directive({
-   
-  standalone: false,selector: 'input[type=file]',
+   selector: 'input[type=file]',
    providers: [
       {
          provide: NG_VALUE_ACCESSOR,
@@ -62,4 +61,3 @@ export class FileValueAccessorDirective implements ControlValueAccessor {
       this.onChange = fn;
    }
 }
-

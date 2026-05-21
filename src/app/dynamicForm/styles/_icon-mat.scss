@@ -1,0 +1,47 @@
+@use './tokens' as *;
+
+// Icon pack locale del DynamicForm.
+// La font Material Icons viene caricata automaticamente da DynamicFormAssetsService.
+.icon-mat,
+.df-icon-mat,
+.iconCss {
+  width: 1.35rem;
+  height: 1.35rem;
+  min-width: 1.35rem;
+  min-height: 1.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  color: inherit;
+}
+
+.icon-mat--sm,
+.df-icon-mat--sm {
+  width: 1rem;
+  height: 1rem;
+  font-size: 1rem;
+}
+
+.icon-mat--lg,
+.df-icon-mat--lg {
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: 1.75rem;
+}
+
+.icon-mat--xl,
+.df-icon-mat--xl {
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 2.25rem;
+}
+
+.icon-mat--primary,
+.df-icon-mat--primary { color: $df-color-primary; }
+.icon-mat--muted,
+.df-icon-mat--muted { color: $df-color-muted; }
+.icon-mat--danger,
+.df-icon-mat--danger { color: $df-color-danger; }
+.icon-mat--success,
+.df-icon-mat--success { color: $df-color-success; }

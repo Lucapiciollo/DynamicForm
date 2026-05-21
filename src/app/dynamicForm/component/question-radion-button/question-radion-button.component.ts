@@ -6,10 +6,9 @@ import {Component, ElementRef, Injector} from '@angular/core';
 import {BaseComponent} from '../base-component.component';
 
 @Component({
-   
-  standalone: false,selector: 'app-radiobutton',
+   selector: 'app-radiobutton',
    templateUrl: './question-radion-button.component.html',
-   styleUrls: ['../../dynamic-form.component.scss', './question-radion-button.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss'],
 })
 export class QuestionRadioButtonComponent extends BaseComponent {
    constructor(
@@ -29,4 +28,3 @@ export class QuestionRadioButtonComponent extends BaseComponent {
       return Array.isArray(value) ? value : [];
    }
 }
-

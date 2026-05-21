@@ -1,20 +1,2 @@
 @use './styles/components';
-@use './styles/tokens' as *;
-
-// ── Form container: compact Hollywood grid
-:host {
-  display: block;
-  font-family: $df-font-family;
-}
-
-.dynamic-form-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: $df-space-4 $df-space-5;
-  padding: $df-space-5;
-  align-items: start;
-}
-
-.dynamic-field {
-  min-width: 0; // prevent grid blowout
-}
+@use './styles/icon-mat';

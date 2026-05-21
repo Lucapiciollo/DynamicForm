@@ -3,8 +3,7 @@
 import {Directive, ElementRef, HostListener, Input, Renderer2} from '@angular/core';
 
 @Directive({
-   
-  standalone: false,selector: '[speech]',
+   selector: '[speech]',
 })
 export class SpeechDirective {
    private recognition: any = null;
@@ -66,4 +65,3 @@ export class SpeechDirective {
       }, 1500);
    }
 }
-

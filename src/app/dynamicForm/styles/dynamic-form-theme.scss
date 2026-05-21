@@ -1,4 +1,26 @@
-@forward './tokens';
-@forward './mixins';
+@use './mixins' as df;
+@use './themes' as themes;
 @use './components';
 @use './material-overrides';
+@use './icon-mat';
+
+ 
+@use './dynamic-form-silk-compact-theme.scss';
+@use './dynamic-form-ivory-elegance-theme';
+
+
+.df-theme-modern-light {
+  @include df.dynamic-form-theme(themes.$df-modern-light);
+}
+
+.df-theme-modern-dark {
+  @include df.dynamic-form-theme(themes.$df-modern-dark);
+}
+
+body.df-theme-modern-light,
+body.df-theme-modern-dark,
+body.df-theme-my-company {
+  background: var(--df-background);
+  color: var(--df-text);
+}
+

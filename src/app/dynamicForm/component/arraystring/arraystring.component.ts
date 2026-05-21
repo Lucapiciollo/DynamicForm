@@ -17,10 +17,9 @@ export interface Fruit {
    name: string;
 }
 @Component({
-   
-  standalone: false,selector: 'app-arraystring',
+   selector: 'app-arraystring',
    templateUrl: './arraystring.component.html',
-   styleUrls: ['../../dynamic-form.component.scss', './arraystring.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss'],
 })
 export class ArrayStringComponent extends BaseComponent {
    public getList = signal<Array<string>>([]);
@@ -86,4 +85,3 @@ export class ArrayStringComponent extends BaseComponent {
    }
    /************************************************************************************************************************************************************************ */
 }
-

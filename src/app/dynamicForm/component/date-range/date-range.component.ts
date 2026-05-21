@@ -5,10 +5,9 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {BaseComponent} from '../base-component.component';
 declare var window: any;
 @Component({
-   
-  standalone: false,selector: 'app-date-range',
+   selector: 'app-date-range',
    templateUrl: './date-range.component.html',
-   styleUrls: ['../../dynamic-form.component.scss', './date-range.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss'],
 })
 export class DateRangeComponent extends BaseComponent implements OnInit {
    /************************************************************************************************************************************************************************ */
@@ -52,4 +51,3 @@ export class DateRangeComponent extends BaseComponent implements OnInit {
    }
    /************************************************************************************************************************************************************************ */
 }
-

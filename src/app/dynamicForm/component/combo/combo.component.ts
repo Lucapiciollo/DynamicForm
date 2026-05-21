@@ -36,10 +36,9 @@ import { Store } from './store';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  
-  standalone: false,selector: 'app-combo',
+  selector: 'app-combo',
   templateUrl: './combo.component.html',
-  styleUrls: ['../../dynamic-form.component.scss', './combo.component.scss'],
+  styleUrls: ['../../dynamic-form.component.scss', './combo.component.css'],
   providers: [Store],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -197,34 +196,160 @@ export class ComboComponent extends BaseComponent implements AfterViewInit {
   }
 
   getValueCombo(formControl: FormControl, smal) {
-    if (!this.isReady()) return null;
-    let option = [
-      ...(this.signalStore.getTotalOptions() || []),
-      ...(this.signalStore.getDefaultOptions() || []),
-    ];
-    let formValue = this.control.formAction.formControl.value;
-    if (option != null) {
-      if (formValue instanceof Array) {
-        let description = formValue
-          ?.map((id) => option?.find((f) => f.id == id)?.description)
-          .filter((f) => f != null);
-        if (smal)
-          return description?.length < this.combotext.maxElementShow
-            ? `${description?.join('; ')}`
-            : description?.length > this.combotext.maxElementShow
-              ? `${description?.slice(0, this.combotext.maxElementShow)?.join('; ')}  + ${description?.length - this.combotext.maxElementShow}`
-              : `${description?.slice(0, this.combotext.maxElementShow)?.join('; ')}`;
-        else return `${description?.join('; ')}`;
-      }
-      return option?.find((f) => f.id == formValue)?.description || null;
+    // Backward compatibility: keep the old public method but route it to the safe trigger label.
+    return this.getSelectedLabel(smal);
+  }
+
+  /**
+   * Label mostrata nel mat-select-trigger.
+   * Deve dipendere solo dal valore reale del FormControl e non dalle opzioni filtrate/caricate
+   * durante lo scroll della COMBOPAGINATE. In questo modo lo scroll aggiorna la lista,
+   * ma non fa comparire valori nel campo se l'utente non li ha selezionati.
+   */
+  getSelectedLabel(small = true): string {
+    if (!this.isReady()) return '';
+
+    const value = this.control.formAction.formControl.value;
+
+    if (value === null || value === undefined || value === '') {
+      return '';
     }
-    return null;
+
+    const options = this.getAllKnownOptionsSafe();
+
+    if (this.control.formAction.multiple) {
+      const values = Array.isArray(value) ? value : [];
+      const descriptions = values
+        .map((id) => this.findOptionDescriptionByValue(id, options))
+        .filter((description) => !!description);
+
+      if (!small) return descriptions.join('; ');
+
+      return descriptions.length <= this.combotext.maxElementShow
+        ? descriptions.join('; ')
+        : `${descriptions.slice(0, this.combotext.maxElementShow).join('; ')}  + ${descriptions.length - this.combotext.maxElementShow}`;
+    }
+
+    return this.findOptionDescriptionByValue(value, options);
+  }
+
+  getOptionValue(option: any): any {
+    const keyId = this.control?.formAction?.keyCombo?.keyId ?? 'id';
+
+    if (Array.isArray(keyId)) {
+      return keyId
+        .map((key) => option?.[key])
+        .filter((value) => value !== null && value !== undefined)
+        .join('|');
+    }
+
+    return option?.[keyId] ?? option?.id;
+  }
+
+  getOptionDescription(option: any): string {
+    if (!option) return '';
+
+    const keys = this.control?.formAction?.keyCombo?.keyDescription ?? ['description'];
+    const keyList = Array.isArray(keys) ? keys : [keys];
+
+    return keyList
+      .map((key: string) => option?.[key])
+      .filter((value: any) => value !== null && value !== undefined && value !== '')
+      .join(' - ');
+  }
+
+  private findOptionDescriptionByValue(value: any, options: any[]): string {
+    const option = options.find((item) => this.optionEqualsValue(item, value));
+
+    if (!option) {
+      return typeof value === 'object' ? '' : String(value ?? '');
+    }
+
+    return option.description || this.getOptionDescription(option);
+  }
+
+  private optionEqualsValue(option: any, value: any): boolean {
+    if (option === null || option === undefined || value === null || value === undefined) {
+      return false;
+    }
+
+    const optionValue = this.getOptionValue(option);
+
+    if (typeof value === 'object') {
+      const keyId = this.control?.formAction?.keyCombo?.keyId ?? 'id';
+      if (Array.isArray(keyId)) {
+        const valueKey = keyId
+          .map((key) => value?.[key])
+          .filter((v) => v !== null && v !== undefined)
+          .join('|');
+        return optionValue == valueKey;
+      }
+      return optionValue == value?.[keyId];
+    }
+
+    return optionValue == value;
+  }
+
+  private getAllKnownOptionsSafe(): any[] {
+    const fromTotal = this.signalStore?.getTotalOptions?.() || [];
+    const fromSelected = this.signalStore?.getSelectedOptions?.() || [];
+    const fromDefault = this.signalStore?.getDefaultOptions?.() || [];
+    const fromFiltered = this.signalStore?.getFilterOption?.() || [];
+    const fromAction = this.normalizeActionOptions(this.getOptionsValue());
+
+    const key = this.control?.formAction?.keyCombo?.keyId ?? 'id';
+    const map = new Map<any, any>();
+
+    for (const item of [
+      ...fromTotal,
+      ...fromSelected,
+      ...fromDefault,
+      ...fromFiltered,
+      ...fromAction,
+    ]) {
+      if (!item) continue;
+      const normalized = this.normalizeOption(item);
+      const mapKey = this.resolveOptionKey(normalized, key);
+      map.set(mapKey, normalized);
+    }
+
+    return Array.from(map.values());
+  }
+
+  private normalizeActionOptions(value: any[] | { items: any[]; totalCount: number }): any[] {
+    if (value && typeof value === 'object' && !Array.isArray(value) && Array.isArray(value.items)) {
+      return value.items.map((item) => this.normalizeOption(item));
+    }
+
+    return Array.isArray(value) ? value.map((item) => this.normalizeOption(item)) : [];
+  }
+
+  private normalizeOption(option: any): any {
+    if (!option) return option;
+
+    return {
+      ...option,
+      id: option.id ?? this.getOptionValue(option),
+      description: option.description ?? this.getOptionDescription(option),
+    };
+  }
+
+  private resolveOptionKey(option: any, key: string | string[]): any {
+    if (Array.isArray(key)) {
+      return key
+        .map((k) => option?.[k])
+        .filter((value) => value !== null && value !== undefined)
+        .join('|');
+    }
+
+    return option?.[key] ?? option?.id ?? JSON.stringify(option);
   }
 
   toggleOption(option: any, event: Event): void {
     if (this.control.formAction.multiple) event.stopPropagation();
+    const optionValue = this.getOptionValue(option);
     this.signalStore.updateOptionSelected(
-      option.id,
+      optionValue,
       !option.selected,
       this.control.formAction.multiple,
     );
@@ -443,4 +568,3 @@ export class ComboComponent extends BaseComponent implements AfterViewInit {
     this.inputSubject.next(value);
   }
 }
-

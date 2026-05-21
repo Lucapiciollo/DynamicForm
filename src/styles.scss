@@ -1,21 +1,22 @@
+@use './app/dynamicForm/styles/dynamic-form-theme';
+ 
+
 /* You can add global styles to this file, and also import other style files */
-
-// DynamicForm fonts (Material Icons + Roboto + Inter)
-@import './app/dynamicForm/styles/fonts';
-
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "node_modules/bootstrap/dist/css/bootstrap.min.css";
 
+@import 'node_modules/@angular/material/_theming.scss';
+@include mat-core();
+
+@import "./theme.scss";
 
 .iconCss {
-    width: 4rem;
+  width: 4rem;
 }
-
 
 h2 {
-    --main-bg-color: yellow !important;
-
+  --main-bg-color: yellow !important;
 }
 
-/* DynamicForm global overlay/theme overrides */
-@import './app/dynamicForm/styles/material-overrides';
+
+ 

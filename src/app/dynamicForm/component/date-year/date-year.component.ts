@@ -29,10 +29,9 @@ export const YEAR_MODE_FORMATS = {
 };
 
 @Component({
-   
-  standalone: false,selector: 'app-year',
+   selector: 'app-year',
    templateUrl: './date-year.component.html',
-   styleUrls: ['../../dynamic-form.component.scss', './date-year.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss'],
    providers: [
       {provide: MAT_DATE_LOCALE, useValue: 'it'},
       {
@@ -80,4 +79,3 @@ export class DateYearComponent extends BaseComponent {
       this.control.formAction.formControl.setValue(chosenDate);
    }
 }
-

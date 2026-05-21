@@ -14,8 +14,7 @@
             }
             <mat-select [matTooltip]="control.formAction.multiple ? signalStore.getConcatStringDescription() : null" class="py-0 my-0" #selectRef [formControl]="this.control.formAction.formControl" [multiple]="control.formAction.multiple" (opened)="onPanelOpen()" (closed)="clearInput(); onPanelClose()">
                <mat-select-trigger>
-                  <div class="d-flex"></div>
-                  <span class="example-additional-selection"> {{ getValueCombo(control.formAction.formControl, true) }}</span>
+                  <span class="example-additional-selection">{{ getSelectedLabel() }}</span>
                </mat-select-trigger>
 
                @if (control.formAction.autocomplete) {
@@ -33,7 +32,7 @@
                }
 
                @for (option of signalStore.getDefaultOptions(); track option.id) {
-                  <mat-option [value]="option.id" [disabled]="true" [class.d-none]="option.hide">
+                  <mat-option [value]="getOptionValue(option)" [disabled]="true" [class.d-none]="option.hide">
                      <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="flex-grow-1">
                            {{ option.description }}
@@ -52,7 +51,7 @@
                   </mat-option>
                }
                @for (option of signalStore.getFilterOption(); track option.id) {
-                  <mat-option (click)="toggleOption(option, $event)" class="w-100" [value]="option.id" [disabled]="(this.signalStore.getDisabledOptions() || []).indexOf(option.id) > -1" [class.d-none]="option.hide">
+                  <mat-option (click)="toggleOption(option, $event)" class="w-100" [value]="getOptionValue(option)" [disabled]="(this.signalStore.getDisabledOptions() || []).indexOf(option.id) > -1" [class.d-none]="option.hide">
                      <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="flex-grow-1">
                            {{ option.description }}

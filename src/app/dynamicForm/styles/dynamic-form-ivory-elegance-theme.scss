@@ -1,0 +1,1113 @@
+@use 'sass:map';
+
+@use './tokens' as df-tokens;
+@use './mixins' as df;
+@use './responsive' as rsp;
+
+$ivory-elegance-theme: map.merge(df-tokens.$df-default-tokens,
+        (primary: #1e3a5f,
+            primary-contrast: #ffffff,
+
+            accent: #c8a45d,
+            accent-contrast: #111827,
+
+            success: #2f855a,
+            warning: #c27803,
+            danger: #b91c1c,
+            info: #2563eb,
+
+            background: #f7f2e9,
+            surface: #ffffff,
+            surface-alt: #fbf7ef,
+
+            text: #1f2937,
+            muted-text: #6b7280,
+            border: rgba(200, 164, 93, 0.34),
+
+            radius: 18px,
+            radius-sm: 12px,
+            radius-lg: 28px,
+
+            field-height: 54px,
+            field-padding-x: 16px,
+            field-gap: 18px,
+
+            shadow: 0 20px 48px rgba(31, 41, 55, 0.12),
+            transition: 180ms ease));
+
+/* =========================================================
+ * ROOT THEME
+ * ========================================================= */
+
+body.df-theme-ivory-elegance {
+    @include df.dynamic-form-theme($ivory-elegance-theme);
+
+    min-height: 100vh;
+    color: var(--df-text);
+
+    background:
+        radial-gradient(circle at top left, rgba(200, 164, 93, 0.16), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(30, 58, 95, 0.12), transparent 36%),
+        linear-gradient(135deg, #f7f2e9 0%, #fbf7ef 48%, #f8fafc 100%) !important;
+}
+
+body.df-theme-ivory-elegance .page {
+    background: transparent !important;
+    color: var(--df-text);
+}
+
+/* =========================================================
+ * SEZIONI / CARD
+ * ========================================================= */
+
+body.df-theme-ivory-elegance .df-section-main {
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+    margin-bottom: 24px;
+
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(251, 247, 239, 0.88)) !important;
+
+    border: 1px solid rgba(200, 164, 93, 0.32) !important;
+    border-radius: var(--df-radius-lg) !important;
+
+    box-shadow:
+        0 22px 52px rgba(31, 41, 55, 0.12),
+        0 8px 18px rgba(200, 164, 93, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+
+    backdrop-filter: blur(14px);
+}
+
+body.df-theme-ivory-elegance .df-section-main::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 5px;
+    background: linear-gradient(180deg, #1e3a5f, #c8a45d);
+    border-radius: var(--df-radius-lg) 0 0 var(--df-radius-lg);
+}
+
+body.df-theme-ivory-elegance .df-section-main::after {
+    content: '';
+    position: absolute;
+    top: -70px;
+    right: -70px;
+    width: 170px;
+    height: 170px;
+    background: radial-gradient(circle, rgba(200, 164, 93, 0.13), transparent 68%);
+    pointer-events: none;
+}
+
+body.df-theme-ivory-elegance .df-card {
+    position: relative;
+    padding: 18px;
+    margin-bottom: 18px;
+
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(251, 247, 239, 0.72)) !important;
+
+    border: 1px solid rgba(200, 164, 93, 0.24) !important;
+    border-radius: var(--df-radius) !important;
+
+    box-shadow:
+        0 14px 34px rgba(31, 41, 55, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+
+    transition: var(--df-transition);
+}
+
+body.df-theme-ivory-elegance .df-card:hover {
+    border-color: rgba(200, 164, 93, 0.44) !important;
+    box-shadow:
+        0 18px 42px rgba(31, 41, 55, 0.12),
+        0 0 0 4px rgba(200, 164, 93, 0.07),
+        inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
+    // transform: translateY(-1px);
+}
+
+body.df-theme-ivory-elegance .df-sub-card {
+    padding: 16px;
+    margin-top: 12px;
+
+    background:
+        linear-gradient(145deg, rgba(251, 247, 239, 0.92), rgba(248, 250, 252, 0.82)) !important;
+
+    border: 1px dashed rgba(200, 164, 93, 0.38) !important;
+    border-radius: var(--df-radius) !important;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.78),
+        0 8px 18px rgba(31, 41, 55, 0.05) !important;
+}
+
+/* =========================================================
+ * TITOLI
+ * ========================================================= */
+
+body.df-theme-ivory-elegance h1,
+body.df-theme-ivory-elegance h2,
+body.df-theme-ivory-elegance h3,
+body.df-theme-ivory-elegance .df-form-title {
+    color: #1e3a5f !important;
+    font-weight: 850;
+    letter-spacing: -0.03em;
+}
+
+body.df-theme-ivory-elegance h1 {
+    display: inline-block;
+    background: linear-gradient(135deg, #1e3a5f, #2f5f8f, #c8a45d);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+}
+
+body.df-theme-ivory-elegance h2 {
+    color: #243b53 !important;
+}
+
+/* =========================================================
+ * BOTTONI NORMALI
+ * ========================================================= */
+
+body.df-theme-ivory-elegance .df-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+body.df-theme-ivory-elegance button:not(.mat-mdc-icon-button):not([mat-icon-button]),
+body.df-theme-ivory-elegance .btn,
+body.df-theme-ivory-elegance .df-action-button {
+    min-height: 10px;
+    border: 1px solid rgba(200, 164, 93, 0.28) !important;
+    border-radius: 14px !important;
+    padding: 10px 10px;
+
+    font-weight: 800;
+    letter-spacing: 0.01em;
+
+    background:
+        linear-gradient(135deg, #1e3a5f 0%, #284b75 52%, #c8a45d 100%) !important;
+    color: #ffffff !important;
+
+    box-shadow:
+        0 14px 30px rgba(30, 58, 95, 0.22),
+        0 4px 12px rgba(200, 164, 93, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24) !important;
+
+    transition: var(--df-transition);
+    cursor: pointer;
+}
+
+body.df-theme-ivory-elegance button:not(.mat-mdc-icon-button):not([mat-icon-button]):hover,
+body.df-theme-ivory-elegance .btn:hover,
+body.df-theme-ivory-elegance .df-action-button:hover {
+    // transform: translateY(-2px);
+    filter: brightness(1.04);
+
+    box-shadow:
+        0 18px 40px rgba(30, 58, 95, 0.28),
+        0 8px 18px rgba(200, 164, 93, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.34) !important;
+}
+
+body.df-theme-ivory-elegance .btn-primary {
+    background: linear-gradient(135deg, #1e3a5f, #2f5f8f) !important;
+}
+
+body.df-theme-ivory-elegance .btn-secondary {
+    background: linear-gradient(135deg, #6b7280, #374151) !important;
+}
+
+body.df-theme-ivory-elegance .btn-success {
+    background: linear-gradient(135deg, #2f855a, #166534) !important;
+}
+
+body.df-theme-ivory-elegance .btn-warning {
+    background: linear-gradient(135deg, #f3c969, #c8a45d) !important;
+    color: #111827 !important;
+}
+
+body.df-theme-ivory-elegance .btn-danger {
+    background: linear-gradient(135deg, #dc2626, #991b1b) !important;
+}
+
+body.df-theme-ivory-elegance .btn-info {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+}
+
+/* =========================================================
+ * MATERIAL FORM FIELD
+ * ========================================================= */
+
+body.df-theme-ivory-elegance .mat-mdc-form-field {
+    width: 100%;
+
+    --mdc-outlined-text-field-outline-color: rgba(200, 164, 93, 0.34);
+    --mdc-outlined-text-field-hover-outline-color: #c8a45d;
+    --mdc-outlined-text-field-focus-outline-color: #1e3a5f;
+
+    --mdc-outlined-text-field-label-text-color: #6b7280;
+    --mdc-outlined-text-field-hover-label-text-color: #1e3a5f;
+    --mdc-outlined-text-field-focus-label-text-color: #1e3a5f;
+
+    --mdc-outlined-text-field-input-text-color: #1f2937;
+    --mdc-outlined-text-field-caret-color: #1e3a5f;
+
+    --mat-form-field-container-text-size: 14px;
+}
+
+body.df-theme-ivory-elegance .mat-mdc-text-field-wrapper {
+    min-height: var(--df-field-height);
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(251, 247, 239, 0.72)) !important;
+
+    border-radius: var(--df-radius) !important;
+
+    box-shadow:
+        0 8px 18px rgba(31, 41, 55, 0.07),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+
+    transition: var(--df-transition);
+}
+
+body.df-theme-ivory-elegance .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+    box-shadow:
+        0 10px 24px rgba(200, 164, 93, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.96) !important;
+}
+
+body.df-theme-ivory-elegance .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+    box-shadow:
+        0 0 0 4px rgba(200, 164, 93, 0.16),
+        0 14px 28px rgba(30, 58, 95, 0.11),
+        inset 0 1px 0 rgba(255, 255, 255, 0.96) !important;
+}
+
+body.df-theme-ivory-elegance .mat-mdc-form-field-error-wrapper {
+    padding-left: 4px;
+}
+
+body.df-theme-ivory-elegance .mat-mdc-select-value,
+body.df-theme-ivory-elegance .mat-mdc-select-placeholder,
+body.df-theme-ivory-elegance input,
+body.df-theme-ivory-elegance textarea {
+    color: #1f2937 !important;
+}
+
+body.df-theme-ivory-elegance input::placeholder,
+body.df-theme-ivory-elegance textarea::placeholder {
+    color: #9ca3af !important;
+}
+
+body.df-theme-ivory-elegance .mat-mdc-select-arrow {
+    color: #1e3a5f !important;
+}
+
+body.df-theme-ivory-elegance textarea {
+    min-height: 110px;
+}
+
+/* =========================================================
+ * CHECKBOX / RADIO
+ * ========================================================= */
+
+body.df-theme-ivory-elegance .mat-mdc-checkbox {
+    --mdc-checkbox-selected-checkmark-color: #ffffff;
+    --mdc-checkbox-selected-focus-icon-color: #1e3a5f;
+    --mdc-checkbox-selected-hover-icon-color: #1e3a5f;
+    --mdc-checkbox-selected-icon-color: #1e3a5f;
+    --mdc-checkbox-selected-pressed-icon-color: #1e3a5f;
+}
+
+body.df-theme-ivory-elegance .mat-mdc-radio-button {
+    --mdc-radio-selected-focus-icon-color: #c8a45d;
+    --mdc-radio-selected-hover-icon-color: #c8a45d;
+    --mdc-radio-selected-icon-color: #c8a45d;
+    --mdc-radio-selected-pressed-icon-color: #c8a45d;
+}
+
+/* =========================================================
+ * COMBO SEARCH
+ * ========================================================= */
+
+body.df-theme-ivory-elegance .df-combo-search {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.98) !important;
+    border-bottom: 1px solid rgba(200, 164, 93, 0.18) !important;
+    backdrop-filter: blur(12px);
+}
+
+body.df-theme-ivory-elegance .df-combo-search input {
+    min-height: 40px;
+    width: 100%;
+
+    border: 1px solid rgba(200, 164, 93, 0.32) !important;
+    border-radius: 14px !important;
+    padding: 9px 13px;
+
+    background:
+        linear-gradient(145deg, #ffffff, #fbf7ef) !important;
+    color: #1f2937 !important;
+
+    box-shadow:
+        0 6px 16px rgba(31, 41, 55, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+
+    outline: none;
+    transition: var(--df-transition);
+}
+
+body.df-theme-ivory-elegance .df-combo-search input:focus {
+    border-color: #1e3a5f !important;
+    box-shadow:
+        0 0 0 4px rgba(200, 164, 93, 0.18),
+        0 8px 20px rgba(30, 58, 95, 0.1) !important;
+}
+
+/* =========================================================
+ * OVERLAY MATERIAL
+ * ========================================================= */
+
+body.df-theme-ivory-elegance .mat-mdc-select-panel,
+body.df-theme-ivory-elegance .mat-mdc-autocomplete-panel,
+body.df-theme-ivory-elegance .mat-datepicker-content,
+.cdk-overlay-container .mat-mdc-select-panel,
+.cdk-overlay-container .mat-mdc-autocomplete-panel,
+.cdk-overlay-container .mat-datepicker-content {
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.99), rgba(251, 247, 239, 0.96)) !important;
+
+    border: 1px solid rgba(200, 164, 93, 0.28) !important;
+    border-radius: 18px !important;
+
+    box-shadow:
+        0 26px 70px rgba(31, 41, 55, 0.18),
+        0 8px 24px rgba(200, 164, 93, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+
+    backdrop-filter: blur(16px);
+}
+
+body.df-theme-ivory-elegance .mat-mdc-option,
+.cdk-overlay-container .mat-mdc-option {
+    margin: 3px 0 !important;
+    border-radius: 12px !important;
+    color: #1f2937 !important;
+    transition: var(--df-transition);
+}
+
+body.df-theme-ivory-elegance .mat-mdc-option:hover,
+.cdk-overlay-container .mat-mdc-option:hover {
+    background: rgba(200, 164, 93, 0.12) !important;
+}
+
+body.df-theme-ivory-elegance .mat-mdc-option.mdc-list-item--selected,
+.cdk-overlay-container .mat-mdc-option.mdc-list-item--selected {
+    background:
+        linear-gradient(90deg, rgba(30, 58, 95, 0.14), rgba(200, 164, 93, 0.15)) !important;
+    color: #1e3a5f !important;
+    font-weight: 750;
+}
+
+/* =========================================================
+ * DATEPICKER
+ * ========================================================= */
+
+body.df-theme-ivory-elegance .mat-calendar-body-selected,
+.cdk-overlay-container .mat-calendar-body-selected {
+    background: linear-gradient(135deg, #1e3a5f, #2f5f8f) !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 18px rgba(30, 58, 95, 0.24);
+}
+
+body.df-theme-ivory-elegance .mat-calendar-body-today:not(.mat-calendar-body-selected),
+.cdk-overlay-container .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    border-color: #c8a45d !important;
+}
+
+/* =========================================================
+ * COMPONENTI CUSTOM
+ * ========================================================= */
+
+body.df-theme-ivory-elegance app-file,
+body.df-theme-ivory-elegance app-arraystring,
+body.df-theme-ivory-elegance app-sort-action,
+body.df-theme-ivory-elegance app-link,
+body.df-theme-ivory-elegance app-label {
+    display: block;
+}
+
+body.df-theme-ivory-elegance app-arraystring .arraystring-container,
+body.df-theme-ivory-elegance app-arraystring .array-string-container,
+body.df-theme-ivory-elegance app-arraystring .array-string-wrapper {
+    border: 1px solid rgba(200, 164, 93, 0.24) !important;
+    border-radius: var(--df-radius) !important;
+    background: rgba(255, 255, 255, 0.84) !important;
+    box-shadow:
+        0 10px 24px rgba(31, 41, 55, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    padding: 12px;
+}
+
+body.df-theme-ivory-elegance app-file .file-container,
+body.df-theme-ivory-elegance app-file .file-wrapper,
+body.df-theme-ivory-elegance app-file .upload-container {
+    border: 1px dashed rgba(200, 164, 93, 0.46) !important;
+    border-radius: var(--df-radius) !important;
+    background:
+        linear-gradient(145deg, rgba(251, 247, 239, 0.9), rgba(255, 255, 255, 0.76)) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    padding: 14px;
+    transition: var(--df-transition);
+}
+
+/* =========================================================
+ * ICON BUTTON / ICONE NORMALIZZATE
+ * ========================================================= */
+
+body.df-theme-ivory-elegance .mat-mdc-icon-button,
+body.df-theme-ivory-elegance button.mat-mdc-icon-button,
+body.df-theme-ivory-elegance button[mat-icon-button] {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+
+    padding: 0 !important;
+    margin: 0 10px !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    border-radius: 11px !important;
+
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(251, 247, 239, 0.76)) !important;
+
+    border: 1px solid rgba(200, 164, 93, 0.28) !important;
+    color: #1e3a5f !important;
+
+    box-shadow:
+        0 6px 14px rgba(31, 41, 55, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+
+    transition:
+        background 180ms ease,
+        color 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+}
+
+body.df-theme-ivory-elegance .mat-mdc-icon-button:hover,
+body.df-theme-ivory-elegance button.mat-mdc-icon-button:hover,
+body.df-theme-ivory-elegance button[mat-icon-button]:hover {
+    // transform: translateY(-1px);
+
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(248, 240, 222, 0.92)) !important;
+
+    border-color: rgba(200, 164, 93, 0.48) !important;
+    color: #9a762d !important;
+
+    box-shadow:
+        0 10px 22px rgba(31, 41, 55, 0.12),
+        0 0 0 4px rgba(200, 164, 93, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.96) !important;
+}
+
+/* icone testuali */
+
+body.df-theme-ivory-elegance mat-icon,
+body.df-theme-ivory-elegance .mat-icon,
+body.df-theme-ivory-elegance .material-icons,
+body.df-theme-ivory-elegance .material-symbols-outlined,
+body.df-theme-ivory-elegance .icon-mat,
+body.df-theme-ivory-elegance .df-icon-mat,
+body.df-theme-ivory-elegance .iconCss,
+.cdk-overlay-container mat-icon,
+.cdk-overlay-container .mat-icon {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    max-width: 20px !important;
+
+    font-size: 20px !important;
+    line-height: 20px !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    vertical-align: middle !important;
+
+    color: #1e3a5f !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    filter: none !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: hidden !important;
+
+    font-weight: 300;
+
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 300,
+        'GRAD' -20,
+        'opsz' 20;
+
+    transition:
+        color 180ms ease,
+        transform 180ms ease,
+        opacity 180ms ease;
+}
+
+body.df-theme-ivory-elegance button mat-icon,
+body.df-theme-ivory-elegance button .mat-icon,
+body.df-theme-ivory-elegance button .material-icons,
+body.df-theme-ivory-elegance button .material-symbols-outlined,
+body.df-theme-ivory-elegance button .icon-mat,
+body.df-theme-ivory-elegance button .df-icon-mat,
+body.df-theme-ivory-elegance button .iconCss {
+    color: currentColor !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    filter: none !important;
+
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+
+    font-size: 18px !important;
+    line-height: 18px !important;
+}
+
+/* immagini SVG/PNG */
+
+body.df-theme-ivory-elegance img.icon-mat,
+body.df-theme-ivory-elegance img.df-icon-mat,
+body.df-theme-ivory-elegance img.iconCss,
+body.df-theme-ivory-elegance .icon-mat img,
+body.df-theme-ivory-elegance .df-icon-mat img,
+body.df-theme-ivory-elegance .iconCss img,
+body.df-theme-ivory-elegance mat-icon img,
+body.df-theme-ivory-elegance .mat-icon img,
+body.df-theme-ivory-elegance .mat-mdc-icon-button img,
+body.df-theme-ivory-elegance button.mat-mdc-icon-button img,
+body.df-theme-ivory-elegance button[mat-icon-button] img,
+body.df-theme-ivory-elegance .mat-mdc-icon-button svg,
+body.df-theme-ivory-elegance button.mat-mdc-icon-button svg,
+body.df-theme-ivory-elegance button[mat-icon-button] svg {
+    width: 17px !important;
+    height: 17px !important;
+    min-width: 17px !important;
+    max-width: 17px !important;
+    min-height: 17px !important;
+    max-height: 17px !important;
+
+    display: block !important;
+
+    object-fit: contain !important;
+    object-position: center center !important;
+
+    margin: auto !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+/* touch target/ripple */
+
+body.df-theme-ivory-elegance .mat-mdc-icon-button .mat-mdc-button-touch-target {
+    width: 34px !important;
+    height: 34px !important;
+}
+
+body.df-theme-ivory-elegance .mat-mdc-icon-button .mat-ripple-element,
+body.df-theme-ivory-elegance button[mat-icon-button] .mat-ripple-element {
+    background-color: rgba(200, 164, 93, 0.18) !important;
+}
+
+/* prefissi/suffissi form field */
+
+body.df-theme-ivory-elegance .mat-mdc-form-field .mat-mdc-form-field-icon-suffix,
+body.df-theme-ivory-elegance .mat-mdc-form-field .mat-mdc-form-field-icon-prefix {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+}
+
+/* clear/remove button più leggero */
+
+body.df-theme-ivory-elegance .mat-mdc-form-field button[aria-label*='clear' i],
+body.df-theme-ivory-elegance .mat-mdc-form-field button[aria-label*='cancella' i],
+body.df-theme-ivory-elegance .mat-mdc-form-field button[aria-label*='remove' i] {
+    background: rgba(255, 255, 255, 0.56) !important;
+    color: #6b7280 !important;
+    border-color: rgba(107, 114, 128, 0.16) !important;
+}
+
+body.df-theme-ivory-elegance .mat-mdc-form-field button[aria-label*='clear' i]:hover,
+body.df-theme-ivory-elegance .mat-mdc-form-field button[aria-label*='cancella' i]:hover,
+body.df-theme-ivory-elegance .mat-mdc-form-field button[aria-label*='remove' i]:hover {
+    background: rgba(185, 28, 28, 0.06) !important;
+    color: #b91c1c !important;
+    border-color: rgba(185, 28, 28, 0.18) !important;
+}
+
+/* =========================================================
+ * DEBUG
+ * ========================================================= */
+
+body.df-theme-ivory-elegance pre {
+    background:
+        linear-gradient(145deg, #1e3a5f, #111827) !important;
+    color: #fef3c7 !important;
+    border: 1px solid rgba(200, 164, 93, 0.26) !important;
+    border-radius: var(--df-radius) !important;
+    box-shadow:
+        0 18px 42px rgba(31, 41, 55, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+/* =========================================================
+ * RESPONSIVE VARIABLES
+ * ========================================================= */
+
+@include rsp.df-mobile {
+    body.df-theme-ivory-elegance {
+        --df-radius: 14px;
+        --df-radius-sm: 10px;
+        --df-radius-lg: 18px;
+
+        --df-field-height: 48px;
+        --df-field-gap: 10px;
+
+        --df-shadow: 0 10px 24px rgba(31, 41, 55, 0.10);
+
+        background:
+            radial-gradient(circle at top left, rgba(200, 164, 93, 0.13), transparent 42%),
+            linear-gradient(135deg, #f7f2e9 0%, #fbf7ef 100%) !important;
+    }
+}
+
+@include rsp.df-tablet {
+    body.df-theme-ivory-elegance {
+        --df-radius: 16px;
+        --df-radius-sm: 11px;
+        --df-radius-lg: 22px;
+
+        --df-field-height: 50px;
+        --df-field-gap: 14px;
+    }
+}
+
+@include rsp.df-desktop {
+    body.df-theme-ivory-elegance {
+        --df-radius: 18px;
+        --df-radius-sm: 12px;
+        --df-radius-lg: 28px;
+
+        --df-field-height: 54px;
+        --df-field-gap: 18px;
+    }
+}
+
+/* =========================================================
+ * RESPONSIVE LAYOUT
+ * ========================================================= */
+
+@include rsp.df-mobile {
+    body.df-theme-ivory-elegance .page {
+        padding: 12px !important;
+    }
+
+    body.df-theme-ivory-elegance .df-section-main {
+        padding: 14px !important;
+        margin-bottom: 14px !important;
+        border-radius: 18px !important;
+    }
+
+    body.df-theme-ivory-elegance .df-section-main::before {
+        width: 4px;
+    }
+
+    body.df-theme-ivory-elegance .df-section-main::after {
+        width: 110px;
+        height: 110px;
+        top: -46px;
+        right: -46px;
+    }
+
+    body.df-theme-ivory-elegance .df-card {
+        padding: 12px !important;
+        margin-bottom: 12px !important;
+        border-radius: 14px !important;
+    }
+
+    body.df-theme-ivory-elegance .df-card:hover {
+        transform: none;
+    }
+
+    body.df-theme-ivory-elegance .df-sub-card {
+        padding: 10px !important;
+        border-radius: 12px !important;
+    }
+
+    body.df-theme-ivory-elegance h1 {
+        font-size: 24px !important;
+        line-height: 1.15 !important;
+    }
+
+    body.df-theme-ivory-elegance h2 {
+        font-size: 20px !important;
+    }
+
+    body.df-theme-ivory-elegance h3 {
+        font-size: 17px !important;
+    }
+
+    body.df-theme-ivory-elegance .mat-mdc-text-field-wrapper {
+        min-height: 48px !important;
+        border-radius: 14px !important;
+    }
+
+    body.df-theme-ivory-elegance .df-form-actions {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    body.df-theme-ivory-elegance button:not(.mat-mdc-icon-button):not([mat-icon-button]),
+    body.df-theme-ivory-elegance .btn,
+    body.df-theme-ivory-elegance .df-action-button {
+        width: 100% !important;
+        min-height: 44px !important;
+        justify-content: center !important;
+    }
+
+    body.df-theme-ivory-elegance .mat-mdc-icon-button,
+    body.df-theme-ivory-elegance button.mat-mdc-icon-button,
+    body.df-theme-ivory-elegance button[mat-icon-button] {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+        border-radius: 10px !important;
+    }
+
+    body.df-theme-ivory-elegance mat-icon,
+    body.df-theme-ivory-elegance .mat-icon,
+    body.df-theme-ivory-elegance .material-icons,
+    body.df-theme-ivory-elegance .material-symbols-outlined,
+    body.df-theme-ivory-elegance .icon-mat,
+    body.df-theme-ivory-elegance .df-icon-mat,
+    body.df-theme-ivory-elegance .iconCss {
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px !important;
+        max-width: 18px !important;
+        font-size: 18px !important;
+        line-height: 18px !important;
+    }
+
+    body.df-theme-ivory-elegance pre {
+        max-height: 260px !important;
+        font-size: 12px !important;
+        border-radius: 14px !important;
+    }
+
+    body.df-theme-ivory-elegance {
+
+        .col,
+        .col-1,
+        .col-2,
+        .col-3,
+        .col-4,
+        .col-5,
+        .col-6,
+        .col-7,
+        .col-8,
+        .col-9,
+        .col-10,
+        .col-11,
+        .col-12 {
+            width: 100% !important;
+            max-width: 100% !important;
+            flex: 0 0 100% !important;
+        }
+    }
+}
+
+@include rsp.df-tablet {
+    body.df-theme-ivory-elegance {
+
+        .col-1,
+        .col-2,
+        .col-3,
+        .col-4 {
+            width: 50% !important;
+            max-width: 50% !important;
+            flex: 0 0 50% !important;
+        }
+
+        .col-5,
+        .col-6,
+        .col-7,
+        .col-8,
+        .col-9,
+        .col-10,
+        .col-11,
+        .col-12 {
+            width: 100% !important;
+            max-width: 100% !important;
+            flex: 0 0 100% !important;
+        }
+    }
+
+    body.df-theme-ivory-elegance .df-section-main {
+        padding: 18px !important;
+    }
+
+    body.df-theme-ivory-elegance .df-card {
+        padding: 15px !important;
+    }
+}
+
+/* =========================================================
+ * FIX SPAZIO TRA ICONE NEL FORM FIELD
+ * ========================================================= */
+
+body.df-theme-ivory-elegance .mat-mdc-form-field .mat-mdc-form-field-icon-suffix,
+body.df-theme-ivory-elegance .mat-mdc-form-field .mat-mdc-form-field-icon-prefix {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    padding-right: 10px !important;
+}
+
+body.df-theme-ivory-elegance .mat-mdc-form-field .mat-mdc-icon-button,
+body.df-theme-ivory-elegance .mat-mdc-form-field button.mat-mdc-icon-button,
+body.df-theme-ivory-elegance .mat-mdc-form-field button[mat-icon-button] {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    max-width: 30px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border-radius: 9px !important;
+}
+
+body.df-theme-ivory-elegance .mat-mdc-form-field .mat-mdc-icon-button+.mat-mdc-icon-button,
+body.df-theme-ivory-elegance .mat-mdc-form-field button[mat-icon-button]+button[mat-icon-button] {
+    margin-left: 2px !important;
+}
+
+body.df-theme-ivory-elegance .mat-mdc-form-field .mat-mdc-icon-button mat-icon,
+body.df-theme-ivory-elegance .mat-mdc-form-field button[mat-icon-button] mat-icon,
+body.df-theme-ivory-elegance .mat-mdc-form-field .mat-mdc-icon-button img,
+body.df-theme-ivory-elegance .mat-mdc-form-field button[mat-icon-button] img,
+body.df-theme-ivory-elegance .mat-mdc-form-field .mat-mdc-icon-button svg,
+body.df-theme-ivory-elegance .mat-mdc-form-field button[mat-icon-button] svg {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 16px !important;
+    line-height: 16px !important;
+}
+
+/* =========================================================
+ * FIX TAG / CHIP / ARRAYSTRING - X più piccola e margine
+ * ========================================================= */
+
+body.df-theme-ivory-elegance app-arraystring,
+body.df-theme-ivory-elegance .arraystring-container,
+body.df-theme-ivory-elegance .array-string-container,
+body.df-theme-ivory-elegance .array-string-wrapper {
+  display: block;
+}
+
+/* Contenitore dei tag */
+body.df-theme-ivory-elegance app-arraystring .mat-mdc-chip-set,
+body.df-theme-ivory-elegance app-arraystring .mat-mdc-chip-listbox,
+body.df-theme-ivory-elegance app-arraystring .mat-mdc-chip-grid,
+body.df-theme-ivory-elegance .mat-mdc-chip-set,
+body.df-theme-ivory-elegance .mat-mdc-chip-listbox,
+body.df-theme-ivory-elegance .mat-mdc-chip-grid {
+  gap: 6px !important;
+}
+
+/* Singolo tag/chip */
+body.df-theme-ivory-elegance app-arraystring .mat-mdc-chip,
+body.df-theme-ivory-elegance app-arraystring .mat-mdc-standard-chip,
+body.df-theme-ivory-elegance app-arraystring .mdc-evolution-chip,
+body.df-theme-ivory-elegance .mat-mdc-chip,
+body.df-theme-ivory-elegance .mat-mdc-standard-chip,
+body.df-theme-ivory-elegance .mdc-evolution-chip {
+  min-height: 28px !important;
+  height: 28px !important;
+
+  padding: 0 6px 0 10px !important;
+
+  border-radius: 999px !important;
+  border: 1px solid rgba(200, 164, 93, 0.22) !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.82),
+      rgba(251, 247, 239, 0.68)
+    ) !important;
+
+  box-shadow:
+    0 5px 12px rgba(31, 41, 55, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
+}
+
+/* Testo del tag */
+body.df-theme-ivory-elegance app-arraystring .mat-mdc-chip .mdc-evolution-chip__text-label,
+body.df-theme-ivory-elegance app-arraystring .mat-mdc-standard-chip .mdc-evolution-chip__text-label,
+body.df-theme-ivory-elegance .mat-mdc-chip .mdc-evolution-chip__text-label,
+body.df-theme-ivory-elegance .mat-mdc-standard-chip .mdc-evolution-chip__text-label {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #1f2937 !important;
+  line-height: 1 !important;
+}
+
+/* Area primaria del chip */
+body.df-theme-ivory-elegance .mdc-evolution-chip__cell--primary {
+  padding-left: 0 !important;
+  padding-right: 4px !important;
+}
+
+/* Area della X */
+body.df-theme-ivory-elegance .mdc-evolution-chip__cell--trailing,
+body.df-theme-ivory-elegance .mat-mdc-chip-action-label + .mdc-evolution-chip__cell,
+body.df-theme-ivory-elegance .mat-mdc-chip-remove {
+  margin-left: 6px !important;
+  padding-left: 0 !important;
+}
+
+/* Bottone X del chip */
+body.df-theme-ivory-elegance app-arraystring .mat-mdc-chip-remove,
+body.df-theme-ivory-elegance app-arraystring button.mat-mdc-chip-remove,
+body.df-theme-ivory-elegance app-arraystring .mdc-evolution-chip__action--trailing,
+body.df-theme-ivory-elegance .mat-mdc-chip-remove,
+body.df-theme-ivory-elegance button.mat-mdc-chip-remove,
+body.df-theme-ivory-elegance .mdc-evolution-chip__action--trailing {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  max-width: 18px !important;
+
+  margin-left: 6px !important;
+  margin-right: 0 !important;
+
+  padding: 0 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 999px !important;
+
+  background: rgba(30, 58, 95, 0.08) !important;
+  border: 1px solid rgba(30, 58, 95, 0.08) !important;
+
+  color: #6b7280 !important;
+
+  box-shadow: none !important;
+  filter: none !important;
+
+  opacity: 1 !important;
+
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+/* Icona X dentro il bottone */
+body.df-theme-ivory-elegance app-arraystring .mat-mdc-chip-remove mat-icon,
+body.df-theme-ivory-elegance app-arraystring .mat-mdc-chip-remove .mat-icon,
+body.df-theme-ivory-elegance app-arraystring .mdc-evolution-chip__action--trailing mat-icon,
+body.df-theme-ivory-elegance app-arraystring .mdc-evolution-chip__action--trailing .mat-icon,
+body.df-theme-ivory-elegance .mat-mdc-chip-remove mat-icon,
+body.df-theme-ivory-elegance .mat-mdc-chip-remove .mat-icon,
+body.df-theme-ivory-elegance .mdc-evolution-chip__action--trailing mat-icon,
+body.df-theme-ivory-elegance .mdc-evolution-chip__action--trailing .mat-icon {
+  width: 12px !important;
+  height: 12px !important;
+  min-width: 12px !important;
+  max-width: 12px !important;
+
+  font-size: 12px !important;
+  line-height: 12px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: currentColor !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* SVG/img dentro X */
+body.df-theme-ivory-elegance app-arraystring .mat-mdc-chip-remove svg,
+body.df-theme-ivory-elegance app-arraystring .mat-mdc-chip-remove img,
+body.df-theme-ivory-elegance .mat-mdc-chip-remove svg,
+body.df-theme-ivory-elegance .mat-mdc-chip-remove img {
+  width: 11px !important;
+  height: 11px !important;
+
+  object-fit: contain !important;
+  object-position: center !important;
+
+  margin: auto !important;
+  padding: 0 !important;
+}
+
+/* Hover X */
+body.df-theme-ivory-elegance app-arraystring .mat-mdc-chip-remove:hover,
+body.df-theme-ivory-elegance app-arraystring button.mat-mdc-chip-remove:hover,
+body.df-theme-ivory-elegance app-arraystring .mdc-evolution-chip__action--trailing:hover,
+body.df-theme-ivory-elegance .mat-mdc-chip-remove:hover,
+body.df-theme-ivory-elegance button.mat-mdc-chip-remove:hover,
+body.df-theme-ivory-elegance .mdc-evolution-chip__action--trailing:hover {
+  background: rgba(185, 28, 28, 0.08) !important;
+  border-color: rgba(185, 28, 28, 0.14) !important;
+  color: #b91c1c !important;
+//   transform: scale(1.04);
+}
+
+/* Evita che la regola generale dei button trasformi la X in bottone grande */
+body.df-theme-ivory-elegance button.mat-mdc-chip-remove,
+body.df-theme-ivory-elegance button.mdc-evolution-chip__action--trailing {
+  min-height: 18px !important;
+  background: rgba(30, 58, 95, 0.08) !important;
+  color: #6b7280 !important;
+  box-shadow: none !important;
+}

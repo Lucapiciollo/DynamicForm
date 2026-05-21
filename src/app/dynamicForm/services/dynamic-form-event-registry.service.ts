@@ -2,7 +2,8 @@
 
 import {Inject, Injectable, Optional} from '@angular/core';
 import {DynamicActionEventHandler, DynamicFieldEventHandler} from '../models/dynamic-form-event.model';
-import {DYNAMIC_FORM_RUNTIME_CONFIG, DynamicFormRuntimeConfig} from '../providers/dynamic-form.providers';
+import {DynamicFormRuntimeConfig} from '../providers/dynamic-form.providers';
+import {DYNAMIC_FORM_RUNTIME_CONFIG} from '../tokens/dynamic-form-config.token';
 
 @Injectable({providedIn: 'root'})
 export class DynamicFormEventRegistryService {

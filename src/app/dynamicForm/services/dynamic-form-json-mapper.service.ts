@@ -144,17 +144,18 @@ export class DynamicFormJsonMapperService {
       const handler = this.eventRegistry.getEvent(eventName);
       if (!handler) return undefined;
 
-      return (runtimeCtx: any = {}) =>
+      return ({param, externalStore}: {param: any; externalStore: WritableSignal<any>}) =>
          handler({
             idGroup: -1,
             idForm: -1,
             formControl: undefined as any,
             formName: eventName,
-            formGroup: runtimeCtx.formGroup ?? [],
+            formGroup: [],
             type: TYPE_CONTROL_FORM.COMBOPAGINATE,
             allGroup: [],
             utility: {},
-            ...runtimeCtx,
+            param,
+            externalStore,
          } as any);
    }
 }

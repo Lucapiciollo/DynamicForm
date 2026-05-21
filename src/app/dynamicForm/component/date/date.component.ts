@@ -16,10 +16,9 @@ import {MatInput} from '@angular/material/input';
 
 declare var window: any;
 @Component({
-   
-  standalone: false,selector: 'app-date',
+   selector: 'app-date',
    templateUrl: './date.component.html',
-   styleUrls: ['../../dynamic-form.component.scss', './date.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss'],
 })
 export class DateComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */
@@ -40,4 +39,3 @@ export class DateComponent extends BaseComponent {
    }
    /************************************************************************************************************************************************************************ */
 }
-

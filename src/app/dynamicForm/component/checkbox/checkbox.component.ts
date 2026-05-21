@@ -12,10 +12,9 @@ import {Component, ElementRef, Injector} from '@angular/core';
 import {BaseComponent} from '../base-component.component';
 
 @Component({
-   
-  standalone: false,selector: 'app-checkbox',
+   selector: 'app-checkbox',
    templateUrl: './checkbox.component.html',
-   styleUrls: ['../../dynamic-form.component.scss', './checkbox.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss'],
 })
 export class CheckboxComponent extends BaseComponent {
    /************************************************************************************************************************************************************************ */
@@ -28,4 +27,3 @@ export class CheckboxComponent extends BaseComponent {
    }
    /************************************************************************************************************************************************************************ */
 }
-

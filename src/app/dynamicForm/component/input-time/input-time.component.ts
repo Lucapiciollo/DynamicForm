@@ -12,10 +12,9 @@ import {BaseComponent} from '../base-component.component';
 import moment from 'moment';
 
 @Component({
-   
-  standalone: false,selector: 'app-input-time',
+   selector: 'app-input-time',
    templateUrl: './input-time.component.html',
-   styleUrls: ['../../dynamic-form.component.scss', './input-time.component.scss'],
+   styleUrls: ['../../dynamic-form.component.scss'],
 })
 export class InputTimeComponent extends BaseComponent {
    public hours = [];
@@ -48,4 +47,3 @@ export class InputTimeComponent extends BaseComponent {
       return times;
    }
 }
-

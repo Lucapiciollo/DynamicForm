@@ -2,10 +2,7 @@
 
 import {Pipe, PipeTransform} from '@angular/core';
 
-@Pipe({
-    standalone: false,
-    name: 'language',
-})
+@Pipe({name: 'language'})
 export class LanguagePipe implements PipeTransform {
    transform(value: Array<{language?: string; value?: string}>, languageCode: string): string {
       try {
@@ -15,8 +12,7 @@ export class LanguagePipe implements PipeTransform {
 }
 
 @Pipe({
-    standalone: false,
-    name: 'timeToNumber',
+   name: 'timeToNumber',
 })
 export class TimeToNumberPipe implements PipeTransform {
    transform(time: string): number | null {
@@ -27,4 +23,3 @@ export class TimeToNumberPipe implements PipeTransform {
       return hours * 100 + minutes;
    }
 }
-
