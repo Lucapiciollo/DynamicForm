@@ -1,25 +1,74 @@
-/* Patch per combo checkbox Material dentro mat-select */
+/* @format */
+
+:host {
+   display: block;
+}
+
+::ng-deep .df-combo-scroll-panel {
+   --mat-minimal-pseudo-checkbox-selected-checkmark-color: white;
+   --mat-minimal-pseudo-checkbox-selected-color: #3f51b5;
+}
+
+/* Rende le righe multiple più compatte e coerenti */
 ::ng-deep .df-combo-scroll-panel .mat-mdc-option .mdc-list-item__primary-text {
-  width: 100%;
+   width: 100%;
 }
 
-::ng-deep .df-combo-scroll-panel .df-combo-checkbox {
-  width: 100%;
-  display: block;
+::ng-deep .df-combo-scroll-panel .mat-mdc-option {
+   min-height: 44px;
 }
 
-::ng-deep .df-combo-scroll-panel .df-combo-checkbox .mdc-form-field {
-  width: 100%;
+::ng-deep .df-combo-scroll-panel .mat-mdc-option.mdc-list-item--selected {
+   background: rgba(63, 81, 181, 0.08);
 }
 
-::ng-deep .df-combo-scroll-panel .df-combo-checkbox .mdc-label {
-  width: 100%;
-  cursor: pointer;
+.search-container {
+   position: sticky;
+   top: 0;
+   z-index: 2;
+   background: white;
+   min-height: 44px;
+   display: flex;
+   align-items: center;
 }
 
-::ng-deep .df-combo-scroll-panel .search-container {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: var(--mat-select-panel-background-color, #fff);
+.search-container input {
+   width: 100%;
+   box-sizing: border-box;
+}
+
+.search-icon {
+   position: absolute;
+   left: 10px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   pointer-events: none;
+}
+
+.loading-bar-container {
+   position: absolute;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   height: 2px;
+   overflow: hidden;
+}
+
+.loading-bar {
+   height: 2px;
+   width: 40%;
+   animation: df-combo-loading 1s infinite linear;
+   background: currentColor;
+   opacity: 0.5;
+}
+
+@keyframes df-combo-loading {
+   0% {
+      transform: translateX(-100%);
+   }
+
+   100% {
+      transform: translateX(300%);
+   }
 }

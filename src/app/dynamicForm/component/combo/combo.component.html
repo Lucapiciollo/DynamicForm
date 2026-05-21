@@ -22,14 +22,11 @@
          <mat-select
             #selectRef
             class="py-0 my-0"
-            [panelClass]="
-               control.formAction.checkboxSelect === true
-                  ? 'df-combo-scroll-panel df-combo-checkbox-panel'
-                  : 'df-combo-scroll-panel'
-            "
+            panelClass="df-combo-scroll-panel"
             [matTooltip]="control.formAction.multiple ? signalStore.getConcatStringDescription() : null"
-            [formControl]="$any(getSelectFormControl())"
-            [multiple]="control.formAction.checkboxSelect === true ? false : control.formAction.multiple === true"
+            [formControl]="$any(control.formAction.formControl)"
+            [multiple]="control.formAction.multiple === true || control.formAction.checkboxSelect === true"
+            [compareWith]="compareMatSelectValues"
             (openedChange)="onOpenedChange($event)"
             (selectionChange)="onMaterialSelectionChange($event)"
             (focus)="emitFocus()"
@@ -72,155 +69,61 @@
             </div>
             }
 
-            @if (control.formAction.checkboxSelect === true) {
-               <mat-option class="d-none" [value]="CHECKBOX_SELECT_VALUE"></mat-option>
+            @for (option of getVisibleOptions(); track option.id) {
+            <mat-option
+               class="w-100"
+               [value]="getOptionValue(option)"
+               [disabled]="isOptionDisabled(option)"
+               [class.d-none]="option.hide">
 
-               @for (option of getVisibleOptions(); track option.id) {
-                  <div
-                     class="df-combo-checkbox-row"
-                     [class.selected]="isOptionSelected(option)"
-                     [class.disabled]="isOptionDisabled(option)"
-                     (click)="toggleOption(option, $event)">
-
-                     <mat-checkbox
-                        color="primary"
-                        class="df-combo-checkbox w-100"
-                        [checked]="isOptionSelected(option)"
-                        [disabled]="isOptionDisabled(option)"
-                        (click)="$event.stopPropagation()"
-                        (change)="toggleOption(option, $event)">
-
-                        <span class="d-flex justify-content-between align-items-center w-100">
-                           <span class="flex-grow-1">
-                              {{ option.description }}
-                           </span>
-
-                           @if (option?.tag) {
-                           <span class="justify-content-end">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="30" viewBox="0 0 80 30">
-                                 <rect
-                                    x="0"
-                                    y="0"
-                                    width="80"
-                                    height="30"
-                                    rx="15"
-                                    ry="15"
-                                    [ngClass]="option?.tag.bgTag" />
-
-                                 <text
-                                    x="50%"
-                                    y="50%"
-                                    font-size="10"
-                                    font-family="Arial, sans-serif"
-                                    text-anchor="middle"
-                                    dominant-baseline="middle"
-                                    [ngClass]="option?.tag.bgText">
-                                    {{ option?.tag?.name }}
-                                 </text>
-                              </svg>
-                           </span>
-                           }
-                        </span>
-                     </mat-checkbox>
+               <div class="d-flex justify-content-between align-items-center w-100">
+                  <div class="flex-grow-1">
+                     {{ option.description }}
                   </div>
-               }
 
-               @if (signalStore.getIsLoading()) {
-               <div class="df-combo-loading-row">
-                  Caricamento...
+                  @if (option?.tag) {
+                  <div class="justify-content-end">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="80" height="30" viewBox="0 0 80 30">
+                        <rect
+                           x="0"
+                           y="0"
+                           width="80"
+                           height="30"
+                           rx="15"
+                           ry="15"
+                           [ngClass]="option?.tag.bgTag" />
+
+                        <text
+                           x="50%"
+                           y="50%"
+                           font-size="10"
+                           font-family="Arial, sans-serif"
+                           text-anchor="middle"
+                           dominant-baseline="middle"
+                           [ngClass]="option?.tag.bgText">
+                           {{ option?.tag?.name }}
+                        </text>
+                     </svg>
+                  </div>
+                  }
                </div>
-               }
+            </mat-option>
+            }
 
-               @if (!signalStore.getIsLoading() && getVisibleOptions().length === 0) {
-               <div class="df-combo-empty-row">
-                  Nessun risultato
-               </div>
-               }
-            } @else {
-               @for (option of signalStore.getDefaultOptions(); track option.id) {
-               <mat-option
-                  [value]="getOptionValue(option)"
-                  [disabled]="true"
-                  [class.d-none]="option.hide">
+            @if (signalStore.getIsLoading()) {
+            <mat-option disabled>
+               Caricamento...
+            </mat-option>
+            }
 
-                  <div class="d-flex justify-content-between align-items-center w-100">
-                     <div class="flex-grow-1">
-                        {{ option.description }}
-                     </div>
+            @if (!signalStore.getIsLoading() && getVisibleOptions().length === 0) {
+            <mat-option disabled>
+               Nessun risultato
+            </mat-option>
+            }
 
-                     @if (option?.tag) {
-                     <div class="justify-content-end">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="30" viewBox="0 0 80 30">
-                           <rect
-                              x="0"
-                              y="0"
-                              width="80"
-                              height="30"
-                              rx="15"
-                              ry="15"
-                              [ngClass]="option?.tag.bgTag" />
-
-                           <text
-                              x="50%"
-                              y="50%"
-                              font-size="10"
-                              font-family="Arial, sans-serif"
-                              text-anchor="middle"
-                              dominant-baseline="middle"
-                              [ngClass]="option?.tag.bgText">
-                              {{ option?.tag?.name }}
-                           </text>
-                        </svg>
-                     </div>
-                     }
-                  </div>
-               </mat-option>
-               }
-
-               @for (option of signalStore.getFilterOption(); track option.id) {
-               <mat-option
-                  class="w-100"
-                  [value]="getOptionValue(option)"
-                  [disabled]="isOptionDisabled(option)"
-                  [class.d-none]="option.hide">
-
-                  <div class="d-flex justify-content-between align-items-center w-100">
-                     <div class="flex-grow-1">
-                        {{ option.description }}
-                     </div>
-
-                     @if (option?.tag) {
-                     <div class="justify-content-end">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="30" viewBox="0 0 80 30">
-                           <rect
-                              x="0"
-                              y="0"
-                              width="80"
-                              height="30"
-                              rx="15"
-                              ry="15"
-                              [ngClass]="option?.tag.bgTag" />
-
-                           <text
-                              x="50%"
-                              y="50%"
-                              font-size="10"
-                              font-family="Arial, sans-serif"
-                              text-anchor="middle"
-                              dominant-baseline="middle"
-                              [ngClass]="option?.tag.bgText">
-                              {{ option?.tag?.name }}
-                           </text>
-                        </svg>
-                     </div>
-                     }
-                  </div>
-               </mat-option>
-               }
-
-               @if (showOptionDefault) {
-               <mat-option class="d-none" [value]="null"></mat-option>
-               }
+            @if (showOptionDefault && !(control.formAction.multiple === true || control.formAction.checkboxSelect === true)) {
+            <mat-option class="d-none" [value]="null"></mat-option>
             }
          </mat-select>
 

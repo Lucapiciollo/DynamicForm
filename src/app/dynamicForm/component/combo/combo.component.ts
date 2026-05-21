@@ -52,27 +52,21 @@ export class ComboComponent extends BaseComponent implements OnInit {
   private scrollBindRetry = 0;
   private remoteRequestCounter = 0;
   private lastLoadedItemsCount = 0;
+
   public onPanelCloseObs = new Subject<void>();
   public showOptionDefault = true;
 
   /**
-   * Valore tecnico usato solo dal mat-select quando la combo è in modalità
-   * checkboxSelect. Il valore vero rimane sempre nel formControl reale.
+   * Testo visuale del trigger.
+   * Rimane solo come cache visuale, ma il valore vero è sempre nel FormControl reale.
    */
-  public readonly CHECKBOX_SELECT_VALUE = "__DF_CHECKBOX_SELECT__";
-  
-  private readonly checkboxSelectFakeControl = new FormControl<string | null>(null);
-
-  private checkboxPanelOpened = false;
-
-  /** Testo visuale forzato per il trigger della checkbox select. */
   public readonly selectedLabelText = signal<string>("");
 
   /**
    * Cache degli oggetti option completi selezionati.
-   * Serve soprattutto per combo remote/paginate: il FormControl conserva gli id,
-   * ma quando cambi pagina o ricerca le option complete potrebbero non essere più
-   * nella lista corrente. Questa cache evita di perdere label e selezioni.
+   * Serve per combo remote/paginate: il FormControl conserva gli id,
+   * ma quando cambi pagina/ricerca le option complete potrebbero non essere più
+   * nella lista corrente.
    */
   private readonly selectedOptionsCache = new Map<string, any>();
 
@@ -84,6 +78,14 @@ export class ComboComponent extends BaseComponent implements OnInit {
   public loaderss = signal(false);
 
   @ViewChild("selectRef") selectRef: MatSelect;
+
+  /**
+   * compareWith per mat-select.
+   * Fondamentale per array multipli, oggetti e id numerici/stringa.
+   */
+  public compareMatSelectValues = (a: any, b: any): boolean => {
+    return this.compareValue(a, b);
+  };
 
   constructor(
     protected override injector: Injector,
@@ -108,7 +110,6 @@ export class ComboComponent extends BaseComponent implements OnInit {
       });
   }
 
-
   ngOnInit(): void {
     /**
      * Mantiene eventuali lifecycle ereditati da BaseComponent senza legarci
@@ -127,8 +128,9 @@ export class ComboComponent extends BaseComponent implements OnInit {
 
       this.normalizeControlValueForMultiple();
       this.cacheInitialOptions();
+      this.hydrateSelectedOptionsFromCurrentValue();
       this.cacheSelectedVisibleOptions();
-      this.syncCheckboxSelectFakeControl();
+      this.keepSelectedOptionsInStores();
       this.refreshSelectedView();
       this.cdr.markForCheck();
     });
@@ -137,8 +139,9 @@ export class ComboComponent extends BaseComponent implements OnInit {
       ?.pipe(takeUntilDestroyed(this.destroyRef))
       ?.subscribe(() => {
         this.normalizeControlValueForMultiple();
+        this.hydrateSelectedOptionsFromCurrentValue();
         this.cacheSelectedVisibleOptions();
-        this.syncCheckboxSelectFakeControl();
+        this.keepSelectedOptionsInStores();
         this.refreshSelectedView();
         this.cdr.markForCheck();
       });
@@ -146,12 +149,6 @@ export class ComboComponent extends BaseComponent implements OnInit {
 
   private isReady(): boolean {
     return !!this.control?.formAction?.formControl;
-  }
-
-  getSelectFormControl(): FormControl {
-    return this.isCheckboxSelect()
-      ? this.checkboxSelectFakeControl
-      : this.control.formAction.formControl as FormControl;
   }
 
   hasComboValue(): boolean {
@@ -164,59 +161,21 @@ export class ComboComponent extends BaseComponent implements OnInit {
     return value !== null && value !== undefined && value !== "";
   }
 
-private syncCheckboxSelectFakeControl(): void {
-  if (!this.isCheckboxSelect()) {
-    return;
-  }
-
-  const realValue = this.control?.formAction?.formControl?.value;
-
-  const hasValue = Array.isArray(realValue)
-    ? realValue.length > 0
-    : realValue !== null && realValue !== undefined && realValue !== "";
-
-  /**
-   * Punto chiave:
-   * - pannello APERTO  => fakeControl sempre null, così Material non seleziona
-   *   la mat-option tecnica nascosta.
-   * - pannello CHIUSO => se ci sono valori reali, uso il valore tecnico per
-   *   far risultare il mat-select non-empty e mostrare il trigger.
-   */
-  const technicalValue =
-    hasValue && !this.checkboxPanelOpened
-      ? this.CHECKBOX_SELECT_VALUE
-      : null;
-
-  if (this.checkboxSelectFakeControl.value !== technicalValue) {
-    this.checkboxSelectFakeControl.setValue(technicalValue, {
-      emitEvent: false,
-    });
-  }
-}
-
   private refreshSelectedView(): void {
     if (!this.isReady()) {
       return;
     }
 
-    const label = this.getSelectedLabel(true);
-    this.selectedLabelText.set(label);
-
-    if (this.isCheckboxSelect()) {
-      this.syncCheckboxSelectFakeControl();
-    }
-
+    this.selectedLabelText.set(this.getSelectedLabel(true));
     this.cdr.markForCheck();
   }
 
   private getIdForm(): any {
     return (
-      
       this.control?.formAction?.idForm ??
       this.control?.formAction?.id ??
       this.control?.formAction?.name ??
       this.control?.formAction?.key ??
-   
       null
     );
   }
@@ -289,130 +248,114 @@ private syncCheckboxSelectFakeControl(): void {
   }
 
   onPanelOpen(): void {
-  if (!this.isReady()) {
-    return;
-  }
+    if (!this.isReady()) {
+      return;
+    }
 
-  this.checkboxPanelOpened = true;
-
-  try {
-    this.normalizeControlValueForMultiple();
-    this.cacheInitialOptions();
-    this.hydrateSelectedOptionsFromCurrentValue();
-    this.cacheSelectedVisibleOptions();
-    this.keepSelectedOptionsInStores();
-
-    this.syncCheckboxSelectFakeControl();
-    this.refreshSelectedView();
-    this.signalStore.setIsLoading(false);
-    this.emitOpened();
-
-    queueMicrotask(() => {
-      const input = this.filterInput();
-      input?.nativeElement?.focus();
-    });
-
-    if (this.control.formAction.type === TYPE_CONTROL_FORM.COMBO) {
-      const filtered = this._filter("");
-
-      this.signalStore.setFilteredOptions(
-        filtered,
-        this.control.formAction.keyCombo,
-        false,
-      );
-
-      this.cacheOptions(filtered);
+    try {
+      this.normalizeControlValueForMultiple();
+      this.cacheInitialOptions();
+      this.hydrateSelectedOptionsFromCurrentValue();
       this.cacheSelectedVisibleOptions();
       this.keepSelectedOptionsInStores();
       this.refreshSelectedView();
+
       this.signalStore.setIsLoading(false);
-      return;
-    }
+      this.emitOpened();
 
-    if (this.control.formAction.type === TYPE_CONTROL_FORM.COMBOPAGINATE) {
-      /**
-       * Per checkboxSelect remota/paginata:
-       * prima mantengo i selezionati in cache/store,
-       * poi carico la pagina remota senza perdere quelli già scelti.
-       */
-      this.search("");
+      queueMicrotask(() => {
+        const input = this.filterInput();
+        input?.nativeElement?.focus();
+      });
 
-      if (this.control.formAction?.enableInfiniteScroll === true) {
-        this.bindPanelScrollWithRetry();
+      if (this.control.formAction.type === TYPE_CONTROL_FORM.COMBO) {
+        const filtered = this._filter("");
+
+        this.signalStore.setFilteredOptions(
+          filtered,
+          this.control.formAction.keyCombo,
+          false,
+        );
+
+        this.cacheOptions(filtered);
+        this.hydrateSelectedOptionsFromCurrentValue();
+        this.cacheSelectedVisibleOptions();
+        this.keepSelectedOptionsInStores();
+        this.refreshSelectedView();
+        this.signalStore.setIsLoading(false);
+        return;
       }
 
+      if (this.control.formAction.type === TYPE_CONTROL_FORM.COMBOPAGINATE) {
+        this.search("");
+
+        if (this.control.formAction?.enableInfiniteScroll === true) {
+          this.bindPanelScrollWithRetry();
+        }
+
+        return;
+      }
+
+      this.signalStore.setIsLoading(false);
+    } catch (e) {
+      throw new Error(e as any);
+    }
+  }
+
+  onPanelClose(): void {
+    if (!this.isReady()) {
       return;
     }
 
-    this.signalStore.setIsLoading(false);
-  } catch (e) {
-    throw new Error(e as any);
-  }
-}
+    try {
+      this.hydrateSelectedOptionsFromCurrentValue();
+      this.cacheSelectedVisibleOptions();
+      this.keepSelectedOptionsInStores();
 
-  onPanelClose(): void {
-  if (!this.isReady()) {
-    return;
-  }
+      this.signalStore.setIsLoading(false);
+      this.removePanelScrollListener();
 
-  this.checkboxPanelOpened = false;
+      this.effectStore.forEach((m) => m.destroy());
+      this.effectStore = [];
 
-  try {
-    this.hydrateSelectedOptionsFromCurrentValue();
-    this.cacheSelectedVisibleOptions();
-    this.keepSelectedOptionsInStores();
+      this.showOptionDefault = true;
+      this.reachedEnd = false;
+      this.scrollBindRetry = 0;
+      this.onPanelCloseObs.next();
 
-    this.signalStore.setIsLoading(false);
+      /**
+       * Non svuotiamo più filteredOptions/totalOptions per le combo multiple.
+       * La lista remota/paginata deve conservare selezionati + pagina corrente.
+       * Per le combo singole manteniamo il reset storico.
+       */
+      if (
+        this.control.formAction.type === TYPE_CONTROL_FORM.COMBOPAGINATE &&
+        !this.isMultipleSelection()
+      ) {
+        this.signalStore.setFilteredOptions(
+          [],
+          this.control.formAction.keyCombo,
+          false,
+        );
 
-    this.removePanelScrollListener();
+        this.control.formAction.paging = {
+          ...this.initPagination,
+        };
+      }
 
-    this.effectStore.forEach((m) => m.destroy());
-    this.effectStore = [];
+      if (this.control.formAction.type === TYPE_CONTROL_FORM.COMBOPAGINATE) {
+        this.control.formAction.paging = {
+          ...this.initPagination,
+        };
+      }
 
-    this.showOptionDefault = true;
-    this.reachedEnd = false;
-    this.scrollBindRetry = 0;
-    this.onPanelCloseObs.next();
-
-    /**
-     * Prima qui svuotavamo filteredOptions e totalOptions.
-     * Questo rompeva la remota paginata checkbox perché perdeva la lista
-     * e lasciava solo uno stato parziale.
-     *
-     * Ora:
-     * - se è checkboxSelect remota/paginata NON svuoto lo store;
-     * - se è una combo paginata normale posso mantenere il comportamento vecchio.
-     */
-    if (
-      this.control.formAction.type === TYPE_CONTROL_FORM.COMBOPAGINATE &&
-      !this.isCheckboxSelect()
-    ) {
-      this.signalStore.setFilteredOptions(
-        [],
-        this.control.formAction.keyCombo,
-        false,
-      );
-
-      this.control.formAction.paging = {
-        ...this.initPagination,
-      };
+      this.refreshSelectedView();
+      this.cdr.markForCheck();
+      this.emitClosed();
+    } catch (e) {
+      throw new Error(e as any);
     }
-
-    if (this.control.formAction.type === TYPE_CONTROL_FORM.COMBOPAGINATE) {
-      this.control.formAction.paging = {
-        ...this.initPagination,
-      };
-    }
-
-    this.syncCheckboxSelectFakeControl();
-    this.refreshSelectedView();
-    this.cdr.markForCheck();
-
-    this.emitClosed();
-  } catch (e) {
-    throw new Error(e as any);
   }
-}
 
   clearInput = (): void => {
     try {
@@ -441,11 +384,13 @@ private syncCheckboxSelectFakeControl(): void {
 
     const valueSearch = value ?? "";
 
-    this.emitSearch(valueSearch );
+    this.emitSearch(valueSearch);
 
     this.signalStore.setIsLoading(true);
+
     this.hydrateSelectedOptionsFromCurrentValue();
-this.keepSelectedOptionsInStores();
+    this.keepSelectedOptionsInStores();
+
     this.resetOption = valueSearch.trim() !== "";
 
     if (
@@ -499,6 +444,11 @@ this.keepSelectedOptionsInStores();
         false,
       );
 
+      this.cacheOptions(filtered);
+      this.hydrateSelectedOptionsFromCurrentValue();
+      this.cacheSelectedVisibleOptions();
+      this.keepSelectedOptionsInStores();
+
       this.refreshSelectedView();
       this.signalStore.setIsLoading(false);
       return;
@@ -533,6 +483,7 @@ this.keepSelectedOptionsInStores();
 
     return page * count < totalCount;
   }
+
   private bindPanelScrollWithRetry(): void {
     this.removePanelScrollListener();
 
@@ -583,13 +534,6 @@ this.keepSelectedOptionsInStores();
     this.removeScrollListener = () => {
       panel.removeEventListener("scroll", onScroll);
     };
-
-    console.log("[COMBOPAGINATE] scroll listener agganciato", {
-      scrollHeight: panel.scrollHeight,
-      clientHeight: panel.clientHeight,
-      scrollTop: panel.scrollTop,
-      options: this.signalStore.getFilterOption?.()?.length,
-    });
   }
 
   private removePanelScrollListener(): void {
@@ -625,9 +569,6 @@ this.keepSelectedOptionsInStores();
     }
 
     if (!this.canLoadNextPage()) {
-      console.log("[COMBOPAGINATE] fine dati raggiunta", {
-        paging: this.control.formAction.paging,
-      });
       return;
     }
 
@@ -651,12 +592,7 @@ this.keepSelectedOptionsInStores();
       count,
     };
 
-    console.log("[COMBOPAGINATE] load next page", {
-      paging: this.control.formAction.paging,
-      search: this.currentSearchValue ?? this.getSearchValue(),
-    });
-
-    this.emitScrollEnd(this.control.formAction.paging );
+    this.emitScrollEnd(this.control.formAction.paging);
 
     this.callRemoteData({
       ...this.getRemoteParams(),
@@ -665,6 +601,7 @@ this.keepSelectedOptionsInStores();
       append: true,
     });
   }
+
   /***********************************************************************************************************************************
    * REMOTE DATA
    ***********************************************************************************************************************************/
@@ -738,7 +675,6 @@ this.keepSelectedOptionsInStores();
 
     try {
       const result = this.resolveRemoteData(remoteData, payload);
-
       this.handleRemoteDataResult(result, param, requestId);
     } catch (error) {
       console.error("[COMBOPAGINATE] remoteData error", error);
@@ -748,26 +684,11 @@ this.keepSelectedOptionsInStores();
   }
 
   private resolveRemoteData(remoteData: any, payload: any): any {
-    /**
-     * Caso Signal Angular.
-     */
     if (isSignal(remoteData)) {
       return remoteData();
     }
 
-    /**
-     * Caso RxMethod / funzione classica:
-     * remoteData({ param, externalStore, ... })
-     */
     if (typeof remoteData === "function") {
-      /**
-       * Se è una Signal Angular, chiamarla senza argomenti restituisce il valore.
-       * Ma una funzione remota normale accetta payload.
-       *
-       * Strategia:
-       * - provo prima come funzione remota con payload
-       * - se esplode, provo come signal senza payload
-       */
       try {
         return remoteData(payload);
       } catch (errorWithPayload) {
@@ -779,23 +700,14 @@ this.keepSelectedOptionsInStores();
       }
     }
 
-    /**
-     * Caso Promise già pronta.
-     */
     if (remoteData && typeof remoteData.then === "function") {
       return remoteData;
     }
 
-    /**
-     * Caso Observable già pronto.
-     */
     if (isObservable(remoteData)) {
       return remoteData;
     }
 
-    /**
-     * Caso array diretto oppure oggetto { items, totalCount }.
-     */
     return remoteData;
   }
 
@@ -804,9 +716,6 @@ this.keepSelectedOptionsInStores();
     param: Record<string, any>,
     requestId: number,
   ): void {
-    /**
-     * Observable
-     */
     if (isObservable(result)) {
       result.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) =>
@@ -821,9 +730,6 @@ this.keepSelectedOptionsInStores();
       return;
     }
 
-    /**
-     * Promise
-     */
     if (result && typeof result.then === "function") {
       result
         .then((response: any) =>
@@ -838,10 +744,6 @@ this.keepSelectedOptionsInStores();
       return;
     }
 
-    /**
-     * Signal Angular già risolta male:
-     * può capitare che result sia ancora una funzione senza argomenti.
-     */
     if (typeof result === "function") {
       try {
         const signalValue = result();
@@ -855,9 +757,6 @@ this.keepSelectedOptionsInStores();
       }
     }
 
-    /**
-     * Array / object / undefined
-     */
     if (requestId !== this.remoteRequestCounter) {
       return;
     }
@@ -872,10 +771,6 @@ this.keepSelectedOptionsInStores();
     const append = param?.append === true;
     const keyCombo = this.control?.formAction?.keyCombo;
 
-    /**
-     * Caso vecchio:
-     * remoteData aggiorna già lo store e non ritorna nulla.
-     */
     if (response === undefined || response === null) {
       this.signalStore.setIsLoading(false);
       this.reachedEnd = false;
@@ -999,7 +894,7 @@ this.keepSelectedOptionsInStores();
   }
 
   /***********************************************************************************************************************************
-   * VISIBLE OPTIONS / CHECKBOX LIST
+   * VISIBLE OPTIONS / MULTI LIST
    ***********************************************************************************************************************************/
 
   getVisibleOptions(): any[] {
@@ -1012,15 +907,6 @@ this.keepSelectedOptionsInStores();
       this.control?.formAction?.initialOptions || [],
     );
 
-    /**
-     * Ordine importante:
-     * 1. selezionati in cache: così una remota/paginata non perde gli elementi
-     *    già scelti quando cambio pagina o ricerca;
-     * 2. opzioni correnti: pagina corrente / ricerca corrente / statiche.
-     *
-     * Non sostituiamo mai la lista con i soli selezionati: i selezionati vengono
-     * solo aggiunti sopra alla pagina corrente e deduplicati.
-     */
     const source = [
       ...selectedCachedOptions,
       ...initialOptions,
@@ -1054,6 +940,60 @@ this.keepSelectedOptionsInStores();
 
     this.signalStore?.setDefaultOptions?.(
       mergedDefaultOptions,
+      this.control?.formAction?.keyCombo,
+    );
+  }
+
+  private hydrateSelectedOptionsFromCurrentValue(): void {
+    const formControl = this.control?.formAction?.formControl;
+
+    if (!formControl) {
+      return;
+    }
+
+    const values = Array.isArray(formControl.value)
+      ? formControl.value
+      : formControl.value === null ||
+          formControl.value === undefined ||
+          formControl.value === ""
+        ? []
+        : [formControl.value];
+
+    const knownOptions = this.getAllKnownOptionsSafe();
+
+    for (const value of values) {
+      const option = knownOptions.find((item) =>
+        this.compareValue(this.getOptionValue(item), value),
+      );
+
+      if (option) {
+        this.cacheOption(option);
+      }
+    }
+  }
+
+  private keepSelectedOptionsInStores(): void {
+    const selectedOptions = this.distinctOptionsByValue([
+      ...this.getSelectedCachedOptions(),
+      ...this.getAllKnownOptionsSafe().filter((option) =>
+        this.isOptionSelected(option),
+      ),
+    ]);
+
+    this.signalStore.setSelectedOptions(selectedOptions);
+
+    const currentTotal = this.normalizeActionOptions(
+      this.signalStore?.getTotalOptions?.() || [],
+    );
+
+    this.signalStore.setTotalOptions(
+      {
+        items: this.distinctOptionsByValue([
+          ...selectedOptions,
+          ...currentTotal,
+        ]),
+        totalCount: Math.max(currentTotal.length, selectedOptions.length),
+      },
       this.control?.formAction?.keyCombo,
     );
   }
@@ -1192,9 +1132,7 @@ this.keepSelectedOptionsInStores();
         ? descriptions.join("; ")
         : `${descriptions
             .slice(0, this.combotext.maxElementShow)
-            .join(
-              "; ",
-            )} + ${descriptions.length - this.combotext.maxElementShow}`;
+            .join("; ")} + ${descriptions.length - this.combotext.maxElementShow}`;
     }
 
     return (
@@ -1470,13 +1408,6 @@ this.keepSelectedOptionsInStores();
       idForm: this.getIdForm(),
     };
 
-    /**
-     * Compatibilità doppia:
-     * - nuova modalità: onChange(ctx)
-     * - vecchia modalità tipizzata: onChange(value, formControl, formAction, control, option, selected, formGroup, instance, idForm, ctx)
-     *
-     * Usiamo cast ad any perché dynamic-form.interface può dichiarare più parametri obbligatori.
-     */
     if ((onChange as Function).length <= 1) {
       (onChange as any)(payload);
       return;
@@ -1497,32 +1428,30 @@ this.keepSelectedOptionsInStores();
   }
 
   onMaterialSelectionChange(event: MatSelectChange): void {
-    /**
-     * In checkboxSelect il mat-select usa un FormControl tecnico.
-     * Quando il pannello è aperto, il fakeControl deve restare null,
-     * altrimenti Material seleziona la mat-option tecnica nascosta.
-     */
-    if (this.isCheckboxSelect()) {
-      this.syncCheckboxSelectFakeControl();
-      this.cacheSelectedVisibleOptions();
-      this.refreshSelectedView();
-      this.cdr.markForCheck();
-      return;
-    }
-
     const formControl = this.control?.formAction?.formControl;
 
     if (!formControl) {
       return;
     }
 
-    const value = event.value;
+    let value = event.value;
+
+    if (this.isMultipleSelection()) {
+      value = Array.isArray(value)
+        ? value
+        : value === null || value === undefined || value === ""
+          ? []
+          : [value];
+    }
 
     formControl.setValue(value);
     formControl.markAsDirty();
     formControl.markAsTouched();
     formControl.updateValueAndValidity();
 
+    this.hydrateSelectedOptionsFromCurrentValue();
+    this.cacheSelectedVisibleOptions();
+    this.keepSelectedOptionsInStores();
     this.refreshSelectedView();
 
     this.emitFormActionOnChange({
@@ -1530,6 +1459,7 @@ this.keepSelectedOptionsInStores();
       formControl: formControl as FormControl,
     });
   }
+
   resetCombo(event?: Event): void {
     event?.stopPropagation();
     event?.preventDefault();
@@ -1546,7 +1476,6 @@ this.keepSelectedOptionsInStores();
     formControl.markAsDirty();
     formControl.markAsTouched();
     formControl.updateValueAndValidity();
-    this.syncCheckboxSelectFakeControl();
 
     this.selectedOptionsCache.clear();
     this.signalStore.setSelectedOptions([]);
@@ -1557,154 +1486,4 @@ this.keepSelectedOptionsInStores();
       formControl: formControl as FormControl,
     });
   }
-
-  toggleOption(option: any, event?: any): void {
-    const formControl = this.control?.formAction?.formControl;
-
-    if (!formControl) {
-      return;
-    }
-
-    if (this.isMultipleSelection()) {
-      event?.stopPropagation?.();
-      event?.preventDefault?.();
-    }
-
-    const optionValue = this.getOptionValue(option);
-    const isMultiple = this.isMultipleSelection();
-
-    if (isMultiple) {
-      const currentValue = Array.isArray(formControl.value)
-        ? formControl.value
-        : formControl.value === null ||
-            formControl.value === undefined ||
-            formControl.value === ""
-          ? []
-          : [formControl.value];
-
-      const exists = currentValue.some((value: any) =>
-        this.compareValue(value, optionValue),
-      );
-
-      const nextValue = exists
-        ? currentValue.filter(
-            (value: any) => !this.compareValue(value, optionValue),
-          )
-        : [...currentValue, optionValue];
-
-      if (exists) {
-        this.selectedOptionsCache.delete(this.toCompareKey(optionValue));
-      } else {
-        this.cacheOption(option);
-      }
-
-      formControl.setValue(nextValue);
-      formControl.markAsDirty();
-      formControl.markAsTouched();
-      formControl.updateValueAndValidity();
-      this.syncCheckboxSelectFakeControl();
-
-      this.signalStore.updateOptionSelected(optionValue, !exists, true);
-
-      const selectedOptions = this.distinctOptionsByValue([
-        ...this.getSelectedCachedOptions(),
-        ...this.getAllKnownOptionsSafe().filter((knownOption) =>
-          nextValue.some((value: any) => this.optionEqualsValue(knownOption, value)),
-        ),
-      ]);
-      this.signalStore.setSelectedOptions(selectedOptions);
-      this.syncCheckboxSelectFakeControl();
-      this.refreshSelectedView();
-      this.cdr.markForCheck();
-
-      this.emitFormActionOnChange({
-        value: nextValue,
-        formControl: formControl as FormControl,
-        option,
-        selected: !exists,
-      });
-
-      return;
-    }
-
-    formControl.setValue(optionValue);
-    formControl.markAsDirty();
-    formControl.markAsTouched();
-    formControl.updateValueAndValidity();
-
-    this.cacheOption(option);
-    this.signalStore.updateOptionSelected(optionValue, true, false);
-    this.refreshSelectedView();
-
-    this.emitFormActionOnChange({
-      value: optionValue,
-      formControl: formControl as FormControl,
-      option,
-      selected: true,
-    });
-  }
-
-  private isRemotePaginatedCheckbox(): boolean {
-  return (
-    this.control?.formAction?.type === TYPE_CONTROL_FORM.COMBOPAGINATE &&
-    this.isCheckboxSelect()
-  );
-}
-
-private hydrateSelectedOptionsFromCurrentValue(): void {
-  const formControl = this.control?.formAction?.formControl;
-
-  if (!formControl) {
-    return;
-  }
-
-  const values = Array.isArray(formControl.value)
-    ? formControl.value
-    : formControl.value === null ||
-        formControl.value === undefined ||
-        formControl.value === ''
-      ? []
-      : [formControl.value];
-
-  const knownOptions = this.getAllKnownOptionsSafe();
-
-  for (const value of values) {
-    const option = knownOptions.find((item) =>
-      this.compareValue(this.getOptionValue(item), value),
-    );
-
-    if (option) {
-      this.cacheOption(option);
-    }
-  }
-}
-
-private keepSelectedOptionsInStores(): void {
-  const selectedOptions = this.distinctOptionsByValue([
-    ...this.getSelectedCachedOptions(),
-    ...this.getAllKnownOptionsSafe().filter((option) =>
-      this.isOptionSelected(option),
-    ),
-  ]);
-
-  this.signalStore.setSelectedOptions(selectedOptions);
-
-  const currentTotal = this.normalizeActionOptions(
-    this.signalStore?.getTotalOptions?.() || [],
-  );
-
-  this.signalStore.setTotalOptions(
-    {
-      items: this.distinctOptionsByValue([
-        ...selectedOptions,
-        ...currentTotal,
-      ]),
-      totalCount: Math.max(
-        currentTotal.length,
-        selectedOptions.length,
-      ),
-    },
-    this.control?.formAction?.keyCombo,
-  );
-}
 }
