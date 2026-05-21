@@ -4,6 +4,41 @@ import { ComponentRef, Injector, Signal, WritableSignal } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { FormComponentTemplate } from './component/FormComponentTemplate';
+ 
+
+export interface DynamicFieldConfig {
+  name: string;
+  type: string;
+
+  label?: string;
+  placeholder?: string;
+  value?: any;
+
+  disabled?: boolean;
+  hidden?: boolean;
+  readonly?: boolean;
+
+ 
+
+  searchable?: boolean;
+  paginated?: boolean;
+  pageSize?: number;
+
+  minSearchLength?: number;
+  searchDebounceTime?: number;
+
+  labelKey?: string;
+  valueKey?: string;
+
+  clearable?: boolean;
+
+  props?: Record<string, any>;
+
+  onChange?: (ctx: any) => void;
+  onSearch?: (ctx: any) => void;
+  onLoadMore?: (ctx: any) => void;
+}
+
 
 /***********************************************************************************************************************************
  * RX METHOD

@@ -1,26 +1,81 @@
-/** @format */
+/**
+ * @format
+ *
+ * Configurazione demo completa per Dynamic Form.
+ * Mantiene la struttura del file originale:
+ * - field(formAction) => { formAction }
+ * - createFormConfiguration() => any[]
+ * - buildUltraSafeNestedActionsForm() => ConfigForm
+ *
+ * Cosa testa:
+ * - input text
+ * - number
+ * - textarea
+ * - checkbox
+ * - radio
+ * - currency
+ * - date
+ * - date range
+ * - date time / year con fallback se l'enum cambia nome
+ * - file
+ * - label / link / separator
+ * - array string
+ * - combo normale
+ * - combo con ricerca locale
+ * - combo remota paginata
+ * - multi combo Material standard
+ * - multi combo checkbox Material
+ * - multi combo checkbox remota paginata
+ * - campi annidati / children
+ * - indirizzi aggiungibili a runtime con pulsante +
+ * - action finale che stampa il JSON in console
+ */
 
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import {
-   ConfigForm,
-   FormAction,
-   TYPE_CONTROL_FORM,
-} from '../dynamic-form.interface';
 import { signal } from '@angular/core';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { delay, of } from 'rxjs';
+import { TYPE_CONTROL_FORM, ConfigForm, FormAction } from '../dynamic-form.interface';
+
+ 
 
 function logEvent(name: string, data?: any): void {
    console.groupCollapsed(
-      `%c[FORM TEST] ${name}`,
+      `%c[DYNAMIC FORM TEST] ${name}`,
       'color:#7c5f2b;font-weight:bold',
    );
    console.log(data);
    console.groupEnd();
 }
 
- 
- function createFullMockDataset(prefix: string, totalCount = 250): Array<any> {
-   return Array.from({ length: totalCount }).map((_, index) => {
+function field(formAction: any): any {
+   return {
+      formAction,
+   };
+}
+
+function typeControl(name: string, fallback: any = TYPE_CONTROL_FORM.TEXT): any {
+   return (TYPE_CONTROL_FORM as any)[name] ?? fallback;
+}
+
+function firstType(names: string[], fallback: any = TYPE_CONTROL_FORM.TEXT): any {
+   for (const name of names) {
+      if ((TYPE_CONTROL_FORM as any)[name] !== undefined) {
+         return (TYPE_CONTROL_FORM as any)[name];
+      }
+   }
+
+   return fallback;
+}
+
+function createSimpleOptions(values: Array<[any, string]>): Array<any> {
+   return values.map(([id, description]) => ({
+      id,
+      description,
+   }));
+}
+
+function createOptions(prefix: string, total = 30): any[] {
+   return Array.from({ length: total }).map((_, index) => {
       const id = index + 1;
 
       return {
@@ -35,68 +90,430 @@ function paginateItems<T>(items: T[], page: number, count: number): T[] {
    return items.slice(start, start + count);
 }
 
-function createMockRemoteData(prefix: string, totalCount = 250) {
-   const fullDataset = createFullMockDataset(prefix, totalCount);
+function createMockRemoteData(prefix: string, totalCount = 250): any {
+   const fullDataset = createOptions(prefix, totalCount);
 
    return ({ param }: any) => {
       const page = Number(param?.page ?? 1);
       const count = Number(param?.count ?? 10);
-
-      const search =
-         param?.search ??
-         param?.description ??
-         param?.q ??
-         '';
-
+      const search = param?.search ?? param?.description ?? param?.q ?? '';
       const cleanSearch = String(search ?? '').trim().toLowerCase();
 
       const filteredDataset = cleanSearch
-         ? fullDataset.filter(item =>
-              String(item.description).toLowerCase().includes(cleanSearch) ||
-              String(item.id).includes(cleanSearch),
+         ? fullDataset.filter(
+              item =>
+                 String(item.description).toLowerCase().includes(cleanSearch) ||
+                 String(item.id).includes(cleanSearch),
            )
          : fullDataset;
 
       const items = paginateItems(filteredDataset, page, count);
 
-      console.groupCollapsed(
-         `%c[REMOTE DATA] ${prefix}`,
-         'color:#0284c7;font-weight:bold',
-      );
-      console.log('param:', param);
-      console.log('page:', page);
-      console.log('count:', count);
-      console.log('search:', search);
-      console.log('filtered total:', filteredDataset.length);
-      console.log('items:', items);
-      console.groupEnd();
+      logEvent(`remoteData:${prefix}`, {
+         param,
+         page,
+         count,
+         search,
+         filteredTotal: filteredDataset.length,
+         items,
+      });
 
-      return {
+      return of({
          items,
          totalCount: filteredDataset.length,
          page,
          count,
-      };
+      }).pipe(delay(250));
    };
 }
 
-/**
- * Helper importante:
- * Il renderer vecchio legge field.formAction.
- * La tipizzazione nuova magari non lo riconosce.
- * Quindi per il test lo forziamo con any.
- */
-function field(formAction: any): any {
-   return {
-      formAction,
+function getFormRawValue(formGroup: FormGroup | FormArray | any): any {
+   if (formGroup?.getRawValue) {
+      return formGroup.getRawValue();
+   }
+
+   return formGroup?.value ?? null;
+}
+
+function printJsonFromForm(formGroup: FormGroup | FormArray | any): void {
+   const json = getFormRawValue(formGroup);
+
+   console.groupCollapsed(
+      '%c[FORM TEST] JSON FINALE',
+      'color:#16a34a;font-weight:bold',
+   );
+   console.log(json);
+   console.log(JSON.stringify(json, null, 3));
+   console.groupEnd();
+}
+
+function commonChangeLogger(name: string): any {
+   return (
+      idGroup: number,
+      idForm: number,
+      formControl: FormControl | FormArray | FormGroup,
+      formName: string,
+      formGroup: any[],
+      type: TYPE_CONTROL_FORM,
+      prevValue: any,
+      allGroup: ConfigForm,
+      utility: any,
+   ) => {
+      logEvent(`${name}:onChange`, {
+         idGroup,
+         idForm,
+         formName,
+         value: (formControl as any)?.value,
+         prevValue,
+         valid: (formControl as any)?.valid,
+         errors: (formControl as any)?.errors,
+         type,
+         allGroup,
+      });
+
+      utility?.getActionByName?.('Reset', (action: any) => {
+         action.disabled = (formControl as any)?.parent?.pristine ?? false;
+      });
    };
+}
+
+function commonInitLogger(name: string): any {
+   return (
+      idGroup: number,
+      idForm: number,
+      formControl: FormControl | FormArray | FormGroup,
+      formName: string,
+      formGroup: any[],
+      type: TYPE_CONTROL_FORM,
+      allGroup: ConfigForm,
+      paging?: any,
+      onOptionSetted?: any,
+      utility?: any,
+   ) => {
+      logEvent(`${name}:onInitialize`, {
+         idGroup,
+         idForm,
+         formName,
+         value: (formControl as any)?.value,
+         type,
+         paging,
+         onOptionSetted,
+         utility,
+         allGroup,
+      });
+   };
+}
+
+function textSeparator(title: string, formName: string): any {
+   return field({
+      title,
+      label: title,
+      translateId: `section-${formName}`,
+
+      css: {
+         class: ['col-12', 'px-1', 'mt-3'],
+      },
+
+      formControl: new FormControl(
+         { value: title, disabled: false },
+         {
+            updateOn: 'change',
+            validators: [],
+         },
+      ),
+
+      formName,
+      type: firstType(['SEPARATOR', 'LABEL'], TYPE_CONTROL_FORM.TEXT),
+      resetButton: false,
+   } as FormAction);
+}
+
+function createAddressFields(index: number): any[] {
+   const prefix = `addresses_${index}`;
+
+   return [
+      textSeparator(`Indirizzo ${index}`, `${prefix}_section`),
+
+      field({
+         title: `Tipo indirizzo ${index}`,
+         translateId: `${prefix}-type`,
+         placeholder: 'Seleziona tipo indirizzo',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-3', 'px-1'],
+         },
+
+         formControl: new FormControl(
+            { value: null, disabled: false },
+            {
+               updateOn: 'change',
+               validators: [Validators.required],
+            },
+         ),
+
+         formName: `${prefix}_type`,
+         type: TYPE_CONTROL_FORM.COMBO,
+         resetButton: true,
+         autocomplete: true,
+
+         keyCombo: {
+            keyId: 'id',
+            keyDescription: 'description',
+            keySearch: 'description',
+         },
+
+         options: signal(
+            createSimpleOptions([
+               ['residenza', 'Residenza'],
+               ['domicilio', 'Domicilio'],
+               ['lavoro', 'Lavoro'],
+               ['spedizione', 'Spedizione'],
+               ['fatturazione', 'Fatturazione'],
+            ]),
+         ),
+
+         onInitialize: commonInitLogger(`${prefix}_type`),
+         onChange: commonChangeLogger(`${prefix}_type`),
+      } as FormAction),
+
+      field({
+         title: `Via ${index}`,
+         translateId: `${prefix}-street`,
+         placeholder: 'Via / Piazza',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-5', 'px-1'],
+         },
+
+         formControl: new FormControl(
+            { value: '', disabled: false },
+            {
+               updateOn: 'change',
+               validators: [Validators.required],
+            },
+         ),
+
+         formName: `${prefix}_street`,
+         type: TYPE_CONTROL_FORM.TEXT,
+         resetButton: true,
+
+         onInitialize: commonInitLogger(`${prefix}_street`),
+         onChange: commonChangeLogger(`${prefix}_street`),
+      } as FormAction),
+
+      field({
+         title: `Civico ${index}`,
+         translateId: `${prefix}-number`,
+         placeholder: 'N. civico',
+
+         css: {
+            class: ['col-12', 'col-sm-4', 'col-md-2', 'px-1'],
+         },
+
+         formControl: new FormControl(
+            { value: '', disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: `${prefix}_streetNumber`,
+         type: TYPE_CONTROL_FORM.TEXT,
+         resetButton: true,
+
+         onInitialize: commonInitLogger(`${prefix}_streetNumber`),
+         onChange: commonChangeLogger(`${prefix}_streetNumber`),
+      } as FormAction),
+
+      field({
+         title: `CAP ${index}`,
+         translateId: `${prefix}-zip`,
+         placeholder: 'CAP',
+
+         css: {
+            class: ['col-12', 'col-sm-4', 'col-md-2', 'px-1'],
+         },
+
+         formControl: new FormControl(
+            { value: '', disabled: false },
+            {
+               updateOn: 'change',
+               validators: [Validators.pattern(/^[0-9]{5}$/)],
+            },
+         ),
+
+         formName: `${prefix}_zipCode`,
+         type: TYPE_CONTROL_FORM.TEXT,
+         resetButton: true,
+
+         onInitialize: commonInitLogger(`${prefix}_zipCode`),
+         onChange: commonChangeLogger(`${prefix}_zipCode`),
+      } as FormAction),
+
+      field({
+         title: `Comune ${index}`,
+         translateId: `${prefix}-city`,
+         placeholder: 'Cerca comune',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+         },
+
+         formControl: new FormControl(
+            { value: null, disabled: false },
+            {
+               updateOn: 'change',
+               validators: [Validators.required],
+            },
+         ),
+
+         formName: `${prefix}_cityId`,
+         type: firstType(['COMBOPAGINATE', 'COMBO'], TYPE_CONTROL_FORM.COMBO),
+         resetButton: true,
+         autocomplete: true,
+         enableInfiniteScroll: true,
+         pageSize: 10,
+         scrollThreshold: 80,
+
+         keyCombo: {
+            keyId: 'id',
+            keyDescription: 'description',
+            keySearch: 'search',
+         },
+
+         options: signal([]),
+
+         paging: {
+            page: 1,
+            count: 10,
+            totalCount: 250,
+         },
+
+         remoteData: createMockRemoteData(`Comune indirizzo ${index}`, 250),
+
+         onInitialize: commonInitLogger(`${prefix}_cityId`),
+         onChange: commonChangeLogger(`${prefix}_cityId`),
+
+         onSearch(
+            idGroup: number,
+            idForm: number,
+            formControl: FormControl,
+            formName: string,
+            formGroup: any[],
+            search: string,
+         ) {
+            logEvent(`${prefix}_cityId:onSearch`, {
+               idGroup,
+               idForm,
+               formName,
+               search,
+               value: formControl?.value,
+               formGroup,
+            });
+         },
+
+         onScrollEnd(
+            idGroup: number,
+            idForm: number,
+            formControl: FormControl,
+            formName: string,
+            formGroup: any[],
+            paging: any,
+         ) {
+            logEvent(`${prefix}_cityId:onScrollEnd`, {
+               idGroup,
+               idForm,
+               formName,
+               paging,
+               value: formControl?.value,
+               formGroup,
+            });
+         },
+      } as FormAction),
+   ];
+}
+
+function getNextAddressIndex(formGroup: any[]): number {
+   const indexes = formGroup
+      .map(item => item?.formAction?.formName)
+      .filter((name: string) => /^addresses_\d+_section$/.test(name))
+      .map((name: string) => Number(name.split('_')[1]))
+      .filter((value: number) => !Number.isNaN(value));
+
+   return indexes.length ? Math.max(...indexes) + 1 : 1;
+}
+
+function createAddAddressButton(formGroupRef: any[]): any {
+   return field({
+      title: '+ Aggiungi indirizzo',
+      label: '+ Aggiungi indirizzo',
+      translateId: 'add-address-button',
+
+      css: {
+         class: ['col-12', 'px-1', 'my-2'],
+         iconCss: 'me-1',
+      },
+
+      formControl: new FormControl(
+         { value: '+ Aggiungi indirizzo', disabled: false },
+         {
+            updateOn: 'change',
+            validators: [],
+         },
+      ),
+
+      formName: 'addAddressButton',
+      type: firstType(['LINK', 'BUTTON'], TYPE_CONTROL_FORM.TEXT),
+      resetButton: false,
+
+      action: (
+         formControl: FormControl | FormArray | FormGroup,
+         idGroup?: number,
+         idForm?: number,
+         formName?: string,
+         formGroup?: any[],
+         allGroup?: ConfigForm,
+         utility?: any,
+      ) => {
+         const nextIndex = getNextAddressIndex(formGroupRef);
+         const newFields = createAddressFields(nextIndex);
+
+         const printButtonIndex = formGroupRef.findIndex(
+            item => item?.formAction?.formName === 'printJsonButton',
+         );
+
+         if (printButtonIndex >= 0) {
+            formGroupRef.splice(printButtonIndex, 0, ...newFields);
+         } else {
+            formGroupRef.push(...newFields);
+         }
+
+         logEvent('ACTION:Add address from inline button', {
+            nextIndex,
+            formGroupLength: formGroupRef.length,
+            formControl,
+            idGroup,
+            idForm,
+            formName,
+            formGroup,
+            allGroup,
+            utility,
+         });
+      },
+   } as FormAction);
 }
 
 function createFormConfiguration(): any[] {
-   return [
+   const formGroup: any[] = [];
+
+   formGroup.push(
+      textSeparator('Raccolta anagrafica', 'section_registry'),
+
       field({
          title: 'Nome',
          translateId: 'test-first-name',
+         placeholder: 'Inserisci nome',
 
          css: {
             class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
@@ -114,71 +531,41 @@ function createFormConfiguration(): any[] {
          type: TYPE_CONTROL_FORM.TEXT,
          resetButton: true,
 
-         onInitialize(
-            idGroup: number,
-            idForm: number,
-            formControl: FormControl | FormArray | FormGroup,
-            formName: string,
-            formGroup: any[],
-            type: TYPE_CONTROL_FORM,
-            allGroup: ConfigForm,
-            utilityOrPaging?: any,
-            maybeOnOptionSetted?: any,
-            maybeUtility?: any,
-         ) {
-            logEvent('firstName:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-               formGroup,
-               allGroup,
-               utilityOrPaging,
-               maybeOnOptionSetted,
-               maybeUtility,
-            });
+         onInitialize: commonInitLogger('firstName'),
+         onChange: commonChangeLogger('firstName'),
+      } as FormAction),
+
+      field({
+         title: 'Cognome',
+         translateId: 'test-last-name',
+         placeholder: 'Inserisci cognome',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
          },
 
-         onChange(
-            idGroup: number,
-            idForm: number,
-            formControl: FormControl | FormArray | FormGroup,
-            formName: string,
-            formGroup: any[],
-            type: TYPE_CONTROL_FORM,
-            prevValue: any,
-            allGroup: ConfigForm,
-            utility: any,
-         ) {
-            logEvent('firstName:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-               valid: formControl.valid,
-               errors: formControl.errors,
-            });
+         formControl: new FormControl(
+            { value: '', disabled: false },
+            {
+               updateOn: 'change',
+               validators: [Validators.required],
+            },
+         ),
 
-            utility?.getActionByName?.('Reset', (action: any) => {
-               action.disabled = formControl.parent?.pristine ?? false;
-            });
-         },
+         formName: 'lastName',
+         type: TYPE_CONTROL_FORM.TEXT,
+         resetButton: true,
 
-         action(formControl: FormControl | FormArray | FormGroup) {
-            logEvent('firstName:action', {
-               value: formControl.value,
-            });
-         },
-      }),
+         onInitialize: commonInitLogger('lastName'),
+         onChange: commonChangeLogger('lastName'),
+      } as FormAction),
 
       field({
          title: 'Età',
          translateId: 'test-age',
 
          css: {
-            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+            class: ['col-12', 'col-sm-6', 'col-md-2', 'px-1'],
          },
 
          formControl: new FormControl(
@@ -198,68 +585,240 @@ function createFormConfiguration(): any[] {
             step: 1,
          },
 
-         onInitialize(
-            idGroup: number,
-            idForm: number,
-            formControl: FormControl | FormArray | FormGroup,
-            formName: string,
-            formGroup: any[],
-            type: TYPE_CONTROL_FORM,
-            allGroup: ConfigForm,
-            utilityOrPaging?: any,
-            maybeOnOptionSetted?: any,
-            maybeUtility?: any,
-         ) {
-            logEvent('age:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-               formGroup,
-               allGroup,
-               utilityOrPaging,
-               maybeOnOptionSetted,
-               maybeUtility,
-            });
+         onInitialize: commonInitLogger('age'),
+         onChange: commonChangeLogger('age'),
+      } as FormAction),
+
+      field({
+         title: 'Codice fiscale',
+         translateId: 'test-tax-code',
+         placeholder: 'Codice fiscale',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
          },
 
-         onChange(
-            idGroup: number,
-            idForm: number,
-            formControl: FormControl | FormArray | FormGroup,
-            formName: string,
-            formGroup: any[],
-            type: TYPE_CONTROL_FORM,
-            prevValue: any,
-            allGroup: ConfigForm,
-            utility: any,
-         ) {
-            logEvent('age:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-               valid: formControl.valid,
-               errors: formControl.errors,
-            });
+         formControl: new FormControl(
+            { value: '', disabled: false },
+            {
+               updateOn: 'change',
+               validators: [Validators.minLength(16), Validators.maxLength(16)],
+            },
+         ),
 
-            utility?.getActionByName?.('Reset', (action: any) => {
-               action.disabled = formControl.parent?.pristine ?? false;
-            });
+         formName: 'taxCode',
+         type: TYPE_CONTROL_FORM.TEXT,
+         resetButton: true,
+
+         onInitialize: commonInitLogger('taxCode'),
+         onChange: commonChangeLogger('taxCode'),
+      } as FormAction),
+
+      field({
+         title: 'Email',
+         translateId: 'test-email',
+         placeholder: 'nome@email.it',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
          },
 
-         action(formControl: FormControl | FormArray | FormGroup) {
-            logEvent('age:action', {
-               value: formControl.value,
-            });
+         formControl: new FormControl(
+            { value: '', disabled: false },
+            {
+               updateOn: 'change',
+               validators: [Validators.email],
+            },
+         ),
+
+         formName: 'email',
+         type: TYPE_CONTROL_FORM.TEXT,
+         resetButton: true,
+
+         onInitialize: commonInitLogger('email'),
+         onChange: commonChangeLogger('email'),
+      } as FormAction),
+
+      field({
+         title: 'Contratto attivo',
+         translateId: 'test-active',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+            classRadio: ['d-flex', 'align-items-center'],
          },
-      }),
+
+         formControl: new FormControl(
+            { value: true, disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'active',
+         type: TYPE_CONTROL_FORM.CHECKBOX,
+         resetButton: true,
+
+         onInitialize: commonInitLogger('active'),
+         onChange: commonChangeLogger('active'),
+      } as FormAction),
+
+      field({
+         title: 'Sesso',
+         translateId: 'test-gender',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+            classRadio: ['d-flex', 'align-items-center'],
+         },
+
+         formControl: new FormControl(
+            { value: 'not_specified', disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'gender',
+         type: firstType(['RADIOGROUP', 'RADIO_BUTTON'], TYPE_CONTROL_FORM.COMBO),
+         resetButton: true,
+
+         keyCombo: {
+            keyId: 'id',
+            keyDescription: 'description',
+            keySearch: 'description',
+         },
+
+         options: signal(
+            createSimpleOptions([
+               ['male', 'Maschio'],
+               ['female', 'Femmina'],
+               ['not_specified', 'Non specificato'],
+            ]),
+         ),
+
+         onInitialize: commonInitLogger('gender'),
+         onChange: commonChangeLogger('gender'),
+      } as FormAction),
+
+      field({
+         title: 'Data nascita',
+         translateId: 'test-birth-date',
+         placeholder: 'Seleziona data',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+         },
+
+         formControl: new FormControl(
+            { value: null, disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'birthDate',
+         type: firstType(['DATA', 'DATE'], TYPE_CONTROL_FORM.TEXT),
+         resetButton: true,
+
+         optionDate: {
+            min: '1900-01-01',
+            max: '2100-12-31',
+         },
+
+         onInitialize: commonInitLogger('birthDate'),
+         onChange: commonChangeLogger('birthDate'),
+      } as FormAction),
+
+      field({
+         title: 'Periodo validità',
+         translateId: 'test-validity-period',
+         placeholder: 'Periodo',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+         },
+
+         formControl: new FormGroup({
+            from: new FormControl<Date | null>(null),
+            to: new FormControl<Date | null>(null),
+         }),
+
+         formName: 'validityPeriod',
+         type: firstType(['DATARANGE', 'DATE_RANGE'], TYPE_CONTROL_FORM.TEXT),
+         resetButton: true,
+
+         optionDate: {
+            min: '1900-01-01',
+            max: '2100-12-31',
+         },
+
+         onInitialize: commonInitLogger('validityPeriod'),
+         onChange: commonChangeLogger('validityPeriod'),
+      } as FormAction),
+
+      field({
+         title: 'Data e ora appuntamento',
+         translateId: 'test-date-time',
+         placeholder: 'Seleziona data e ora',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+         },
+
+         formControl: new FormControl(
+            { value: null, disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'appointmentDateTime',
+         type: firstType(['DATETIME', 'DATE_TIME'], TYPE_CONTROL_FORM.TEXT),
+         resetButton: true,
+
+         onInitialize: commonInitLogger('appointmentDateTime'),
+         onChange: commonChangeLogger('appointmentDateTime'),
+      } as FormAction),
+
+      field({
+         title: 'Anno riferimento',
+         translateId: 'test-year',
+         placeholder: 'Seleziona anno',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+         },
+
+         formControl: new FormControl(
+            { value: null, disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'referenceYear',
+         type: firstType(['YEAR', 'DATE_YEAR'], TYPE_CONTROL_FORM.TEXT),
+         resetButton: true,
+
+         optionDate: {
+            min: '1900-01-01',
+            max: '2100-12-31',
+         },
+
+         onInitialize: commonInitLogger('referenceYear'),
+         onChange: commonChangeLogger('referenceYear'),
+      } as FormAction),
+
       field({
          title: 'Note',
          translateId: 'test-notes',
-         placeholder: 'Scrivi una nota',
+         placeholder: 'Scrivi note anagrafiche',
 
          css: {
             class: ['col-12', 'px-1'],
@@ -282,390 +841,16 @@ function createFormConfiguration(): any[] {
             maxlength: 300,
          },
 
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
-         ) {
-            logEvent('notes:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-            });
-         },
-
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('notes:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
-
-         onFocus(idGroup, idForm, formControl, formName) {
-            logEvent('notes:onFocus', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onBlur(idGroup, idForm, formControl, formName) {
-            logEvent('notes:onBlur', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               valid: formControl.valid,
-               errors: formControl.errors,
-            });
-
-            formControl.markAsTouched();
-            formControl.updateValueAndValidity();
-         },
+         onInitialize: commonInitLogger('notes'),
+         onChange: commonChangeLogger('notes'),
       } as FormAction),
+
+      textSeparator('Combo e selezioni', 'section_combo'),
+
       field({
-         title: 'Data nascita',
-         translateId: 'test-birth-date',
-         placeholder: 'Seleziona data',
-
-         css: {
-            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
-         },
-
-         formControl: new FormControl(
-            { value: null, disabled: false },
-            {
-               updateOn: 'change',
-               validators: [],
-            },
-         ),
-
-         formName: 'birthDate',
-         type: TYPE_CONTROL_FORM.DATA,
-         resetButton: true,
-
-         optionDate: {
-            min: '1900-01-01',
-            max: '2100-12-31',
-         },
-
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
-         ) {
-            logEvent('birthDate:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-            });
-         },
-
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('birthDate:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
-
-         opened(idGroup, idForm, formControl, formName) {
-            logEvent('birthDate:opened', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         closed(idGroup, idForm, formControl, formName) {
-            logEvent('birthDate:closed', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onFocus(idGroup, idForm, formControl, formName) {
-            logEvent('birthDate:onFocus', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onBlur(idGroup, idForm, formControl, formName) {
-            logEvent('birthDate:onBlur', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-      } as FormAction),
-      field({
-         title: 'Fascia oraria',
-         translateId: 'test-date-time',
-         placeholder: 'Seleziona fascia',
-
-         css: {
-            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
-         },
-
-         formControl: new FormControl(
-            { value: null, disabled: false },
-            {
-               updateOn: 'change',
-               validators: [],
-            },
-         ),
-
-         formName: 'dateTimeSlot',
-         type: TYPE_CONTROL_FORM.DATETIME,
-         resetButton: true,
-
-         options: [
-            { id: 'morning', description: 'Mattina' },
-            { id: 'afternoon', description: 'Pomeriggio' },
-            { id: 'evening', description: 'Sera' },
-         ],
-
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
-         ) {
-            logEvent('dateTimeSlot:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-            });
-         },
-
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('dateTimeSlot:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
-
-         opened(idGroup, idForm, formControl, formName) {
-            logEvent('dateTimeSlot:opened', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         closed(idGroup, idForm, formControl, formName) {
-            logEvent('dateTimeSlot:closed', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onFocus(idGroup, idForm, formControl, formName) {
-            logEvent('dateTimeSlot:onFocus', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onBlur(idGroup, idForm, formControl, formName) {
-            logEvent('dateTimeSlot:onBlur', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-      } as FormAction),
-      field({
-         title: 'Orario preferito',
-         translateId: 'test-time',
-         placeholder: 'Seleziona orario',
-
-         css: {
-            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
-         },
-
-         formControl: new FormControl(
-            { value: null, disabled: false },
-            {
-               updateOn: 'change',
-               validators: [],
-            },
-         ),
-
-         formName: 'preferredTime',
-         type: TYPE_CONTROL_FORM.TIME,
-         resetButton: true,
-
-         options: [
-            { id: '08:00', description: '08:00' },
-            { id: '09:00', description: '09:00' },
-            { id: '10:00', description: '10:00' },
-            { id: '11:00', description: '11:00' },
-            { id: '12:00', description: '12:00' },
-            { id: '15:00', description: '15:00' },
-            { id: '16:00', description: '16:00' },
-            { id: '17:00', description: '17:00' },
-         ],
-
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
-         ) {
-            logEvent('preferredTime:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-            });
-         },
-
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('preferredTime:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
-
-         opened(idGroup, idForm, formControl, formName) {
-            logEvent('preferredTime:opened', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         closed(idGroup, idForm, formControl, formName) {
-            logEvent('preferredTime:closed', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onFocus(idGroup, idForm, formControl, formName) {
-            logEvent('preferredTime:onFocus', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onBlur(idGroup, idForm, formControl, formName) {
-            logEvent('preferredTime:onBlur', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-      } as FormAction),
-      field({
-         title: 'Tipo cliente',
+         title: 'Tipo cliente - combo normale',
          translateId: 'test-customer-type',
-         placeholder: 'Cerca tipo cliente',
+         placeholder: 'Seleziona tipo cliente',
 
          css: {
             class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
@@ -682,6 +867,47 @@ function createFormConfiguration(): any[] {
          formName: 'customerType',
          type: TYPE_CONTROL_FORM.COMBO,
          resetButton: true,
+         autocomplete: false,
+
+         keyCombo: {
+            keyId: 'id',
+            keyDescription: 'description',
+            keySearch: 'description',
+         },
+
+         options: signal(
+            createSimpleOptions([
+               ['private', 'Privato'],
+               ['company', 'Azienda'],
+               ['pa', 'Pubblica amministrazione'],
+               ['freelance', 'Professionista'],
+            ]),
+         ),
+
+         onInitialize: commonInitLogger('customerType'),
+         onChange: commonChangeLogger('customerType'),
+      } as FormAction),
+
+      field({
+         title: 'Professione - combo con ricerca locale',
+         translateId: 'test-profession',
+         placeholder: 'Cerca professione',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+         },
+
+         formControl: new FormControl(
+            { value: null, disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'profession',
+         type: TYPE_CONTROL_FORM.COMBO,
+         resetButton: true,
          autocomplete: true,
 
          keyCombo: {
@@ -690,437 +916,454 @@ function createFormConfiguration(): any[] {
             keySearch: 'description',
          },
 
-         options: signal([
-            { id: 'private', description: 'Privato' },
-            { id: 'company', description: 'Azienda' },
-            { id: 'pa', description: 'Pubblica amministrazione' },
-            { id: 'freelance', description: 'Professionista' },
-         ]),
+         options: signal(
+            createSimpleOptions([
+               ['developer', 'Sviluppatore'],
+               ['designer', 'Designer'],
+               ['doctor', 'Medico'],
+               ['teacher', 'Insegnante'],
+               ['worker', 'Operaio'],
+               ['employee', 'Impiegato'],
+               ['student', 'Studente'],
+               ['retired', 'Pensionato'],
+            ]),
+         ),
 
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
+         onInitialize: commonInitLogger('profession'),
+         onChange: commonChangeLogger('profession'),
+      } as FormAction),
+
+      field({
+         title: 'Comune - combo remota paginata',
+         translateId: 'test-city-paginated',
+         placeholder: 'Cerca comune',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+         },
+
+         formControl: new FormControl(
+            { value: null, disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'cityId',
+         type: firstType(['COMBOPAGINATE', 'COMBO'], TYPE_CONTROL_FORM.COMBO),
+         resetButton: true,
+         autocomplete: true,
+         enableInfiniteScroll: true,
+         pageSize: 10,
+         scrollThreshold: 80,
+
+         keyCombo: {
+            keyId: 'id',
+            keyDescription: 'description',
+            keySearch: 'search',
+         },
+
+         options: signal([]),
+
+         paging: {
+            page: 1,
+            count: 10,
+            totalCount: 250,
+         },
+
+         remoteData: createMockRemoteData('Comune', 250),
+
+         onInitialize: commonInitLogger('cityId'),
+         onChange: commonChangeLogger('cityId'),
+
+         onSearch(
+            idGroup: number,
+            idForm: number,
+            formControl: FormControl,
+            formName: string,
+            formGroup: any[],
+            search: string,
          ) {
-            logEvent('customerType:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-            });
-         },
-
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('customerType:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
-
-         opened(idGroup, idForm, formControl, formName) {
-            logEvent('customerType:opened', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         closed(idGroup, idForm, formControl, formName) {
-            logEvent('customerType:closed', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onSearch(idGroup, idForm, formControl, formName, formGroup, search) {
-            logEvent('customerType:onSearch', {
+            logEvent('cityId:onSearch', {
                idGroup,
                idForm,
                formName,
                search,
+               value: formControl?.value,
+               formGroup,
+            });
+         },
+
+         onScrollEnd(
+            idGroup: number,
+            idForm: number,
+            formControl: FormControl,
+            formName: string,
+            formGroup: any[],
+            paging: any,
+         ) {
+            logEvent('cityId:onScrollEnd', {
+               idGroup,
+               idForm,
+               formName,
+               paging,
+               value: formControl?.value,
+               formGroup,
             });
          },
       } as FormAction),
+
       field({
-   title: 'Città paginata',
-   translateId: 'test-city-paginated',
-   placeholder: 'Cerca città',
-
-   css: {
-      class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
-   },
-
-   formControl: new FormControl(
-      { value: null, disabled: false },
-      {
-         updateOn: 'change',
-         validators: [],
-      },
-   ),
-
-   formName: 'cityId',
-   type: TYPE_CONTROL_FORM.COMBOPAGINATE,
-   resetButton: true,
-   autocomplete: true,
-   enableInfiniteScroll: true,
-   pageSize: 10,
-   scrollThreshold: 80,
-
-   keyCombo: {
-      keyId: 'id',
-      keyDescription: 'description',
-      keySearch: 'search',
-   },
-
-   options: signal([]),
-
-   paramsForRemoteData: signal({
-      page: 1,
-      count: 10,
-   }),
-
-   paging: {
-      page: 1,
-      count: 10,
-      totalCount: 250,
-   },
-
-   remoteData:  ({ param }: any) => {
-   return new Promise(resolve => {
-      setTimeout(() => {
-         const page = Number(param?.page ?? 1);
-         const count = Number(param?.count ?? 10);
-         const search = String(param?.search ?? '').toLowerCase();
-
-         const all = Array.from({ length: 250 }).map((_, index) => {
-            const id = index + 1;
-            return {
-               id,
-               description: `Cliente ${id}`,
-            };
-         });
-
-         const filtered = search
-            ? all.filter(x =>
-                 x.description.toLowerCase().includes(search) ||
-                 String(x.id).includes(search),
-              )
-            : all;
-
-         const start = (page - 1) * count;
-
-         resolve({
-            items: filtered.slice(start, start + count),
-            totalCount: filtered.length,
-         });
-      }, 500);
-   });
-},
-
-   onInitialize(
-      idGroup,
-      idForm,
-      formControl,
-      formName,
-      formGroup,
-      type,
-      allGroup,
-      paging,
-      onOptionSetted,
-      utility,
-   ) {
-      logEvent('cityId:onInitialize', {
-         idGroup,
-         idForm,
-         formName,
-         value: formControl.value,
-         type,
-         paging,
-      });
-   },
-
-   onChange(
-      idGroup,
-      idForm,
-      formControl,
-      formName,
-      formGroup,
-      type,
-      prevValue,
-      allGroup,
-      utility,
-   ) {
-      logEvent('cityId:onChange', {
-         idGroup,
-         idForm,
-         formName,
-         value: formControl.value,
-         prevValue,
-         valid: formControl.valid,
-         errors: formControl.errors,
-      });
-   },
-
-   opened(
-      idGroup,
-      idForm,
-      formControl,
-      formName,
-      formGroup,
-      allGroup,
-      utility,
-   ) {
-      logEvent('cityId:opened', {
-         idGroup,
-         idForm,
-         formName,
-         value: formControl.value,
-      });
-   },
-
-   closed(
-      idGroup,
-      idForm,
-      formControl,
-      formName,
-      formGroup,
-      allGroup,
-      utility,
-   ) {
-      logEvent('cityId:closed', {
-         idGroup,
-         idForm,
-         formName,
-         value: formControl.value,
-      });
-   },
-
-   onSearch(
-      idGroup,
-      idForm,
-      formControl,
-      formName,
-      formGroup,
-      search,
-      utility,
-   ) {
-      logEvent('cityId:onSearch', {
-         idGroup,
-         idForm,
-         formName,
-         search,
-         value: formControl.value,
-      });
-   },
-
-   onScrollEnd(
-      idGroup,
-      idForm,
-      formControl,
-      formName,
-      formGroup,
-      paging,
-      utility,
-   ) {
-      logEvent('cityId:onScrollEnd', {
-         idGroup,
-         idForm,
-         formName,
-         paging,
-         value: formControl.value,
-      });
-   },
-} as FormAction),
-      field({
-         title: 'Contratto attivo',
-         translateId: 'test-active',
+         title: 'Lingue - multi select Material standard',
+         translateId: 'test-languages',
+         placeholder: 'Seleziona lingue',
 
          css: {
             class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
-            classRadio: ['d-flex', 'align-items-center'],
          },
 
          formControl: new FormControl(
-            { value: true, disabled: false },
+            { value: [], disabled: false },
             {
                updateOn: 'change',
                validators: [],
             },
          ),
 
-         formName: 'active',
-         type: TYPE_CONTROL_FORM.CHECKBOX,
+         formName: 'languages',
+         type: TYPE_CONTROL_FORM.COMBO,
          resetButton: true,
+         autocomplete: true,
+         multiple: true,
+         checkboxSelect: false,
 
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
-         ) {
-            logEvent('active:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-            });
+         keyCombo: {
+            keyId: 'id',
+            keyDescription: 'description',
+            keySearch: 'description',
          },
 
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('active:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
+         options: signal(
+            createSimpleOptions([
+               ['it', 'Italiano'],
+               ['en', 'Inglese'],
+               ['fr', 'Francese'],
+               ['es', 'Spagnolo'],
+               ['de', 'Tedesco'],
+            ]),
+         ),
 
-         onFocus(idGroup, idForm, formControl, formName) {
-            logEvent('active:onFocus', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onBlur(idGroup, idForm, formControl, formName) {
-            logEvent('active:onBlur', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
+         onInitialize: commonInitLogger('languages'),
+         onChange: commonChangeLogger('languages'),
       } as FormAction),
+
       field({
-         title: 'Sesso',
-         translateId: 'test-gender',
+         title: 'Intolleranze - multi checkbox Material',
+         translateId: 'test-intolerances',
+         placeholder: 'Seleziona intolleranze',
 
          css: {
             class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
-            classRadio: ['d-flex', 'align-items-center'],
          },
 
          formControl: new FormControl(
-            { value: 'not_specified', disabled: false },
+            { value: [], disabled: false },
             {
                updateOn: 'change',
                validators: [],
             },
          ),
 
-         formName: 'gender',
-         type: TYPE_CONTROL_FORM.RADIOGROUP,
+         formName: 'intolerances',
+         type: TYPE_CONTROL_FORM.COMBO,
          resetButton: true,
+         autocomplete: true,
+         multiple: true,
+         checkboxSelect: true,
 
-         options: signal([
-            { id: 'male', description: 'Maschio' },
-            { id: 'female', description: 'Femmina' },
-            { id: 'not_specified', description: 'Non specificato' },
-         ]),
+         keyCombo: {
+            keyId: 'id',
+            keyDescription: 'description',
+            keySearch: 'description',
+         },
 
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
+         combotext: {
+            maxElementShow: 3,
+         },
+
+         options: signal(
+            createSimpleOptions([
+               ['glutine', 'Glutine'],
+               ['lattosio', 'Lattosio'],
+               ['uova', 'Uova'],
+               ['frutta_secca', 'Frutta secca'],
+               ['pesce', 'Pesce'],
+               ['arachidi', 'Arachidi'],
+            ]),
+         ),
+
+         onInitialize: commonInitLogger('intolerances'),
+         onChange: commonChangeLogger('intolerances'),
+      } as FormAction),
+
+      field({
+         title: 'Patologie - multi checkbox remota paginata',
+         translateId: 'test-pathologies',
+         placeholder: 'Cerca patologie',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+         },
+
+         formControl: new FormControl(
+            { value: [], disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'pathologies',
+         type: firstType(['COMBOPAGINATE', 'COMBO'], TYPE_CONTROL_FORM.COMBO),
+         resetButton: true,
+         autocomplete: true,
+         multiple: true,
+         checkboxSelect: true,
+         enableInfiniteScroll: true,
+         pageSize: 10,
+         scrollThreshold: 80,
+
+         keyCombo: {
+            keyId: 'id',
+            keyDescription: 'description',
+            keySearch: 'search',
+         },
+
+         options: signal([]),
+
+         paging: {
+            page: 1,
+            count: 10,
+            totalCount: 200,
+         },
+
+         remoteData: createMockRemoteData('Patologia', 200),
+
+         onInitialize: commonInitLogger('pathologies'),
+         onChange: commonChangeLogger('pathologies'),
+
+         onSearch(
+            idGroup: number,
+            idForm: number,
+            formControl: FormControl,
+            formName: string,
+            formGroup: any[],
+            search: string,
          ) {
-            logEvent('gender:onInitialize', {
+            logEvent('pathologies:onSearch', {
                idGroup,
                idForm,
                formName,
-               value: formControl.value,
-               type,
+               search,
+               value: formControl?.value,
+               formGroup,
             });
          },
 
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
+         onScrollEnd(
+            idGroup: number,
+            idForm: number,
+            formControl: FormControl,
+            formName: string,
+            formGroup: any[],
+            paging: any,
          ) {
-            logEvent('gender:onChange', {
+            logEvent('pathologies:onScrollEnd', {
                idGroup,
                idForm,
                formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
-
-         onFocus(idGroup, idForm, formControl, formName) {
-            logEvent('gender:onFocus', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onBlur(idGroup, idForm, formControl, formName) {
-            logEvent('gender:onBlur', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
+               paging,
+               value: formControl?.value,
+               formGroup,
             });
          },
       } as FormAction),
+
+      textSeparator('Dati dieta annidati / simulati', 'section_diet'),
+
+      field({
+         title: 'Obiettivo dieta',
+         translateId: 'test-diet-goal',
+         placeholder: 'Seleziona obiettivo',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+         },
+
+         formControl: new FormControl(
+            { value: null, disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'diet_goal',
+         type: TYPE_CONTROL_FORM.COMBO,
+         resetButton: true,
+         autocomplete: true,
+
+         keyCombo: {
+            keyId: 'id',
+            keyDescription: 'description',
+            keySearch: 'description',
+         },
+
+         options: signal(
+            createSimpleOptions([
+               ['dimagrimento', 'Dimagrimento'],
+               ['massa', 'Massa muscolare'],
+               ['mantenimento', 'Mantenimento'],
+               ['salute', 'Salute generale'],
+            ]),
+         ),
+
+         onInitialize: commonInitLogger('diet_goal'),
+         onChange: commonChangeLogger('diet_goal'),
+      } as FormAction),
+
+      field({
+         title: 'Lunedì - Colazione',
+         translateId: 'test-monday-breakfast',
+         placeholder: 'Alimenti colazione',
+
+         css: {
+            class: ['col-12', 'col-md-6', 'px-1'],
+            rows: 3,
+         },
+
+         formControl: new FormControl(
+            { value: '', disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'diet_monday_breakfast',
+         type: TYPE_CONTROL_FORM.TEXTAREA,
+         resetButton: true,
+
+         onInitialize: commonInitLogger('diet_monday_breakfast'),
+         onChange: commonChangeLogger('diet_monday_breakfast'),
+      } as FormAction),
+
+      field({
+         title: 'Lunedì - Pranzo',
+         translateId: 'test-monday-lunch',
+         placeholder: 'Alimenti pranzo',
+
+         css: {
+            class: ['col-12', 'col-md-6', 'px-1'],
+            rows: 3,
+         },
+
+         formControl: new FormControl(
+            { value: '', disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'diet_monday_lunch',
+         type: TYPE_CONTROL_FORM.TEXTAREA,
+         resetButton: true,
+
+         onInitialize: commonInitLogger('diet_monday_lunch'),
+         onChange: commonChangeLogger('diet_monday_lunch'),
+      } as FormAction),
+
+      field({
+         title: 'Martedì - Colazione',
+         translateId: 'test-tuesday-breakfast',
+         placeholder: 'Alimenti colazione',
+
+         css: {
+            class: ['col-12', 'col-md-6', 'px-1'],
+            rows: 3,
+         },
+
+         formControl: new FormControl(
+            { value: '', disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'diet_tuesday_breakfast',
+         type: TYPE_CONTROL_FORM.TEXTAREA,
+         resetButton: true,
+
+         onInitialize: commonInitLogger('diet_tuesday_breakfast'),
+         onChange: commonChangeLogger('diet_tuesday_breakfast'),
+      } as FormAction),
+
+      field({
+         title: 'Martedì - Pranzo',
+         translateId: 'test-tuesday-lunch',
+         placeholder: 'Alimenti pranzo',
+
+         css: {
+            class: ['col-12', 'col-md-6', 'px-1'],
+            rows: 3,
+         },
+
+         formControl: new FormControl(
+            { value: '', disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'diet_tuesday_lunch',
+         type: TYPE_CONTROL_FORM.TEXTAREA,
+         resetButton: true,
+
+         onInitialize: commonInitLogger('diet_tuesday_lunch'),
+         onChange: commonChangeLogger('diet_tuesday_lunch'),
+      } as FormAction),
+
+      field({
+         title: 'Tag dieta',
+         translateId: 'test-diet-tags',
+         placeholder: 'Aggiungi tag',
+
+         css: {
+            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
+         },
+
+         formControl: new FormControl(
+            { value: ['demo', 'dieta'], disabled: false },
+            {
+               updateOn: 'change',
+               validators: [],
+            },
+         ),
+
+         formName: 'diet_tags',
+         type: firstType(['ARRAYSTRING'], TYPE_CONTROL_FORM.TEXT),
+         resetButton: true,
+
+         onInitialize: commonInitLogger('diet_tags'),
+         onChange: commonChangeLogger('diet_tags'),
+      } as FormAction),
+
+      textSeparator('Documento e link', 'section_document'),
+
       field({
          title: 'Documento',
          translateId: 'test-document',
@@ -1139,381 +1382,17 @@ function createFormConfiguration(): any[] {
          ),
 
          formName: 'documentFile',
-         type: TYPE_CONTROL_FORM.FILE,
+         type: firstType(['FILE'], TYPE_CONTROL_FORM.TEXT),
          resetButton: true,
 
          accept: '.pdf,.png,.jpg,.jpeg',
          multiple: false,
          size: 10,
 
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
-         ) {
-            logEvent('documentFile:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-            });
-         },
-
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('documentFile:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
-
-         onFocus(idGroup, idForm, formControl, formName) {
-            logEvent('documentFile:onFocus', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onBlur(idGroup, idForm, formControl, formName) {
-            logEvent('documentFile:onBlur', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         action(formControl) {
-            logEvent('documentFile:action', {
-               value: formControl.value,
-            });
-         },
+         onInitialize: commonInitLogger('documentFile'),
+         onChange: commonChangeLogger('documentFile'),
       } as FormAction),
-      field({
-         title: 'Tag',
-         translateId: 'test-tags',
-         placeholder: 'Aggiungi tag',
 
-         css: {
-            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
-         },
-
-         formControl: new FormControl(
-            { value: ['demo', 'cliente'], disabled: false },
-            {
-               updateOn: 'change',
-               validators: [],
-            },
-         ),
-
-         formName: 'tags',
-         type: TYPE_CONTROL_FORM.ARRAYSTRING,
-         resetButton: true,
-
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
-         ) {
-            logEvent('tags:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-            });
-         },
-
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('tags:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
-
-         onFocus(idGroup, idForm, formControl, formName) {
-            logEvent('tags:onFocus', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onBlur(idGroup, idForm, formControl, formName) {
-            logEvent('tags:onBlur', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         action(formControl) {
-            logEvent('tags:action', {
-               value: formControl.value,
-            });
-         },
-      } as FormAction),
-      field({
-         title: 'Periodo contratto',
-         translateId: 'test-contract-period',
-         placeholder: 'Data inizio',
-
-         css: {
-            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
-         },
-
-         formControl: new FormGroup({
-            from: new FormControl<Date | null>(null),
-            to: new FormControl<Date | null>(null),
-         }),
-
-         formName: 'contractPeriod',
-         type: TYPE_CONTROL_FORM.DATARANGE,
-         resetButton: true,
-
-         optionDate: {
-            min: '1900-01-01',
-            max: '2100-12-31',
-            onClose: (value, formGroup) => {
-               logEvent('contractPeriod:optionDate:onClose', {
-                  value,
-                  formGroupValue: formGroup.value,
-               });
-            },
-         },
-
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
-         ) {
-            logEvent('contractPeriod:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-            });
-         },
-
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('contractPeriod:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
-
-         opened(idGroup, idForm, formControl, formName) {
-            logEvent('contractPeriod:opened', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         closed(idGroup, idForm, formControl, formName) {
-            logEvent('contractPeriod:closed', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onFocus(idGroup, idForm, formControl, formName) {
-            logEvent('contractPeriod:onFocus', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onBlur(idGroup, idForm, formControl, formName) {
-            logEvent('contractPeriod:onBlur', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onClose(value, formGroup, utility) {
-            logEvent('contractPeriod:onClose', {
-               value,
-               formGroupValue: formGroup.value,
-               utility,
-            });
-         },
-      } as FormAction),
-      field({
-         title: 'Anno riferimento',
-         translateId: 'test-year',
-         placeholder: 'Seleziona anno',
-
-         css: {
-            class: ['col-12', 'col-sm-6', 'col-md-4', 'px-1'],
-         },
-
-         formControl: new FormControl(
-            { value: null, disabled: false },
-            {
-               updateOn: 'change',
-               validators: [],
-            },
-         ),
-
-         formName: 'referenceYear',
-         type: TYPE_CONTROL_FORM.YEAR,
-         resetButton: true,
-
-         optionDate: {
-            min: '1900-01-01',
-            max: '2100-12-31',
-         },
-
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
-         ) {
-            logEvent('referenceYear:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-            });
-         },
-
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('referenceYear:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
-
-         opened(idGroup, idForm, formControl, formName) {
-            logEvent('referenceYear:opened', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         closed(idGroup, idForm, formControl, formName) {
-            logEvent('referenceYear:closed', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onFocus(idGroup, idForm, formControl, formName) {
-            logEvent('referenceYear:onFocus', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onBlur(idGroup, idForm, formControl, formName) {
-            logEvent('referenceYear:onBlur', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-      } as FormAction),
       field({
          title: 'Apri documento',
          label: 'Apri documento',
@@ -1534,269 +1413,110 @@ function createFormConfiguration(): any[] {
          ),
 
          formName: 'documentLink',
-         type: TYPE_CONTROL_FORM.LINK,
+         type: firstType(['LINK'], TYPE_CONTROL_FORM.TEXT),
 
          href: 'https://www.google.com',
          target: '_blank',
 
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
-         ) {
-            logEvent('documentLink:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-            });
-         },
-
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('documentLink:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
-
-         onFocus(idGroup, idForm, formControl, formName) {
-            logEvent('documentLink:onFocus', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onBlur(idGroup, idForm, formControl, formName) {
-            logEvent('documentLink:onBlur', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         action(formControl) {
-            logEvent('documentLink:action', {
-               value: formControl.value,
-            });
-         },
+         onInitialize: commonInitLogger('documentLink'),
+         onChange: commonChangeLogger('documentLink'),
       } as FormAction),
+
+      textSeparator('Componenti annidati', 'section_nested'),
+
       field({
-         title: 'Etichetta informativa del form',
-         label: 'Etichetta informativa del form',
-         translateId: 'test-label',
+         title: 'Gruppo annidato dati fisici',
+         formName: 'nestedPhysicalData',
+         type: firstType(['GROUP'], TYPE_CONTROL_FORM.TEXT),
+         css: { class: ['col-12', 'px-1', 'mt-2'] },
+         formControl: new FormGroup({}),
+         children: [
+            field({
+               title: 'Altezza cm',
+               formName: 'nested_heightCm',
+               type: TYPE_CONTROL_FORM.NUMBER,
+               css: { class: ['col-12', 'col-md-6', 'px-1'] },
+               formControl: new FormControl(null, [
+                  Validators.min(50),
+                  Validators.max(250),
+               ]),
+            } as FormAction),
+            field({
+               title: 'Peso kg',
+               formName: 'nested_weightKg',
+               type: TYPE_CONTROL_FORM.NUMBER,
+               css: { class: ['col-12', 'col-md-6', 'px-1'] },
+               formControl: new FormControl(null, [
+                  Validators.min(10),
+                  Validators.max(300),
+               ]),
+            } as FormAction),
+            field({
+               title: 'Note fisiche',
+               formName: 'nested_physicalNotes',
+               type: TYPE_CONTROL_FORM.TEXTAREA,
+               css: { class: ['col-12', 'px-1'], rows: 3 },
+               formControl: new FormControl(''),
+            } as FormAction),
+         ],
+      } as FormAction),
+
+      textSeparator('Indirizzi', 'section_addresses'),
+   );
+
+   formGroup.push(createAddAddressButton(formGroup));
+   formGroup.push(...createAddressFields(1));
+
+   formGroup.push(
+      field({
+         title: 'Stampa JSON',
+         label: 'Stampa JSON',
+         translateId: 'print-json-button',
 
          css: {
-            class: ['col-12', 'px-1'],
+            class: ['col-12', 'px-1', 'mt-3'],
             iconCss: 'me-1',
          },
 
          formControl: new FormControl(
-            { value: 'Etichetta informativa del form', disabled: false },
+            { value: 'Stampa JSON', disabled: false },
             {
                updateOn: 'change',
                validators: [],
             },
          ),
 
-         formName: 'infoLabel',
-         type: TYPE_CONTROL_FORM.LABEL,
-
-         tipContent: 'Questa è una label cliccabile di test',
-
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
-         ) {
-            logEvent('infoLabel:onInitialize', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               type,
-            });
-         },
-
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('infoLabel:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
-
-         onFocus(idGroup, idForm, formControl, formName) {
-            logEvent('infoLabel:onFocus', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onBlur(idGroup, idForm, formControl, formName) {
-            logEvent('infoLabel:onBlur', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         action(formControl) {
-            logEvent('infoLabel:action', {
-               value: formControl.value,
-            });
-         },
-      } as FormAction),
-      field({
-         title: 'Ordinamento',
-         translateId: 'test-sort',
-         placeholder: '',
-
-         css: {
-            class: ['col-12', 'col-sm-6', 'col-md-2', 'px-1'],
-            iconCss: ['df-sort-icon'],
-            toggleIcons: [
-               'assets/icons/sort-asc.svg',
-               'assets/icons/sort-desc.svg',
-            ],
-         },
-
-         formControl: new FormControl(
-            { value: 'ASC', disabled: false },
-            {
-               updateOn: 'change',
-               validators: [],
-            },
-         ),
-
-         formName: 'sortDirection',
-         type: TYPE_CONTROL_FORM.SORTACTION,
+         formName: 'printJsonButton',
+         type: firstType(['LINK', 'BUTTON'], TYPE_CONTROL_FORM.TEXT),
          resetButton: false,
 
-         onInitialize(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            allGroup,
-            paging,
-            onOptionSetted,
-            utility,
-         ) {
-            logEvent('sortDirection:onInitialize', {
+         action: (
+            formControl: FormControl | FormArray | FormGroup,
+            idGroup?: number,
+            idForm?: number,
+            formName?: string,
+            currentFormGroup?: FormGroup | FormArray,
+         ) => {
+            logEvent('ACTION:Inline print JSON', {
+               formControl,
                idGroup,
                idForm,
                formName,
-               value: formControl.value,
-               type,
             });
-         },
-
-         onChange(
-            idGroup,
-            idForm,
-            formControl,
-            formName,
-            formGroup,
-            type,
-            prevValue,
-            allGroup,
-            utility,
-         ) {
-            logEvent('sortDirection:onChange', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-               prevValue,
-            });
-         },
-
-         onFocus(idGroup, idForm, formControl, formName) {
-            logEvent('sortDirection:onFocus', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         onBlur(idGroup, idForm, formControl, formName) {
-            logEvent('sortDirection:onBlur', {
-               idGroup,
-               idForm,
-               formName,
-               value: formControl.value,
-            });
-         },
-
-         toggleAction(direction) {
-            logEvent('sortDirection:toggleAction', {
-               direction,
-            });
-         },
-
-         action(formControl) {
-            logEvent('sortDirection:action', {
-               value: formControl.value,
-            });
+            printJsonFromForm(currentFormGroup);
          },
       } as FormAction),
+   );
 
-   ];
+   return formGroup;
 }
 
 export function buildUltraSafeNestedActionsForm(): ConfigForm {
+   const formGroup = createFormConfiguration();
+
    return [
       {
-         formGroup: [...createFormConfiguration()],
+         formGroup,
 
          actions: [
             {
@@ -1808,16 +1528,49 @@ export function buildUltraSafeNestedActionsForm(): ConfigForm {
                action: (
                   questions: any[],
                   idForm: string,
-                  formGroup: FormGroup | FormArray,
+                  formGroupRef: FormGroup | FormArray,
                ) => {
                   logEvent('ACTION:Reset', {
                      questions,
                      idForm,
-                     value: formGroup.value,
+                     value: getFormRawValue(formGroupRef),
                   });
 
-                  formGroup.reset();
-                  formGroup.markAsPristine();
+                  formGroupRef.reset();
+                  formGroupRef.markAsPristine();
+               },
+            },
+
+            {
+               label: '+ Aggiungi indirizzo',
+               cssClassButton: ['btn', 'btn-outline-primary', 'mx-1'],
+               disabled: false,
+               visible: true,
+
+               action: (
+                  questions: any[],
+                  idForm: string,
+                  formGroupRef: FormGroup | FormArray,
+               ) => {
+                  const nextIndex = getNextAddressIndex(formGroup);
+                  const newFields = createAddressFields(nextIndex);
+
+                  const printButtonIndex = formGroup.findIndex(
+                     item => item?.formAction?.formName === 'printJsonButton',
+                  );
+
+                  if (printButtonIndex >= 0) {
+                     formGroup.splice(printButtonIndex, 0, ...newFields);
+                  } else {
+                     formGroup.push(...newFields);
+                  }
+
+                  logEvent('ACTION:Add address from footer action', {
+                     questions,
+                     idForm,
+                     nextIndex,
+                     value: getFormRawValue(formGroupRef),
+                  });
                },
             },
 
@@ -1830,23 +1583,57 @@ export function buildUltraSafeNestedActionsForm(): ConfigForm {
                action: (
                   questions: any[],
                   idForm: string,
-                  formGroup: FormGroup | FormArray,
+                  formGroupRef: FormGroup | FormArray,
                ) => {
                   logEvent('ACTION:Patch demo', {
                      questions,
                      idForm,
-                     value: formGroup.value,
+                     value: getFormRawValue(formGroupRef),
                   });
 
-                  if (formGroup instanceof FormGroup) {
-                     formGroup.patchValue({
+                  if (formGroupRef instanceof FormGroup) {
+                     formGroupRef.patchValue({
                         firstName: 'Luca',
+                        lastName: 'Piciollo',
                         age: 40,
+                        customerType: 'private',
+                        active: true,
+                        gender: 'male',
+                        intolerances: ['glutine', 'lattosio'],
+                        languages: ['it', 'en'],
+                        diet_goal: 'dimagrimento',
+                        addresses_1_type: 'residenza',
+                        addresses_1_street: 'Via Roma',
+                        addresses_1_streetNumber: '10',
+                        addresses_1_zipCode: '01100',
                      });
                   }
+               },
+            },
+
+            {
+               label: 'Stampa JSON',
+               cssClassButton: ['btn', 'btn-success', 'mx-1'],
+               disabled: false,
+               visible: true,
+
+               action: (
+                  questions: any[],
+                  idForm: string,
+                  formGroupRef: FormGroup | FormArray,
+               ) => {
+                  logEvent('ACTION:Stampa JSON', {
+                     questions,
+                     idForm,
+                     value: getFormRawValue(formGroupRef),
+                  });
+
+                  printJsonFromForm(formGroupRef);
                },
             },
          ],
       },
    ] as any;
 }
+
+export const ULTRA_SAFE_NESTED_ACTIONS_FORM = buildUltraSafeNestedActionsForm();

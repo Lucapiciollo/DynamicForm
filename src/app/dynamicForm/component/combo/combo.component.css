@@ -1,35 +1,25 @@
-/** @format */
-
-.search-container {
-   position: relative;
-   display: inline-block;
-   width: 100%;
-   background-color: white;
+/* Patch per combo checkbox Material dentro mat-select */
+::ng-deep .df-combo-scroll-panel .mat-mdc-option .mdc-list-item__primary-text {
+  width: 100%;
 }
 
-.search-input {
-   width: 100%;
-   padding-left: 40px; /* Spazio a destra per l'icona */
-   padding-top: 8px;
-   padding-bottom: 8px;
-   padding-right: 8px;
-   border: 1px solid #ccc;
-   border-radius: 4px;
+::ng-deep .df-combo-scroll-panel .df-combo-checkbox {
+  width: 100%;
+  display: block;
 }
 
-.search-icon {
-   position: absolute;
-   left: 10px;
-   top: 50%;
-   transform: translateY(-50%);
-   cursor: pointer;
-   color: gray;
+::ng-deep .df-combo-scroll-panel .df-combo-checkbox .mdc-form-field {
+  width: 100%;
 }
 
-.search-icon i {
-   font-size: 14px;
+::ng-deep .df-combo-scroll-panel .df-combo-checkbox .mdc-label {
+  width: 100%;
+  cursor: pointer;
 }
 
-.autocomplete-search {
-   min-height: 48px !important;
+::ng-deep .df-combo-scroll-panel .search-container {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--mat-select-panel-background-color, #fff);
 }

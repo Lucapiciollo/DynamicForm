@@ -7,8 +7,7 @@ import {Camera} from '@ionic-native/camera/ngx';
 import {InputTextComponent} from './component/base-component.module';
 import {ArrayStringComponent} from './component/arraystring/arraystring.component';
 import {CheckboxComponent} from './component/checkbox/checkbox.component';
-import {ComboComponent} from './component/combo/combo.component';
-import {CurrencyComponent} from './component/currency/currency.component';
+ import {CurrencyComponent} from './component/currency/currency.component';
 import {DateRangeComponent} from './component/date-range/date-range.component';
 import {DateTimeComponent} from './component/date-time/date-time.component';
 import {DateComponent} from './component/date/date.component';
@@ -33,7 +32,8 @@ import moment from 'moment';
 import {DynamicFormRuntimeConfig, provideDynamicFormForModule} from './providers/dynamic-form.providers';
 import {DynamicFormAssetsService} from './services/dynamic-form-assets.service';
 import {DynamicFormThemeService} from './services/dynamic-form-theme.service';
-/**
+import { ComboComponent } from './component/combo/combo.component';
+ /**
  * @author luca.piciollo
  * @email lucapiciollo@gmail.com
  * @create date 2022-03-29 19:47:50

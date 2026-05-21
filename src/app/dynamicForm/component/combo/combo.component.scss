@@ -52,3 +52,62 @@
     min-height: 36px !important;
   }
 }
+.dynamic-combo {
+  width: 100%;
+}
+
+.dynamic-combo__search-option {
+  height: auto;
+  min-height: 48px;
+  padding: 8px 12px;
+  cursor: default;
+}
+
+.dynamic-combo__search {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dynamic-combo__clear-option {
+  font-style: italic;
+}
+
+.dynamic-combo__load-more {
+  text-align: center;
+  font-weight: 500;
+}
+
+::ng-deep .df-combo-checkbox-panel {
+   .mat-pseudo-checkbox,
+   .mat-mdc-option-pseudo-checkbox,
+   .mdc-list-item__start {
+      display: none !important;
+   }
+
+   .mat-mdc-option {
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+   }
+
+   .mat-mdc-option .mdc-list-item__primary-text {
+      width: 100%;
+   }
+
+   .df-combo-checkbox-option {
+      min-height: 44px;
+   }
+
+   .df-combo-checkbox {
+      width: 100%;
+      display: block;
+   }
+
+   .df-combo-checkbox .mdc-form-field {
+      width: 100%;
+   }
+
+   .df-combo-checkbox .mdc-label {
+      width: 100%;
+      cursor: pointer;
+   }
+}

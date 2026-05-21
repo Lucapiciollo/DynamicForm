@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ConfigForm } from './dynamicForm/dynamic-form.interface';
-import { buildUltraSafeNestedActionsForm } from './dynamicForm/examples/ultra-safe-nested-actions.builder';
+import {   buildUltraSafeNestedActionsForm } from './dynamicForm/examples/ultra-safe-nested-actions.builder';
  
 @Component({
    standalone: false,
