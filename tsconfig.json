@@ -5,7 +5,12 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
-    "skipLibCheck":true,
+    "skipLibCheck": true,
+    "paths": {
+      "dynamicform": [
+        "./dist/dynamicform"
+      ]
+    },
     "skipDefaultLibCheck":true,
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": false,

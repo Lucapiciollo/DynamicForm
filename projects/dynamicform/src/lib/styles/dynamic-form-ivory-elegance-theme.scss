@@ -51,10 +51,7 @@ body.df-theme-ivory-elegance {
         linear-gradient(135deg, #f7f2e9 0%, #fbf7ef 48%, #f8fafc 100%) !important;
 }
 
-body.df-theme-ivory-elegance .page {
-    background: transparent !important;
-    color: var(--df-text);
-}
+ 
 
 /* =========================================================
  * SEZIONI / CARD
@@ -734,10 +731,7 @@ body.df-theme-ivory-elegance pre {
  * ========================================================= */
 
 @include rsp.df-mobile {
-    body.df-theme-ivory-elegance .page {
-        padding: 12px !important;
-    }
-
+ 
     body.df-theme-ivory-elegance .df-section-main {
         padding: 14px !important;
         margin-bottom: 14px !important;

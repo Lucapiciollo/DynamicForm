@@ -33,10 +33,11 @@
 
 import { signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { TYPE_CONTROL_FORM, ConfigForm, FormAction } from 'projects/dynamicform/src/public-api';
 import { delay, of } from 'rxjs';
-import { TYPE_CONTROL_FORM, ConfigForm, FormAction } from '../dynamic-form.interface';
 
- 
+
+
 
 function logEvent(name: string, data?: any): void {
    console.groupCollapsed(
@@ -101,10 +102,10 @@ function createMockRemoteData(prefix: string, totalCount = 250): any {
 
       const filteredDataset = cleanSearch
          ? fullDataset.filter(
-              item =>
-                 String(item.description).toLowerCase().includes(cleanSearch) ||
-                 String(item.id).includes(cleanSearch),
-           )
+            item =>
+               String(item.description).toLowerCase().includes(cleanSearch) ||
+               String(item.id).includes(cleanSearch),
+         )
          : fullDataset;
 
       const items = paginateItems(filteredDataset, page, count);
@@ -1508,15 +1509,15 @@ function createFormConfiguration(): any[] {
          type: firstType(['LINK', 'BUTTON'], TYPE_CONTROL_FORM.TEXT),
          resetButton: false,
 
-      action: (
-         formControl: FormControl | FormArray | FormGroup,
-         idGroup?: number,
-         idForm?: number,
-         formName?: string,
-         currentFormGroup?: FormGroup | FormArray,
-      ) => {
-         printJsonFromForm(currentFormGroup ?? formControl);
-      },
+         action: (
+            formControl: FormControl | FormArray | FormGroup,
+            idGroup?: number,
+            idForm?: number,
+            formName?: string,
+            currentFormGroup?: FormGroup | FormArray,
+         ) => {
+            printJsonFromForm(currentFormGroup ?? formControl);
+         },
       } as FormAction),
    );
 

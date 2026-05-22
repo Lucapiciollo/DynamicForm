@@ -11,20 +11,11 @@
  */
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BROWSER, PlAmbientModeLoaderService, PlCoreModule } from 'pl-core-utils-library';
-
 import AmbientModeProviderFactory from '../initializer/AmbientModeLoader';
-
-
-
-
 import { registerLocaleData } from '@angular/common';
 import locale from '@angular/common/locales/it';
 
 registerLocaleData(locale);
-
-
-
-
 
 
 

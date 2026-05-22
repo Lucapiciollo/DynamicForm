@@ -27,6 +27,6 @@ body.df-theme-my-company,
 body:has(.df-theme-modern-light),
 body:has(.df-theme-modern-dark),
 body:has(.df-theme-my-company) {
-  background: var(--df-background);
-  color: var(--df-text);
+  // background: var(--df-background);
+  // color: var(--df-text);
 }

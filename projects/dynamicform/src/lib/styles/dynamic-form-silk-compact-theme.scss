@@ -55,11 +55,7 @@ body.df-theme-silk-compact {
     linear-gradient(135deg, var(--df-background) 0%, var(--df-surface) 50%, #f8fafc 100%) !important;
 }
 
-body.df-theme-silk-compact .page {
-  background: transparent !important;
-  color: var(--df-text);
-  padding: 18px !important;
-}
+ 
 
 /* =========================================================
  * SECTION / CARD
@@ -924,9 +920,7 @@ body.df-theme-silk-compact pre {
     --df-shadow: 0 8px 18px rgba(31, 41, 55, 0.09);
   }
 
-  body.df-theme-silk-compact .page {
-    padding: 10px !important;
-  }
+ 
 
   body.df-theme-silk-compact .df-section-main {
     padding: 12px !important;

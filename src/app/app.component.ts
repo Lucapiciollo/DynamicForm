@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { ConfigForm } from './dynamicForm/dynamic-form.interface';
-import {   buildUltraSafeNestedActionsForm } from './dynamicForm/examples/ultra-safe-nested-actions.builder';
- 
+import { buildUltraSafeNestedActionsForm } from './ultra-safe-nested-actions.builder';
+import { ConfigForm } from 'projects/dynamicform/src/public-api';
+
+
 @Component({
-   standalone: false,
+  standalone: false,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
@@ -16,4 +17,3 @@ export class AppComponent {
   }
 }
 
- 
