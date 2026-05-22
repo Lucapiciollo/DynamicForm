@@ -23,7 +23,7 @@
             #selectRef
             class="py-0 my-0"
             panelClass="df-combo-scroll-panel"
-            [matTooltip]="control.formAction.multiple ? signalStore.getConcatStringDescription() : null"
+            [matTooltip]="(control.formAction.multiple === true || control.formAction.checkboxSelect === true) ? signalStore.getConcatStringDescription() : null"
             [formControl]="$any(control.formAction.formControl)"
             [multiple]="control.formAction.multiple === true || control.formAction.checkboxSelect === true"
             [compareWith]="compareMatSelectValues"

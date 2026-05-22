@@ -805,12 +805,21 @@ export class ComboComponent extends BaseComponent implements OnInit {
         )
       : this.mergeOptionsDistinct([], items);
 
+    const totalItems = this.shouldExposeMissingSelectedOptions()
+      ? this.distinctOptionsByValue([
+          ...this.getSelectedCachedOptionsMissingFrom(currentTotal),
+          ...currentTotal,
+        ])
+      : this.distinctOptionsByValue(currentTotal);
+
     this.signalStore.setTotalOptions(
       {
-        items: this.distinctOptionsByValue([
-          ...this.getSelectedCachedOptions(),
-          ...currentTotal,
-        ]),
+        /**
+         * Non sporco totalOptions con i selezionati durante la normale apertura.
+         * Aggiungo i selezionati mancanti solo quando c'è una ricerca attiva,
+         * così il filtro remoto non fa sparire ciò che era già selezionato.
+         */
+        items: totalItems,
         totalCount,
       },
       keyCombo,
@@ -897,8 +906,51 @@ export class ComboComponent extends BaseComponent implements OnInit {
    * VISIBLE OPTIONS / MULTI LIST
    ***********************************************************************************************************************************/
 
+  private isPaginatedCombo(): boolean {
+    return (
+      this.control?.formAction?.type === TYPE_CONTROL_FORM.COMBOPAGINATE ||
+      this.control?.formAction?.enableInfiniteScroll === true
+    );
+  }
+
+  private hasActiveSearch(): boolean {
+    const inputValue = this.getSearchValue();
+    const currentSearch = this.currentSearchValue;
+
+    return !!(
+      (typeof inputValue === "string" && inputValue.trim() !== "") ||
+      (typeof currentSearch === "string" && currentSearch.trim() !== "")
+    );
+  }
+
+  private shouldExposeMissingSelectedOptions(): boolean {
+    /**
+     * UX definitiva DynamicForm:
+     * - combo normale / multiselect non paginata: ordine naturale sempre;
+     * - combo paginata senza ricerca: ordine naturale della pagina/lista corrente;
+     * - combo paginata durante ricerca: mostro anche i selezionati mancanti,
+     *   perché il filtro remoto può non restituirli ma il valore deve restare
+     *   visibile/checked e disponibile nel FormControl.
+     */
+    return this.isPaginatedCombo() && this.hasActiveSearch();
+  }
+
   getVisibleOptions(): any[] {
-    const selectedCachedOptions = this.getSelectedCachedOptions();
+    const naturalSource = this.getNaturalVisibleOptionSource();
+
+    const source = this.shouldExposeMissingSelectedOptions()
+      ? [
+          ...this.getSelectedCachedOptionsMissingFrom(naturalSource),
+          ...naturalSource,
+        ]
+      : naturalSource;
+
+    return this.distinctOptionsByValue(source)
+      .map((option) => this.normalizeOption(option))
+      .filter((option) => !!option && option.hide !== true);
+  }
+
+  private getNaturalVisibleOptionSource(): any[] {
     const defaultOptions = this.signalStore?.getDefaultOptions?.() || [];
     const filterOptions = this.signalStore?.getFilterOption?.() || [];
     const totalOptions = this.signalStore?.getTotalOptions?.() || [];
@@ -907,18 +959,26 @@ export class ComboComponent extends BaseComponent implements OnInit {
       this.control?.formAction?.initialOptions || [],
     );
 
-    const source = [
-      ...selectedCachedOptions,
-      ...initialOptions,
+    return [
       ...defaultOptions,
       ...filterOptions,
       ...totalOptions,
       ...actionOptions,
+      ...initialOptions,
     ];
+  }
 
-    return this.distinctOptionsByValue(source)
-      .map((option) => this.normalizeOption(option))
-      .filter((option) => !!option && option.hide !== true);
+  private getSelectedCachedOptionsMissingFrom(source: any[]): any[] {
+    const selectedCachedOptions = this.getSelectedCachedOptions();
+    const sourceKeys = new Set(
+      this.distinctOptionsByValue(source)
+        .map((option) => this.toCompareKey(this.getOptionValue(option))),
+    );
+
+    return selectedCachedOptions.filter((option) => {
+      const key = this.toCompareKey(this.getOptionValue(option));
+      return !sourceKeys.has(key);
+    });
   }
 
   private cacheInitialOptions(): void {
@@ -986,12 +1046,22 @@ export class ComboComponent extends BaseComponent implements OnInit {
       this.signalStore?.getTotalOptions?.() || [],
     );
 
+    const totalItems = this.shouldExposeMissingSelectedOptions()
+      ? this.distinctOptionsByValue([
+          ...this.getSelectedCachedOptionsMissingFrom(currentTotal),
+          ...currentTotal,
+        ])
+      : this.distinctOptionsByValue(currentTotal);
+
     this.signalStore.setTotalOptions(
       {
-        items: this.distinctOptionsByValue([
-          ...selectedOptions,
-          ...currentTotal,
-        ]),
+        /**
+         * In apertura normale non metto i selezionati dentro totalOptions, perché
+         * la combo paginata non deve riordinarsi o mostrare extra non richiesti.
+         * Durante la ricerca, invece, aggiungo i selezionati mancanti per non
+         * perdere il valore scelto mentre il filtro remoto cambia la lista.
+         */
+        items: totalItems,
         totalCount: Math.max(currentTotal.length, selectedOptions.length),
       },
       this.control?.formAction?.keyCombo,
