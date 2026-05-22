@@ -7,8 +7,8 @@
  * @desc [description]
  */
 
-import {Directive, ElementRef, HostListener, Renderer2} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import { Directive, ElementRef, HostListener, Renderer2 } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Directive({
    selector: 'input[type=file]',
@@ -24,10 +24,10 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 export class FileValueAccessorDirective implements ControlValueAccessor {
    public onChange;
 
-   @HostListener('change', ['$event.target.files']) _handleInput(event) {
+   @HostListener('change', ['$event']) _handleInput(event: Event) {
       try {
-         this.onChange(event);
-      } catch (e) {}
+         this.onChange((event.target as HTMLInputElement).files);
+      } catch (e) { }
    }
 
    /************************************************************************************************************************************************************************ */
@@ -35,15 +35,15 @@ export class FileValueAccessorDirective implements ControlValueAccessor {
    constructor(
       private element: ElementRef,
       private render: Renderer2,
-   ) {}
+   ) { }
 
    /************************************************************************************************************************************************************************ */
 
-   registerOnTouched(fn: any): void {}
+   registerOnTouched(fn: any): void { }
 
    /************************************************************************************************************************************************************************ */
 
-   setDisabledState?(isDisabled: boolean): void {}
+   setDisabledState?(isDisabled: boolean): void { }
 
    /************************************************************************************************************************************************************************ */
 

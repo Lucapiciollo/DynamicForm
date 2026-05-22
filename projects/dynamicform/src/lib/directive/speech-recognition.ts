@@ -1,6 +1,6 @@
 /** @format */
 
-import {Directive, ElementRef, HostListener, Input, Renderer2} from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/core';
 
 @Directive({
    selector: '[speech]',
@@ -21,11 +21,11 @@ export class SpeechDirective {
             this.recognition.lang = 'it-IT';
             this.recognition.continuous = false;
          }
-      } catch (error) {}
+      } catch (error) { }
    }
 
-   @HostListener('touchstart', ['$event'])
-   @HostListener('mousedown', ['$event'])
+   @HostListener('touchstart')
+   @HostListener('mousedown')
    start() {
       this.renderer.setStyle(this.element.nativeElement, 'color', 'red');
       this.recognition.start();
@@ -48,7 +48,7 @@ export class SpeechDirective {
                   // (this.e as HTMLInputElement).dispatchEvent(new Event('change'));
                   (this.e as HTMLInputElement).dispatchEvent(
                      new CustomEvent('change', {
-                        detail: {value: this.e.value, frommic: true},
+                        detail: { value: this.e.value, frommic: true },
                      }),
                   );
                }
@@ -57,8 +57,8 @@ export class SpeechDirective {
       };
    }
 
-   @HostListener('touchend', ['$event'])
-   @HostListener('mouseup', ['$event'])
+   @HostListener('touchend')
+   @HostListener('mouseup')
    stop() {
       setTimeout(() => {
          this.renderer.setStyle(this.element.nativeElement, 'color', '');

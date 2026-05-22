@@ -1,12 +1,32 @@
 /** @format */
 
-import {Component, EventEmitter, Input, Output, ViewContainerRef, inject} from '@angular/core';
-import {FormArray, FormGroup} from '@angular/forms';
-import {ConfigForm, TYPE_CONTROL_FORM} from './dynamic-form.interface';
-import {StepperService} from './dynamic-form.service';
-import {DynamicFormJsonSchema} from './models/dynamic-form-json-schema.model';
-import {DynamicFormJsonMapperService} from './services/dynamic-form-json-mapper.service';
+import { Component, EventEmitter, Input, Output, ViewContainerRef, inject } from '@angular/core';
+import { FormArray, FormGroup } from '@angular/forms';
+import { ConfigForm, TYPE_CONTROL_FORM } from './dynamic-form.interface';
+import { StepperService } from './dynamic-form.service';
+import { DynamicFormJsonSchema } from './models/dynamic-form-json-schema.model';
+import { DynamicFormJsonMapperService } from './services/dynamic-form-json-mapper.service';
 
+/**
+ * Componente principale della libreria DynamicForm.
+ *
+ * Accetta la configurazione del form in tre modalità:
+ * - `[config]` / `[questions]` — oggetto `ConfigForm` già costruito runtime (API Angular)
+ * - `[json]` — schema JSON puro (`DynamicFormJsonSchema`) tradotto automaticamente dal mapper
+ *
+ * Emette due eventi al completamento dell'inizializzazione:
+ * - `(onFormCreate)` — fornisce il `FormGroup` / `FormArray` generato
+ * - `(onQuestionsCreate)` — fornisce la `ConfigForm` risolta
+ *
+ * @example
+ * ```html
+ * <!-- Con JSON schema -->
+ * <app-dynamic-form [json]="mySchema" (onFormCreate)="onForm($event)"></app-dynamic-form>
+ *
+ * <!-- Con ConfigForm runtime -->
+ * <app-dynamic-form [config]="myConfig" (onFormCreate)="onForm($event)"></app-dynamic-form>
+ * ```
+ */
 @Component({
    styleUrls: ['./dynamic-form.component.scss'],
    selector: 'app-dynamic-form',
@@ -15,6 +35,7 @@ import {DynamicFormJsonMapperService} from './services/dynamic-form-json-mapper.
    standalone: false,
 })
 export class DynamicFormComponent {
+   /** Configurazione interna del form, costruita da `setRuntimeConfig`. */
    public _questions: ConfigForm = null;
 
    /**
@@ -51,14 +72,24 @@ export class DynamicFormComponent {
    public TYPE_CONTROL_FORM = TYPE_CONTROL_FORM;
    public formGroup!: FormGroup | FormArray;
 
-   constructor(private viewContainerRef: ViewContainerRef) {}
+   constructor(private viewContainerRef: ViewContainerRef) { }
 
+   /**
+    * Normalizza e memorizza la configurazione runtime, poi avvia l'inizializzazione.
+    * Scartato se `config` è null/undefined (guard per evitare re-render inutili).
+    */
    private setRuntimeConfig(config: ConfigForm): void {
       if (!config) return;
       this._questions = config;
       this.initializeForm();
    }
 
+   /**
+    * Trasforma la `ConfigForm` in un `FormGroup` o `FormArray` tramite `StepperService`.
+    * - Se il form ha un solo gruppo produce un `FormGroup` piatto.
+    * - Se ha più gruppi produce un `FormArray`.
+    * Al termine emette `onFormCreate` e `onQuestionsCreate`.
+    */
    compile() {
       let fg = (this.stepperService.toFormGroup(this._questions as any) as FormArray)?.controls as any;
       if (fg && fg.length == 1) {
@@ -71,6 +102,10 @@ export class DynamicFormComponent {
       this.onQuestionsCreate.emit(this._questions);
    }
 
+   /**
+    * Punto di ingresso dell'inizializzazione: delega a `compile()`.
+    * Separato per consentire override nelle sottoclassi o hook aggiuntivi in futuro.
+    */
    initializeForm() {
       this.compile();
    }

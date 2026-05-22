@@ -4,39 +4,39 @@ import { ComponentRef, Injector, Signal, WritableSignal } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { FormComponentTemplate } from './component/FormComponentTemplate';
- 
+
 
 export interface DynamicFieldConfig {
-  name: string;
-  type: string;
+   name: string;
+   type: string;
 
-  label?: string;
-  placeholder?: string;
-  value?: any;
+   label?: string;
+   placeholder?: string;
+   value?: any;
 
-  disabled?: boolean;
-  hidden?: boolean;
-  readonly?: boolean;
+   disabled?: boolean;
+   hidden?: boolean;
+   readonly?: boolean;
 
- 
 
-  searchable?: boolean;
-  paginated?: boolean;
-  pageSize?: number;
 
-  minSearchLength?: number;
-  searchDebounceTime?: number;
+   searchable?: boolean;
+   paginated?: boolean;
+   pageSize?: number;
 
-  labelKey?: string;
-  valueKey?: string;
+   minSearchLength?: number;
+   searchDebounceTime?: number;
 
-  clearable?: boolean;
+   labelKey?: string;
+   valueKey?: string;
 
-  props?: Record<string, any>;
+   clearable?: boolean;
 
-  onChange?: (ctx: any) => void;
-  onSearch?: (ctx: any) => void;
-  onLoadMore?: (ctx: any) => void;
+   props?: Record<string, any>;
+
+   onChange?: (ctx: any) => void;
+   onSearch?: (ctx: any) => void;
+   onLoadMore?: (ctx: any) => void;
 }
 
 
@@ -58,6 +58,13 @@ export type RxMethod<Input> = ((
  * ENUM
  ***********************************************************************************************************************************/
 
+/**
+ * Enumerazione di tutti i tipi di controllo supportati dal DynamicForm.
+ *
+ * Ogni valore corrisponde a uno specifico componente Angular della libreria.
+ * Può essere usato sia come valore numerico che come chiave stringa nello schema JSON
+ * (es. `'TEXT'`, `'COMBO'`, `'DATARANGE'`).
+ */
 export enum TYPE_CONTROL_FORM {
    ARRAYSTRING,
    COMBOPAGINATE,
@@ -154,12 +161,18 @@ export type TypeComboOption = Array<{
  * STRUCTURE
  ***********************************************************************************************************************************/
 
+/** Unità minima del form: contiene la configurazione di un singolo campo (`FormAction`). */
 export type Form = {
    formAction: FormAction;
 };
 
 export type TypeForm = Array<Form>;
 
+/**
+ * Pulsante di azione associato a un gruppo del form.
+ * Viene renderizzato come bottone nella footer del gruppo e riceve
+ * l'intero stato del form al click.
+ */
 export type DynamicFormActionButton = {
    label?: string;
    name?: string;
@@ -179,6 +192,11 @@ export type DynamicFormActionButton = {
    ) => void;
 };
 
+/**
+ * Gruppo di campi del form. Ogni form può contenere uno o più gruppi.
+ * Un gruppo ha un titolo opzionale, una griglia di campi (`formGroup`)
+ * e un array di pulsanti di azione (`actions`).
+ */
 export type Group = {
    title?: string;
    class?: Array<string>;
@@ -187,12 +205,22 @@ export type Group = {
    actions?: Array<DynamicFormActionButton>;
 };
 
+/**
+ * Struttura principale della configurazione del form.
+ * È un array di `Group`, dove ogni gruppo rappresenta una sezione del form.
+ * Viene passata al componente tramite `[config]` o `[questions]`.
+ */
 export type ConfigForm = Array<Group>;
 
 /***********************************************************************************************************************************
  * UTILITY
  ***********************************************************************************************************************************/
 
+/**
+ * Oggetto di utilità iniettato in tutti gli handler di eventi.
+ * Fornisce metodi helper per accedere e modificare i campi del form
+ * senza dover navigare manualmente la struttura `ConfigForm`.
+ */
 export type Utility = {
    getFormByName?: (
       formName: string,

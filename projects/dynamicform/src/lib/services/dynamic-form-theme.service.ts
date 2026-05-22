@@ -1,20 +1,34 @@
 /** @format */
 
-import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, Optional} from '@angular/core';
-import {DynamicFormThemeConfig, DynamicFormThemeCustomTokens, DynamicFormThemeName} from '../models/dynamic-form-theme-config.model';
-import {DYNAMIC_FORM_RUNTIME_CONFIG} from '../tokens/dynamic-form-config.token';
-import {DynamicFormRuntimeConfig} from '../providers/dynamic-form.providers';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable, Optional } from '@angular/core';
+import { DynamicFormThemeConfig, DynamicFormThemeCustomTokens, DynamicFormThemeName } from '../models/dynamic-form-theme-config.model';
+import { DYNAMIC_FORM_RUNTIME_CONFIG } from '../tokens/dynamic-form-config.token';
+import { DynamicFormRuntimeConfig } from '../providers/dynamic-form.providers';
 
-@Injectable({providedIn: 'root'})
+/**
+ * Servizio per la gestione del tema visivo del DynamicForm.
+ *
+ * Applica la classe CSS `df-theme-{nome}` sull'elemento root (body o elemento custom)
+ * e inietta CSS custom token per permettere la personalizzazione completa dei colori,
+ * tipografia e spaziatura senza modificare i file SCSS della libreria.
+ *
+ * Temi built-in: `modern-light`, `modern-dark`.
+ * È possibile definire temi custom passando un nome arbitrario e i `customTokens`.
+ */
+@Injectable({ providedIn: 'root' })
 export class DynamicFormThemeService {
    private readonly themeClassPrefix = 'df-theme-';
 
    constructor(
       @Inject(DOCUMENT) private readonly document: Document,
       @Optional() @Inject(DYNAMIC_FORM_RUNTIME_CONFIG) private readonly config: DynamicFormRuntimeConfig | null,
-   ) {}
+   ) { }
 
+   /**
+    * Inizializza il tema applicando nome e custom token dalla configurazione fornita.
+    * Viene chiamato automaticamente da `DynamicFormModule` all'avvio.
+    */
    init(): void {
       const theme = this.getThemeConfig();
       this.applyTheme(theme.name ?? 'modern-light');
@@ -24,6 +38,13 @@ export class DynamicFormThemeService {
       }
    }
 
+   /**
+    * Applica la classe `df-theme-{themeName}` sull'elemento root rimuovendo
+    * le classi di tema precedenti. Imposta anche l'attributo `data-df-theme`
+    * e `data-df-theme-mode` per eventuali query CSS.
+    *
+    * @param themeName - Nome del tema da applicare (es. `'modern-dark'`).
+    */
    applyTheme(themeName: DynamicFormThemeName): void {
       const root = this.getThemeRoot();
       const theme = this.getThemeConfig();
@@ -37,6 +58,12 @@ export class DynamicFormThemeService {
       }
    }
 
+   /**
+    * Inietta i custom token come CSS custom properties (`--df-*`) sull'elemento root.
+    * Permette di sovrascrivere singoli valori del tema senza ridefinire l'intero tema.
+    *
+    * @param tokens - Oggetto con i token da sovrascrivere (solo le chiavi valorizzate vengono applicate).
+    */
    applyCustomTokens(tokens: DynamicFormThemeCustomTokens): void {
       const root = this.getThemeRoot();
       const tokenMap: Record<keyof DynamicFormThemeCustomTokens, string> = {
@@ -83,6 +110,10 @@ export class DynamicFormThemeService {
       });
    }
 
+   /**
+    * Restituisce l'elemento HTML su cui applicare le classi di tema.
+    * Priorità: `rootSelector` > `applyToBody` (body) > documentElement.
+    */
    getThemeRoot(): HTMLElement {
       const theme = this.getThemeConfig();
 
@@ -96,6 +127,10 @@ export class DynamicFormThemeService {
       return theme.applyToBody === false ? this.document.documentElement : this.document.body;
    }
 
+   /**
+    * Restituisce la configurazione tema effettiva, unendo i default con
+    * la configurazione opzionale iniettata via `provideDynamicForm()`.
+    */
    getThemeConfig(): DynamicFormThemeConfig {
       return {
          name: 'modern-light',
@@ -107,6 +142,7 @@ export class DynamicFormThemeService {
       };
    }
 
+   /** Rimuove dall'elemento root tutte le classi CSS che iniziano con `df-theme-`. */
    private removePreviousThemeClasses(root: HTMLElement): void {
       Array.from(root.classList)
          .filter(className => className.startsWith(this.themeClassPrefix))

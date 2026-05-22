@@ -25,6 +25,11 @@ export class DynamicFormAssetsService {
     @Optional() @Inject(DYNAMIC_FORM_RUNTIME_CONFIG) private readonly config: DynamicFormRuntimeConfig | null,
   ) { }
 
+  /**
+   * Carica gli asset di default: font Material Icons/Symbols e stili globali runtime.
+   * Può essere disabilitato selettivamente tramite `theme.loadMaterialIcons` e
+   * `theme.injectRuntimeStyles` nella configurazione.
+   */
   loadDefaultAssets(): void {
     const theme = this.config?.theme ?? {};
 
@@ -49,6 +54,13 @@ export class DynamicFormAssetsService {
     }
   }
 
+  /**
+   * Aggiunge un elemento `<link rel="stylesheet">` nell'`<head>` del documento.
+   * Utilizza l'`id` come guard per evitare inserimenti duplicati.
+   *
+   * @param id - Identificatore univoco del tag link (usato come attributo `id`).
+   * @param href - URL del foglio di stile da caricare.
+   */
   private appendStylesheet(id: string, href: string): void {
     if (this.document.getElementById(id)) {
       return;
@@ -61,6 +73,12 @@ export class DynamicFormAssetsService {
     this.document.head.appendChild(link);
   }
 
+  /**
+   * Inietta un blocco `<style>` con i CSS custom property di default del tema
+   * e gli stili globali per gli overlay Material/CDK (mat-select, mat-datepicker, ecc.).
+   * Gli overlay CDK vivono fuori dall'incapsulamento dei componenti e richiedono
+   * stili globali per essere tematizzati correttamente.
+   */
   private appendGlobalStyles(): void {
     if (this.document.getElementById(this.globalStylesId)) {
       return;

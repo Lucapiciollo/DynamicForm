@@ -1,11 +1,28 @@
 /** @format */
 
-import {Injectable} from '@angular/core';
-import {FormArray, FormGroup} from '@angular/forms';
-import {DynamicJsonCondition} from '../models/dynamic-form-json-schema.model';
+import { Injectable } from '@angular/core';
+import { FormArray, FormGroup } from '@angular/forms';
+import { DynamicJsonCondition } from '../models/dynamic-form-json-schema.model';
 
-@Injectable({providedIn: 'root'})
+/**
+ * Servizio per la valutazione di condizioni dichiarative JSON sul form.
+ *
+ * Usato per implementare `visibleWhen` e `disabledWhen` nei campi dello schema JSON:
+ * ogni condizione specifica un campo da osservare, un operatore e un valore di confronto.
+ * Tutte le condizioni devono essere soddisfatte (AND logico).
+ *
+ * Operatori supportati: `eq`, `neq`, `in`, `notIn`, `truthy`, `falsy`,
+ * `gt`, `gte`, `lt`, `lte`.
+ */
+@Injectable({ providedIn: 'root' })
 export class DynamicConditionEvaluatorService {
+   /**
+    * Valuta un array di condizioni rispetto al form corrente.
+    *
+    * @param conditions - Array di condizioni da valutare. Array vuoto = sempre `true`.
+    * @param form - Il `FormGroup` o `FormArray` di Angular da cui leggere i valori dei campi.
+    * @returns `true` se tutte le condizioni sono soddisfatte, `false` altrimenti.
+    */
    evaluate(conditions: DynamicJsonCondition[] = [], form: FormGroup | FormArray): boolean {
       if (!conditions.length) return true;
 
