@@ -1,176 +1,182 @@
 @use './tokens' as *;
 @use './mixins' as *;
 
-// Questo file va importato globalmente in src/styles.scss perché i pannelli mat-select/mat-datepicker
-// vivono nell'overlay CDK, fuori dall'incapsulamento del componente.
+// Questo file va importato globalmente in src/styles.scss perché i pannelli
+// mat-select/mat-datepicker vivono nell'overlay CDK, fuori dall'incapsulamento.
 
 .cdk-overlay-pane .mat-mdc-select-panel {
-  border-radius: $df-radius-lg !important;
-  box-shadow: $df-shadow-md !important;
-  padding: $df-space-1 !important;
+  --mat-minimal-pseudo-checkbox-selected-checkmark-color: var(--df-primary-contrast);
+  --mat-minimal-pseudo-checkbox-selected-color: var(--df-primary);
+
+  border-radius: var(--df-select-panel-radius) !important;
+  box-shadow: var(--df-shadow-md) !important;
+  padding: var(--df-select-panel-padding) !important;
+  background: var(--df-surface) !important;
+  color: var(--df-text) !important;
   @include df-scrollbar;
 }
 
 .cdk-overlay-pane .mat-mdc-option {
-  min-height: 44px !important;
-  border-radius: $df-radius-sm !important;
-  margin: 2px 0 !important;
-  transition: background $df-transition, color $df-transition;
+  min-height: var(--df-select-option-min-height) !important;
+  border-radius: var(--df-select-option-radius) !important;
+  margin: var(--df-select-option-margin-y) var(--df-select-option-margin-x) !important;
+  color: var(--df-text) !important;
+  transition:
+    background var(--df-transition),
+    color var(--df-transition);
 }
 
 .cdk-overlay-pane .mat-mdc-option:hover:not(.mdc-list-item--disabled),
 .cdk-overlay-pane .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-  background: $df-color-primary-soft !important;
+  background: var(--df-primary-soft) !important;
 }
 
 .cdk-overlay-pane .search-container {
   position: sticky;
-  top: 0;
-  z-index: 3;
-  min-height: 48px;
-  background: $df-color-surface;
+  top: var(--df-space-0);
+  z-index: var(--df-search-z-index);
+  min-height: var(--df-search-height);
+  background: var(--df-surface);
   display: flex;
   align-items: center;
-  border-radius: $df-radius-md;
-  border: 1px solid $df-color-border;
-  margin: $df-space-1 $df-space-1 $df-space-2;
+  border-radius: var(--df-radius-md);
+  border: 1px solid var(--df-border);
+  margin:
+    var(--df-search-margin-top)
+    var(--df-search-margin-right)
+    var(--df-search-margin-bottom)
+    var(--df-search-margin-left);
   overflow: hidden;
-  box-shadow: $df-shadow-sm;
+  box-shadow: var(--df-shadow-sm);
 }
 
 .cdk-overlay-pane .search-container input {
   width: 100%;
-  border: 0;
+  border: var(--df-space-0);
   outline: none;
   background: transparent;
-  min-height: 44px;
-  padding-right: $df-space-3;
+  min-height: var(--df-search-input-height);
+  padding-right: var(--df-search-padding-right);
+  color: var(--df-text);
 }
 
 .cdk-overlay-pane .search-icon {
   position: absolute;
-  left: $df-space-3;
-  color: $df-color-muted;
+  left: var(--df-search-icon-left);
+  color: var(--df-muted);
   z-index: 1;
 }
 
 .cdk-overlay-pane .mat-datepicker-content,
 .cdk-overlay-pane .mat-timepicker-panel {
-  border-radius: $df-radius-lg !important;
-  box-shadow: $df-shadow-md !important;
+  border-radius: var(--df-radius-lg) !important;
+  box-shadow: var(--df-shadow-md) !important;
 }
 
 /* =========================================================
-   DYNAMIC FORM - FIX MDC ICON ALIGNMENT
-   date / year / date-range / input-time
+   DYNAMIC FORM - MDC ICON ALIGNMENT
+   date / year / date-range / input-time / select
    ========================================================= */
-
 .df-theme-elegant,
 .df-theme-my-company,
 .dynamic-form,
 app-dynamic-form {
-
   app-date,
   app-date-range,
   app-year,
   app-input-time,
   app-date-time {
     .mat-mdc-form-field {
-      --df-icon-button-size: 32px;
-      --df-icon-size: 18px;
+      --df-local-icon-button-size: var(--df-icon-button-size);
+      --df-local-icon-size: var(--df-icon-size);
     }
 
-    .mat-mdc-text-field-wrapper {
-      min-height: var(--df-field-height, 48px);
-      display: flex;
-      align-items: center;
-    }
-
-    .mat-mdc-form-field-flex {
-      min-height: var(--df-field-height, 48px);
+    .mat-mdc-text-field-wrapper,
+    .mat-mdc-form-field-flex,
+    .mat-mdc-form-field-infix {
+      min-height: var(--df-field-height);
       display: flex;
       align-items: center;
     }
 
     .mat-mdc-form-field-infix {
-      min-height: var(--df-field-height, 48px);
-      display: flex;
-      align-items: center;
-      padding-top: 0;
-      padding-bottom: 0;
+      padding-top: var(--df-field-padding-y);
+      padding-bottom: var(--df-field-padding-y);
     }
 
     .mat-mdc-form-field-icon-prefix,
-    .mat-mdc-form-field-icon-suffix {
-      height: var(--df-field-height, 48px);
-      min-height: var(--df-field-height, 48px);
+    .mat-mdc-form-field-icon-suffix,
+    .mat-datepicker-toggle {
+      height: var(--df-field-height);
+      min-height: var(--df-field-height);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       align-self: center;
-      padding: 0 6px;
-      margin: 0;
+      margin: var(--df-space-0);
+    }
+
+    .mat-mdc-form-field-icon-prefix {
+      padding-inline: var(--df-icon-prefix-padding-start) var(--df-icon-prefix-padding-end);
+    }
+
+    .mat-mdc-form-field-icon-suffix {
+      padding-inline: var(--df-icon-suffix-padding-start) var(--df-icon-suffix-padding-end);
     }
 
     .mat-datepicker-toggle {
-      height: var(--df-field-height, 48px);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      align-self: center;
-      margin: 0;
-      padding: 0;
+      padding: var(--df-space-0);
     }
 
     .mat-datepicker-toggle .mat-mdc-icon-button,
     .mat-mdc-form-field-icon-prefix .mat-mdc-icon-button,
     .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button {
-      width: var(--df-icon-button-size);
-      height: var(--df-icon-button-size);
-      min-width: var(--df-icon-button-size);
-      min-height: var(--df-icon-button-size);
-      padding: 0;
+      width: var(--df-local-icon-button-size);
+      height: var(--df-local-icon-button-size);
+      min-width: var(--df-local-icon-button-size);
+      min-height: var(--df-local-icon-button-size);
+      padding: var(--df-space-0);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border-radius: 10px;
-      margin: 0;
+      border-radius: var(--df-radius-sm);
+      margin: var(--df-space-0);
     }
 
     .mat-mdc-icon-button .mat-mdc-button-touch-target {
-      width: var(--df-icon-button-size);
-      height: var(--df-icon-button-size);
+      width: var(--df-local-icon-button-size);
+      height: var(--df-local-icon-button-size);
     }
 
     .mat-datepicker-toggle-default-icon,
     .mat-mdc-form-field-icon-prefix mat-icon,
     .mat-mdc-form-field-icon-suffix mat-icon,
     .df-time-prefix-icon {
-      width: var(--df-icon-size);
-      height: var(--df-icon-size);
-      font-size: var(--df-icon-size);
-      line-height: var(--df-icon-size);
+      width: var(--df-local-icon-size);
+      height: var(--df-local-icon-size);
+      font-size: var(--df-local-icon-size);
+      line-height: var(--df-local-icon-size);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      color: var(--df-muted-text, #6b7280);
-      opacity: 0.85;
+      color: var(--df-muted-text);
+      opacity: var(--df-icon-opacity);
     }
 
     .mat-mdc-select {
       display: flex;
       align-items: center;
-      min-height: 24px;
+      min-height: var(--df-select-trigger-min-height);
     }
 
     .mat-mdc-select-trigger {
-      height: 24px;
+      min-height: var(--df-select-trigger-min-height);
       display: flex;
       align-items: center;
     }
 
     .mat-mdc-select-arrow-wrapper {
-      height: 24px;
+      height: var(--df-select-arrow-height);
       display: flex;
       align-items: center;
       justify-content: center;

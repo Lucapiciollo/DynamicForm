@@ -1,65 +1,56 @@
 /** @format */
-// Shared mixin — Hollywood compact style
-// Usage: @use '../../styles/df-field-base' as base; @include base.df-field-base();
+
 @use './tokens' as *;
 
 @mixin df-field-base {
   :host {
     display: block;
-    font-family: $df-font-family;
+    font-family: var(--df-font-family);
   }
 
   mat-form-field {
     width: 100%;
   }
 
-  // ── Field label: luxury uppercase, razor-thin
   label {
     display: block;
-    font-family: $df-font-family;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.13em;
+    font-family: var(--df-font-family);
+    font-size: var(--df-font-size-xs);
+    font-weight: var(--df-font-weight-bold);
+    letter-spacing: var(--df-letter-spacing-xl);
     text-transform: uppercase;
-    color: $df-color-muted;
-    margin-bottom: $df-space-1;
+    color: var(--df-muted);
+    margin-bottom: var(--df-space-1);
     user-select: none;
-    transition: color $df-transition;
+    transition: color var(--df-transition);
   }
 
-  // ── Hint / helper text
   .bottomLabel {
     display: block;
-    font-family: $df-font-family;
-    font-size: 10px;
-    color: $df-color-muted;
-    margin-top: $df-space-1;
-    line-height: 1.5;
-    letter-spacing: 0.01em;
+    font-family: var(--df-font-family);
+    font-size: var(--df-hint-font-size);
+    color: var(--df-muted);
+    margin-top: var(--df-space-1);
+    line-height: var(--df-line-height-md);
+    letter-spacing: var(--df-letter-spacing-sm);
   }
 
-  // ── Validation error — accent red bar on the left
   .mat-mdc-error,
   .mat-error {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-family: $df-font-family;
-    font-size: 10px;
-    font-weight: 600;
-    color: $df-color-danger !important;
-    letter-spacing: 0.02em;
-    margin-top: $df-space-1;
-    padding-left: $df-space-2;
-    border-left: 2px solid $df-color-danger;
-    line-height: 1.4;
+    gap: var(--df-error-gap);
+    font-family: var(--df-font-family);
+    font-size: var(--df-error-font-size-compact);
+    font-weight: var(--df-font-weight-semibold);
+    color: var(--df-danger) !important;
+    letter-spacing: var(--df-letter-spacing-md);
+    margin-top: var(--df-space-1);
+    padding-left: var(--df-error-padding-left);
+    border-left: var(--df-error-border-width) solid var(--df-danger);
+    line-height: var(--df-line-height-sm);
   }
 
-  // ───────────────────────────────────────────────────────────────────────────
-  // Material MDC icon alignment fix
-  // Risolve icone non centrate in DATE / DATE_RANGE / YEAR / TIME / SELECT.
-  // Usa ::ng-deep perché le classi interne MDC vengono generate dentro Material.
-  // ───────────────────────────────────────────────────────────────────────────
   :host ::ng-deep .mat-mdc-form-field-flex {
     align-items: center;
   }
@@ -67,14 +58,14 @@
   :host ::ng-deep .mat-mdc-form-field-infix {
     display: flex;
     align-items: center;
-    min-height: var(--df-field-height, 48px);
+    min-height: var(--df-field-infix-min-height);
   }
 
   :host ::ng-deep .mat-mdc-select,
   :host ::ng-deep .mat-mdc-select-trigger {
     display: flex;
     align-items: center;
-    min-height: 24px;
+    min-height: var(--df-select-trigger-min-height);
   }
 
   :host ::ng-deep .mat-mdc-form-field-icon-prefix,
@@ -85,16 +76,16 @@
     justify-content: center;
     align-self: center;
     height: 100%;
-    min-height: var(--df-field-height, 48px);
+    min-height: var(--df-icon-wrapper-height);
     line-height: 1;
   }
 
   :host ::ng-deep .mat-mdc-form-field-icon-prefix {
-    padding-inline: 2px 6px;
+    padding-inline: var(--df-icon-prefix-padding-start) var(--df-icon-prefix-padding-end);
   }
 
   :host ::ng-deep .mat-mdc-form-field-icon-suffix {
-    padding-inline: 6px 2px;
+    padding-inline: var(--df-icon-suffix-padding-start) var(--df-icon-suffix-padding-end);
   }
 
   :host ::ng-deep .mat-mdc-form-field-icon-prefix > .mat-icon,
@@ -103,14 +94,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
-    min-height: 20px;
-    font-size: 19px;
-    line-height: 20px;
-    color: $df-color-muted;
-    opacity: 0.88;
+    width: var(--df-icon-size-md);
+    height: var(--df-icon-size-md);
+    min-width: var(--df-icon-size-md);
+    min-height: var(--df-icon-size-md);
+    font-size: var(--df-icon-size-md);
+    line-height: var(--df-icon-size-md);
+    color: var(--df-muted);
+    opacity: var(--df-icon-opacity-strong);
   }
 
   :host ::ng-deep .mat-datepicker-toggle button,
@@ -118,18 +109,18 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    min-width: 34px;
-    min-height: 34px;
-    padding: 0;
-    border-radius: $df-radius-sm;
+    width: var(--df-icon-button-size-lg);
+    height: var(--df-icon-button-size-lg);
+    min-width: var(--df-icon-button-size-lg);
+    min-height: var(--df-icon-button-size-lg);
+    padding: var(--df-space-0);
+    border-radius: var(--df-radius-sm);
     line-height: 1;
   }
 
   :host ::ng-deep .mat-mdc-icon-button .mat-mdc-button-touch-target {
-    width: 34px;
-    height: 34px;
+    width: var(--df-icon-button-size-lg);
+    height: var(--df-icon-button-size-lg);
   }
 
   :host ::ng-deep .mat-datepicker-toggle-default-icon,
@@ -138,12 +129,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
-    min-width: 18px;
-    min-height: 18px;
-    font-size: 18px;
-    line-height: 18px;
-    color: $df-color-muted;
+    width: var(--df-icon-size);
+    height: var(--df-icon-size);
+    min-width: var(--df-icon-size);
+    min-height: var(--df-icon-size);
+    font-size: var(--df-icon-size);
+    line-height: var(--df-icon-size);
+    color: var(--df-muted);
   }
 }

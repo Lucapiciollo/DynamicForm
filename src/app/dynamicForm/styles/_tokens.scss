@@ -1,17 +1,20 @@
-// DynamicForm design tokens.
-// Compatibile con i vecchi SCSS della libreria e con il nuovo sistema tema a CSS variables.
+// DynamicForm design tokens
+// Tutte le misure e i colori della libreria passano da CSS variables.
+// Chi usa la libreria può sovrascrivere solo le variabili, senza modificare gli SCSS.
 
 $df-default-tokens: (
+  // colors
   primary: #2563eb,
+  primary-rgb: #{37, 99, 235},
   primary-contrast: #ffffff,
   primary-soft: #eff6ff,
   accent: #06b6d4,
+  accent-rgb: #{6, 182, 212},
   accent-contrast: #ffffff,
   success: #16a34a,
   warning: #f59e0b,
   danger: #dc2626,
   info: #0284c7,
-
   background: #f8fafc,
   surface: #ffffff,
   surface-soft: #f8fafc,
@@ -21,56 +24,202 @@ $df-default-tokens: (
   muted-text: #64748b,
   border: #dbe3ef,
   border-strong: #b6c3d5,
+  overlay-backdrop: rgba(15, 23, 42, 0.32),
 
+  // fonts
+  font-family: #{'Inter, Roboto, Arial, sans-serif'},
+  font-size-xs: 0.625rem,
+  font-size-sm: 0.75rem,
+  font-size-md: 0.875rem,
+  font-size-base: 1rem,
+  font-size-lg: 1.125rem,
+  font-size-title: 0.98rem,
+  font-size-subtitle: 0.84rem,
+  font-weight-regular: 400,
+  font-weight-medium: 500,
+  font-weight-semibold: 650,
+  font-weight-bold: 700,
+  font-weight-extra-bold: 800,
+  line-height-xs: 1.2,
+  line-height-sm: 1.4,
+  line-height-md: 1.5,
+  line-height-lg: 1.55,
+  letter-spacing-none: 0,
+  letter-spacing-sm: 0.01em,
+  letter-spacing-md: 0.02em,
+  letter-spacing-lg: 0.08em,
+  letter-spacing-xl: 0.13em,
+
+  // spacing
+  space-0: 0,
+  space-1: 4px,
+  space-2: 8px,
+  space-3: 12px,
+  space-4: 16px,
+  space-5: 20px,
+  space-6: 24px,
+  space-7: 32px,
+  space-8: 40px,
+
+  // radius
+  radius-none: 0,
+  radius-xs: 4px,
   radius-sm: 10px,
   radius-md: 14px,
   radius-lg: 18px,
   radius-xl: 24px,
+  radius-pill: 999px,
 
+  // component sizes
   field-height: 48px,
+  field-infix-min-height: 48px,
   field-gap: 16px,
   field-padding-x: 14px,
+  field-padding-y: 0,
+  field-shell-padding: 4px,
+  form-shell-padding: 16px,
+  label-before-width: 4px,
+  label-before-height: 18px,
+  form-title-padding-left: 16px,
+  form-title-padding-bottom: 8px,
+  form-title-before-top: 2px,
 
+  // material option / select panel
+  select-panel-padding: 4px,
+  select-panel-radius: 18px,
+  select-option-min-height: 44px,
+  select-option-radius: 10px,
+  select-option-margin-y: 2px,
+  select-option-margin-x: 0,
+  select-trigger-min-height: 24px,
+  select-arrow-height: 24px,
+
+  // search box inside select
+  search-height: 48px,
+  search-input-height: 44px,
+  search-icon-left: 12px,
+  search-padding-right: 12px,
+  search-margin-top: 4px,
+  search-margin-right: 4px,
+  search-margin-bottom: 8px,
+  search-margin-left: 4px,
+  search-z-index: 3,
+
+  // icon alignment
+  icon-button-size: 32px,
+  icon-button-size-lg: 34px,
+  icon-size: 18px,
+  icon-size-md: 19px,
+  icon-wrapper-height: 48px,
+  icon-prefix-padding-start: 2px,
+  icon-prefix-padding-end: 6px,
+  icon-suffix-padding-start: 6px,
+  icon-suffix-padding-end: 2px,
+
+  // checkbox / radio
+  checkbox-min-height: 56px,
+  checkbox-padding-x: 12px,
+  radio-gap: 8px,
+  radio-padding-top: 4px,
+  radio-padding-right: 12px,
+  radio-padding-bottom: 4px,
+  radio-padding-left: 4px,
+
+  // cards / label / link / file / array
+  card-padding: 16px,
+  label-line-height: 1.55,
+  link-padding-y: 8px,
+  link-padding-x: 12px,
+  file-drop-min-height: 72px,
+  chip-padding-y: 4px,
+  chip-padding-x: 12px,
+  sort-icon-size: 22px,
+
+  // errors / hints
+  error-font-size: 0.78rem,
+  error-font-size-compact: 10px,
+  error-gap: 4px,
+  error-border-width: 2px,
+  error-padding-left: 8px,
+  hint-font-size: 10px,
+
+  // loader
+  loading-bar-height: 3px,
+  loading-bar-width: 40%,
+  loading-bar-radius: 999px,
+  loading-bar-bg: rgba(37, 99, 235, 0.10),
+  loading-bar-start-x: -120%,
+  loading-bar-end-x: 260%,
+  loading-bar-duration: 1s,
+
+  // scrollbar
+  scrollbar-width: 10px,
+  scrollbar-thumb-border-width: 3px,
+  scrollbar-radius: 999px,
+
+  // shadows/focus
   shadow-sm: 0 8px 22px rgba(15, 23, 42, 0.08),
   shadow-md: 0 20px 45px rgba(15, 23, 42, 0.16),
   shadow-lg: 0 26px 70px rgba(15, 23, 42, 0.22),
+  shadow-focus-size: 3px,
+  shadow-focus-alpha: 18%,
+
+  // transitions
+  transition-duration: 180ms,
+  transition-easing: ease,
   transition: 180ms ease,
+
+  // opacity
+  disabled-opacity: 0.55,
+  icon-opacity: 0.85,
+  icon-opacity-strong: 0.88,
+  hover-translate-y: -1px
 );
 
-// Alias storici usati dai componenti SCSS.
-$df-font-family: Inter, Roboto, Arial, sans-serif;
+// Sass aliases storici usati dai componenti SCSS.
+// Restano var(...) per permettere override runtime dalla webapp.
+$df-font-family: var(--df-font-family);
 
 $df-color-primary: var(--df-primary);
+$df-color-primary-rgb: var(--df-primary-rgb);
+$df-color-primary-contrast: var(--df-primary-contrast);
 $df-color-primary-soft: var(--df-primary-soft);
 $df-color-accent: var(--df-accent);
+$df-color-accent-contrast: var(--df-accent-contrast);
 $df-color-success: var(--df-success);
 $df-color-warning: var(--df-warning);
 $df-color-danger: var(--df-danger);
 $df-color-info: var(--df-info);
-
 $df-color-bg: var(--df-background);
 $df-color-surface: var(--df-surface);
 $df-color-surface-soft: var(--df-surface-soft);
 $df-color-surface-alt: var(--df-surface-alt);
 $df-color-text: var(--df-text);
 $df-color-muted: var(--df-muted);
+$df-color-muted-text: var(--df-muted-text);
 $df-color-border: var(--df-border);
 $df-color-border-strong: var(--df-border-strong);
 
+$df-radius-xs: var(--df-radius-xs);
 $df-radius-sm: var(--df-radius-sm);
 $df-radius-md: var(--df-radius-md);
 $df-radius-lg: var(--df-radius-lg);
 $df-radius-xl: var(--df-radius-xl);
+$df-radius-pill: var(--df-radius-pill);
 
-$df-space-1: 4px;
-$df-space-2: 8px;
-$df-space-3: 12px;
-$df-space-4: 16px;
-$df-space-5: 20px;
-$df-space-6: 24px;
+$df-space-0: var(--df-space-0);
+$df-space-1: var(--df-space-1);
+$df-space-2: var(--df-space-2);
+$df-space-3: var(--df-space-3);
+$df-space-4: var(--df-space-4);
+$df-space-5: var(--df-space-5);
+$df-space-6: var(--df-space-6);
+$df-space-7: var(--df-space-7);
+$df-space-8: var(--df-space-8);
 
+$df-field-height: var(--df-field-height);
 $df-shadow-sm: var(--df-shadow-sm);
 $df-shadow-md: var(--df-shadow-md);
 $df-shadow-lg: var(--df-shadow-lg);
-$df-shadow-focus: 0 0 0 3px color-mix(in srgb, var(--df-primary) 18%, transparent);
+$df-shadow-focus: 0 0 0 var(--df-shadow-focus-size) color-mix(in srgb, var(--df-primary) var(--df-shadow-focus-alpha), transparent);
 $df-transition: var(--df-transition);

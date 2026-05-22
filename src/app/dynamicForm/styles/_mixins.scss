@@ -2,28 +2,8 @@
 @use './tokens' as tokens;
 @use './tokens' as *;
 
-
- 
-
- 
-
-@mixin dynamic-form-theme($theme-map) {
-  @include emit-css-vars($theme-map);
-}
-
 @function df-token($theme-map, $key) {
   @return map.get($theme-map, $key);
-}
-
-
-@mixin emit-css-vars($theme-map) {
-  @each $key, $value in $theme-map {
-    --df-#{$key}: #{$value};
-  }
-}
-
-@mixin theme($theme-map) {
-  @include emit-css-vars($theme-map);
 }
 
 @function token($theme-map, $key) {
@@ -34,35 +14,64 @@
   @return map.merge(tokens.$df-default-tokens, $theme-map);
 }
 
-@mixin df-card($padding: $df-space-4) {
-  background: $df-color-surface;
-  border: 1px solid $df-color-border;
-  border-radius: $df-radius-lg;
-  box-shadow: $df-shadow-sm;
+@mixin emit-css-vars($theme-map) {
+  $merged: merge-with-defaults($theme-map);
+
+  @each $key, $value in $merged {
+    --df-#{$key}: #{$value};
+  }
+}
+
+@mixin dynamic-form-theme($theme-map) {
+  @include emit-css-vars($theme-map);
+}
+
+@mixin theme($theme-map) {
+  @include emit-css-vars($theme-map);
+}
+
+@mixin df-card($padding: var(--df-card-padding)) {
+  background: var(--df-surface);
+  border: 1px solid var(--df-border);
+  border-radius: var(--df-radius-lg);
+  box-shadow: var(--df-shadow-sm);
   padding: $padding;
 }
 
 @mixin df-field-shell {
   display: block;
   min-width: 0;
-  padding: $df-space-1;
+  padding: var(--df-field-shell-padding);
 }
 
 @mixin df-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: $df-color-border-strong $df-color-surface;
+  scrollbar-color: var(--df-border-strong) var(--df-surface);
 
   &::-webkit-scrollbar {
-    width: 10px;
+    width: var(--df-scrollbar-width);
   }
 
   &::-webkit-scrollbar-thumb {
-    border-radius: 999px;
-    background: $df-color-border-strong;
-    border: 3px solid $df-color-surface;
+    border-radius: var(--df-scrollbar-radius);
+    background: var(--df-border-strong);
+    border: var(--df-scrollbar-thumb-border-width) solid var(--df-surface);
   }
 
   &::-webkit-scrollbar-track {
-    background: $df-color-surface;
+    background: var(--df-surface);
   }
+}
+
+@mixin df-transition($properties...) {
+  transition-property: $properties;
+  transition-duration: var(--df-transition-duration);
+  transition-timing-function: var(--df-transition-easing);
+}
+
+@mixin df-icon-button-size($size-var: --df-icon-button-size) {
+  width: var(#{$size-var});
+  height: var(#{$size-var});
+  min-width: var(#{$size-var});
+  min-height: var(#{$size-var});
 }
