@@ -800,16 +800,16 @@ export class ComboComponent extends BaseComponent implements OnInit {
 
     const currentTotal = append
       ? this.mergeOptionsDistinct(
-          this.signalStore.getTotalOptions?.() || [],
-          items,
-        )
+        this.signalStore.getTotalOptions?.() || [],
+        items,
+      )
       : this.mergeOptionsDistinct([], items);
 
     const totalItems = this.shouldExposeMissingSelectedOptions()
       ? this.distinctOptionsByValue([
-          ...this.getSelectedCachedOptionsMissingFrom(currentTotal),
-          ...currentTotal,
-        ])
+        ...this.getSelectedCachedOptionsMissingFrom(currentTotal),
+        ...currentTotal,
+      ])
       : this.distinctOptionsByValue(currentTotal);
 
     this.signalStore.setTotalOptions(
@@ -940,9 +940,9 @@ export class ComboComponent extends BaseComponent implements OnInit {
 
     const source = this.shouldExposeMissingSelectedOptions()
       ? [
-          ...this.getSelectedCachedOptionsMissingFrom(naturalSource),
-          ...naturalSource,
-        ]
+        ...this.getSelectedCachedOptionsMissingFrom(naturalSource),
+        ...naturalSource,
+      ]
       : naturalSource;
 
     return this.distinctOptionsByValue(source)
@@ -1014,8 +1014,8 @@ export class ComboComponent extends BaseComponent implements OnInit {
     const values = Array.isArray(formControl.value)
       ? formControl.value
       : formControl.value === null ||
-          formControl.value === undefined ||
-          formControl.value === ""
+        formControl.value === undefined ||
+        formControl.value === ""
         ? []
         : [formControl.value];
 
@@ -1048,9 +1048,9 @@ export class ComboComponent extends BaseComponent implements OnInit {
 
     const totalItems = this.shouldExposeMissingSelectedOptions()
       ? this.distinctOptionsByValue([
-          ...this.getSelectedCachedOptionsMissingFrom(currentTotal),
-          ...currentTotal,
-        ])
+        ...this.getSelectedCachedOptionsMissingFrom(currentTotal),
+        ...currentTotal,
+      ])
       : this.distinctOptionsByValue(currentTotal);
 
     this.signalStore.setTotalOptions(
@@ -1112,8 +1112,8 @@ export class ComboComponent extends BaseComponent implements OnInit {
     const selectedValues = Array.isArray(formControl.value)
       ? formControl.value
       : formControl.value === null ||
-          formControl.value === undefined ||
-          formControl.value === ""
+        formControl.value === undefined ||
+        formControl.value === ""
         ? []
         : [formControl.value];
 
@@ -1201,8 +1201,8 @@ export class ComboComponent extends BaseComponent implements OnInit {
       return descriptions.length <= this.combotext.maxElementShow
         ? descriptions.join("; ")
         : `${descriptions
-            .slice(0, this.combotext.maxElementShow)
-            .join("; ")} + ${descriptions.length - this.combotext.maxElementShow}`;
+          .slice(0, this.combotext.maxElementShow)
+          .join("; ")} + ${descriptions.length - this.combotext.maxElementShow}`;
     }
 
     return (
@@ -1555,5 +1555,12 @@ export class ComboComponent extends BaseComponent implements OnInit {
       value,
       formControl: formControl as FormControl,
     });
+  }
+
+  getComboPanelClass(): string[] {
+    return [
+      'df-combo-scroll-panel',
+      this.control?.formAction?.themeClass || 'df-theme-aurora-luxe',
+    ];
   }
 }
