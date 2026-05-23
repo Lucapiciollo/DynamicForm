@@ -263,10 +263,7 @@ export class ComboComponent extends BaseComponent implements OnInit {
       this.signalStore.setIsLoading(false);
       this.emitOpened();
 
-      queueMicrotask(() => {
-        const input = this.filterInput();
-        input?.nativeElement?.focus();
-      });
+      this.focusFilterInputOnOpen();
 
       if (this.control.formAction.type === TYPE_CONTROL_FORM.COMBO) {
         const filtered = this._filter("");
@@ -1557,10 +1554,48 @@ export class ComboComponent extends BaseComponent implements OnInit {
     });
   }
 
-  getComboPanelClass(): string[] {
-    return [
-      'df-combo-scroll-panel',
-      this.control?.formAction?.themeClass || 'df-theme-aurora-luxe',
-    ];
+  private focusFilterInputOnOpen(): void {
+    if (!this.control?.formAction?.autocomplete) {
+      return;
+    }
+
+    this.focusFilterInputWithRetry(0);
+  }
+
+  private focusFilterInputWithRetry(attempt: number): void {
+    const maxAttempts = 12;
+
+    const inputFromViewChild = this.filterInput?.()?.nativeElement;
+
+    const inputFromPanel = this.selectRef?.panel?.nativeElement?.querySelector(
+      '[data-df-combo-filter="true"]',
+    ) as HTMLInputElement | null;
+
+    const input = inputFromViewChild ?? inputFromPanel;
+
+    if (input) {
+      input.focus();
+
+      /**
+       * Utile quando riapri la combo con testo già presente.
+       */
+      queueMicrotask(() => {
+        try {
+          input.select();
+        } catch {
+          // alcuni input/browser possono non supportarlo, non blocco nulla
+        }
+      });
+
+      return;
+    }
+
+    if (attempt >= maxAttempts) {
+      return;
+    }
+
+    setTimeout(() => {
+      this.focusFilterInputWithRetry(attempt + 1);
+    }, 30);
   }
 }

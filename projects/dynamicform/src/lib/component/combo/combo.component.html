@@ -17,7 +17,7 @@
          </mat-label>
          }
 
-         <mat-select #selectRef [panelClass]="getComboPanelClass()" class="py-0 my-0" panelClass="df-combo-scroll-panel"
+         <mat-select #selectRef class="py-0 my-0" panelClass="df-combo-scroll-panel"
             [matTooltip]="(control.formAction.multiple === true || control.formAction.checkboxSelect === true) ? signalStore.getConcatStringDescription() : null"
             [formControl]="$any(control.formAction.formControl)"
             [multiple]="control.formAction.multiple === true || control.formAction.checkboxSelect === true"
@@ -38,7 +38,8 @@
                   <mat-icon class="m-auto">search</mat-icon>
                </span>
 
-               <input #filterInput matInput class="ps-5 py-0" [matTooltip]="control.formAction?.tipContent || null"
+               <input #filterInput data-df-combo-filter="true" matInput class="ps-5 py-0"
+                  [matTooltip]="control.formAction?.tipContent || null"
                   [placeholder]="control.formAction.placeholder || ''" (click)="$event.stopPropagation()"
                   (mousedown)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
                   (input)="onInputChange(filterInput.value)" />
