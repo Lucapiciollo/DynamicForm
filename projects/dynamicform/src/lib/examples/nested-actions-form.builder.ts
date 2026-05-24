@@ -1,8 +1,8 @@
 /** @format */
 
-import {signal} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {ConfigForm, TYPE_CONTROL_FORM} from '../dynamic-form.interface';
+import { signal } from '@angular/core';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ConfigForm, TYPE_CONTROL_FORM } from '../dynamic-form.interface';
 
 function firstGroup(control: any): FormGroup | null {
    if (control instanceof FormArray) return (control.at(0) as FormGroup) || null;
@@ -64,7 +64,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                   title: 'Dati anagrafici',
                   type: TYPE_CONTROL_FORM.GROUP,
                   formName: 'registry',
-                  css: {class: ['col-12', 'df-card']},
+                  css: { class: ['col-12', 'df-card'] },
                   formGroup: [
                      {
                         title: 'Anagrafica',
@@ -76,7 +76,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  type: TYPE_CONTROL_FORM.TEXT,
                                  formName: 'firstName',
                                  placeholder: 'Inserisci nome',
-                                 css: {class: ['col-12', 'col-md-6']},
+                                 css: { class: ['col-12', 'col-md-6'] },
                                  formControl: new FormControl<string | null>(null, {
                                     validators: [Validators.required, Validators.minLength(3)],
                                     updateOn: 'change',
@@ -92,17 +92,17 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  type: TYPE_CONTROL_FORM.TEXT,
                                  formName: 'lastName',
                                  placeholder: 'Inserisci cognome',
-                                 css: {class: ['col-12', 'col-md-6']},
-                                 formControl: new FormControl<string | null>(null, {validators: [Validators.required]}),
+                                 css: { class: ['col-12', 'col-md-6'] },
+                                 formControl: new FormControl<string | null>(null, { validators: [Validators.required] }),
                               } as any,
                            },
                            {
                               formAction: {
                                  title: 'Email',
-                                 type: TYPE_CONTROL_FORM.EMAIL,
+                                 type: TYPE_CONTROL_FORM.TEXT,
                                  formName: 'email',
                                  placeholder: 'nome@email.it',
-                                 css: {class: ['col-12', 'col-md-6']},
+                                 css: { class: ['col-12', 'col-md-6'] },
                                  formControl: new FormControl<string | null>(null, {
                                     validators: [Validators.required, Validators.email],
                                     updateOn: 'blur',
@@ -115,7 +115,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  type: TYPE_CONTROL_FORM.TEXT,
                                  formName: 'phone',
                                  placeholder: 'Telefono',
-                                 css: {class: ['col-12', 'col-md-6']},
+                                 css: { class: ['col-12', 'col-md-6'] },
                                  formControl: new FormControl<string | null>(null),
                               } as any,
                            },
@@ -124,14 +124,14 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  title: 'Sesso',
                                  type: TYPE_CONTROL_FORM.RADIOGROUP,
                                  formName: 'gender',
-                                 css: {class: ['col-12', 'col-md-6']},
+                                 css: { class: ['col-12', 'col-md-6'] },
                                  formControl: new FormControl<string | null>('M'),
                                  options: signal([
-                                    {id: 'M', description: 'Maschio'},
-                                    {id: 'F', description: 'Femmina'},
-                                    {id: 'N', description: 'Non specificato'},
+                                    { id: 'M', description: 'Maschio' },
+                                    { id: 'F', description: 'Femmina' },
+                                    { id: 'N', description: 'Non specificato' },
                                  ]),
-                                 keyCombo: {keyId: 'id', keyDescription: ['description']},
+                                 keyCombo: { keyId: 'id', keyDescription: ['description'] },
                               } as any,
                            },
                            {
@@ -139,7 +139,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  title: 'Cliente attivo',
                                  type: TYPE_CONTROL_FORM.CHECKBOX,
                                  formName: 'active',
-                                 css: {class: ['col-12', 'col-md-6']},
+                                 css: { class: ['col-12', 'col-md-6'] },
                                  formControl: new FormControl<boolean>(true),
                               } as any,
                            },
@@ -153,7 +153,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                   title: 'Documento',
                   type: TYPE_CONTROL_FORM.GROUP,
                   formName: 'document',
-                  css: {class: ['col-12', 'df-card']},
+                  css: { class: ['col-12', 'df-card'] },
                   formGroup: [
                      {
                         title: 'Dati documento',
@@ -165,14 +165,14 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  type: TYPE_CONTROL_FORM.COMBO,
                                  formName: 'documentType',
                                  placeholder: 'Seleziona documento',
-                                 css: {class: ['col-12', 'col-md-4']},
-                                 formControl: new FormControl<string | null>(null, {validators: [Validators.required]}),
+                                 css: { class: ['col-12', 'col-md-4'] },
+                                 formControl: new FormControl<string | null>(null, { validators: [Validators.required] }),
                                  options: signal([
-                                    {id: 'CI', description: 'Carta identità'},
-                                    {id: 'PASS', description: 'Passaporto'},
-                                    {id: 'PAT', description: 'Patente'},
+                                    { id: 'CI', description: 'Carta identità' },
+                                    { id: 'PASS', description: 'Passaporto' },
+                                    { id: 'PAT', description: 'Patente' },
                                  ]),
-                                 keyCombo: {keyId: 'id', keyDescription: ['description']},
+                                 keyCombo: { keyId: 'id', keyDescription: ['description'] },
                                  autocomplete: false,
                                  multiple: false,
                               } as any,
@@ -183,8 +183,8 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  type: TYPE_CONTROL_FORM.TEXT,
                                  formName: 'documentNumber',
                                  placeholder: 'Numero documento',
-                                 css: {class: ['col-12', 'col-md-4']},
-                                 formControl: new FormControl<string | null>(null, {validators: [Validators.required]}),
+                                 css: { class: ['col-12', 'col-md-4'] },
+                                 formControl: new FormControl<string | null>(null, { validators: [Validators.required] }),
                               } as any,
                            },
                            {
@@ -193,8 +193,8 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  type: TYPE_CONTROL_FORM.DATA,
                                  formName: 'documentExpireDate',
                                  placeholder: 'Data scadenza',
-                                 css: {class: ['col-12', 'col-md-4']},
-                                 formControl: new FormControl<Date | null>(null, {validators: [Validators.required]}),
+                                 css: { class: ['col-12', 'col-md-4'] },
+                                 formControl: new FormControl<Date | null>(null, { validators: [Validators.required] }),
                               } as any,
                            },
                         ],
@@ -221,7 +221,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                cssClassButton: ['btn', 'btn-secondary', 'me-2', 'mb-2'],
                action: (_questions, _idForm, formGroup) => {
                   const registry = groupAt(formGroup, 'registry');
-                  registry?.patchValue({firstName: 'Luca', lastName: 'Piciollo', email: 'luca@test.it', phone: '3331234567', gender: 'M', active: true});
+                  registry?.patchValue({ firstName: 'Luca', lastName: 'Piciollo', email: 'luca@test.it', phone: '3331234567', gender: 'M', active: true });
                   console.log('Patch anagrafica eseguito');
                },
             },
@@ -236,7 +236,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                   title: 'Indirizzo principale',
                   type: TYPE_CONTROL_FORM.GROUP,
                   formName: 'mainAddress',
-                  css: {class: ['col-12', 'df-card']},
+                  css: { class: ['col-12', 'df-card'] },
                   formGroup: [
                      {
                         title: 'Indirizzo',
@@ -248,7 +248,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  type: TYPE_CONTROL_FORM.TEXT,
                                  formName: 'street',
                                  placeholder: 'Via',
-                                 css: {class: ['col-12', 'col-md-6']},
+                                 css: { class: ['col-12', 'col-md-6'] },
                                  formControl: new FormControl<string | null>(null),
                               } as any,
                            },
@@ -258,7 +258,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  type: TYPE_CONTROL_FORM.TEXT,
                                  formName: 'streetNumber',
                                  placeholder: 'Civico',
-                                 css: {class: ['col-12', 'col-md-2']},
+                                 css: { class: ['col-12', 'col-md-2'] },
                                  formControl: new FormControl<string | null>(null),
                               } as any,
                            },
@@ -268,8 +268,8 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  type: TYPE_CONTROL_FORM.TEXT,
                                  formName: 'zipCode',
                                  placeholder: 'CAP',
-                                 css: {class: ['col-12', 'col-md-4']},
-                                 formControl: new FormControl<string | null>(null, {validators: [Validators.pattern(/^[0-9]{5}$/)]}),
+                                 css: { class: ['col-12', 'col-md-4'] },
+                                 formControl: new FormControl<string | null>(null, { validators: [Validators.pattern(/^[0-9]{5}$/)] }),
                               } as any,
                            },
                            {
@@ -277,7 +277,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  title: 'Comune e provincia',
                                  type: TYPE_CONTROL_FORM.GROUP,
                                  formName: 'cityInfo',
-                                 css: {class: ['col-12', 'df-sub-card']},
+                                 css: { class: ['col-12', 'df-sub-card'] },
                                  formGroup: [
                                     {
                                        title: 'Comune e provincia',
@@ -289,7 +289,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                                 type: TYPE_CONTROL_FORM.TEXT,
                                                 formName: 'city',
                                                 placeholder: 'Comune',
-                                                css: {class: ['col-12', 'col-md-6']},
+                                                css: { class: ['col-12', 'col-md-6'] },
                                                 formControl: new FormControl<string | null>(null),
                                              } as any,
                                           },
@@ -299,7 +299,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                                 type: TYPE_CONTROL_FORM.TEXT,
                                                 formName: 'province',
                                                 placeholder: 'Provincia',
-                                                css: {class: ['col-12', 'col-md-3']},
+                                                css: { class: ['col-12', 'col-md-3'] },
                                                 formControl: new FormControl<string | null>(null),
                                              } as any,
                                           },
@@ -309,14 +309,14 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                                 type: TYPE_CONTROL_FORM.COMBO,
                                                 formName: 'region',
                                                 placeholder: 'Regione',
-                                                css: {class: ['col-12', 'col-md-3']},
+                                                css: { class: ['col-12', 'col-md-3'] },
                                                 formControl: new FormControl<string | null>(null),
                                                 options: signal([
-                                                   {id: 'LAZIO', description: 'Lazio'},
-                                                   {id: 'UMBRIA', description: 'Umbria'},
-                                                   {id: 'TOSCANA', description: 'Toscana'},
+                                                   { id: 'LAZIO', description: 'Lazio' },
+                                                   { id: 'UMBRIA', description: 'Umbria' },
+                                                   { id: 'TOSCANA', description: 'Toscana' },
                                                 ]),
-                                                keyCombo: {keyId: 'id', keyDescription: ['description']},
+                                                keyCombo: { keyId: 'id', keyDescription: ['description'] },
                                                 autocomplete: true,
                                                 multiple: false,
                                              } as any,
@@ -336,7 +336,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                   title: 'Indirizzo secondario',
                   type: TYPE_CONTROL_FORM.GROUP,
                   formName: 'secondaryAddress',
-                  css: {class: ['col-12', 'df-card']},
+                  css: { class: ['col-12', 'df-card'] },
                   formGroup: [
                      {
                         title: 'Secondario',
@@ -347,7 +347,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  title: 'Usa indirizzo secondario',
                                  type: TYPE_CONTROL_FORM.CHECKBOX,
                                  formName: 'enabled',
-                                 css: {class: ['col-12']},
+                                 css: { class: ['col-12'] },
                                  formControl: new FormControl<boolean>(false),
                               } as any,
                            },
@@ -357,7 +357,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  type: TYPE_CONTROL_FORM.TEXT,
                                  formName: 'street',
                                  placeholder: 'Via secondaria',
-                                 css: {class: ['col-12', 'col-md-6']},
+                                 css: { class: ['col-12', 'col-md-6'] },
                                  formControl: new FormControl<string | null>(null),
                               } as any,
                            },
@@ -367,7 +367,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  type: TYPE_CONTROL_FORM.TEXT,
                                  formName: 'city',
                                  placeholder: 'Comune secondario',
-                                 css: {class: ['col-12', 'col-md-6']},
+                                 css: { class: ['col-12', 'col-md-6'] },
                                  formControl: new FormControl<string | null>(null),
                               } as any,
                            },
@@ -386,7 +386,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                   const mainAddress = groupAt(formGroup, 'mainAddress');
                   const cityInfo = groupAt(formGroup, 'mainAddress.cityInfo');
                   const secondaryAddress = groupAt(formGroup, 'secondaryAddress');
-                  secondaryAddress?.patchValue({enabled: true, street: mainAddress?.get('street')?.value, city: cityInfo?.get('city')?.value});
+                  secondaryAddress?.patchValue({ enabled: true, street: mainAddress?.get('street')?.value, city: cityInfo?.get('city')?.value });
                   console.log('Indirizzo copiato');
                },
             },
@@ -401,7 +401,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                   title: 'Dati contratto',
                   type: TYPE_CONTROL_FORM.GROUP,
                   formName: 'contract',
-                  css: {class: ['col-12', 'df-card']},
+                  css: { class: ['col-12', 'df-card'] },
                   formGroup: [
                      {
                         title: 'Contratto',
@@ -413,8 +413,8 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  type: TYPE_CONTROL_FORM.TEXT,
                                  formName: 'code',
                                  placeholder: 'Codice contratto',
-                                 css: {class: ['col-12', 'col-md-4']},
-                                 formControl: new FormControl<string | null>(null, {validators: [Validators.required]}),
+                                 css: { class: ['col-12', 'col-md-4'] },
+                                 formControl: new FormControl<string | null>(null, { validators: [Validators.required] }),
                               } as any,
                            },
                            {
@@ -423,14 +423,14 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  type: TYPE_CONTROL_FORM.COMBO,
                                  formName: 'type',
                                  placeholder: 'Tipo contratto',
-                                 css: {class: ['col-12', 'col-md-4']},
+                                 css: { class: ['col-12', 'col-md-4'] },
                                  formControl: new FormControl<string | null>(null),
                                  options: signal([
-                                    {id: 'STANDARD', description: 'Standard'},
-                                    {id: 'PREMIUM', description: 'Premium'},
-                                    {id: 'CUSTOM', description: 'Personalizzato'},
+                                    { id: 'STANDARD', description: 'Standard' },
+                                    { id: 'PREMIUM', description: 'Premium' },
+                                    { id: 'CUSTOM', description: 'Personalizzato' },
                                  ]),
-                                 keyCombo: {keyId: 'id', keyDescription: ['description']},
+                                 keyCombo: { keyId: 'id', keyDescription: ['description'] },
                                  autocomplete: false,
                                  multiple: false,
                               } as any,
@@ -440,7 +440,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  title: 'Attivazione immediata',
                                  type: TYPE_CONTROL_FORM.CHECKBOX,
                                  formName: 'immediateActivation',
-                                 css: {class: ['col-12', 'col-md-4']},
+                                 css: { class: ['col-12', 'col-md-4'] },
                                  formControl: new FormControl<boolean>(false),
                               } as any,
                            },
@@ -449,7 +449,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  title: 'Periodo contratto',
                                  type: TYPE_CONTROL_FORM.GROUP,
                                  formName: 'period',
-                                 css: {class: ['col-12', 'df-sub-card']},
+                                 css: { class: ['col-12', 'df-sub-card'] },
                                  formGroup: [
                                     {
                                        title: 'Periodo',
@@ -461,7 +461,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                                 type: TYPE_CONTROL_FORM.DATA,
                                                 formName: 'from',
                                                 placeholder: 'Data inizio',
-                                                css: {class: ['col-12', 'col-md-6']},
+                                                css: { class: ['col-12', 'col-md-6'] },
                                                 formControl: new FormControl<Date | null>(null),
                                              } as any,
                                           },
@@ -471,7 +471,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                                 type: TYPE_CONTROL_FORM.DATA,
                                                 formName: 'to',
                                                 placeholder: 'Data fine',
-                                                css: {class: ['col-12', 'col-md-6']},
+                                                css: { class: ['col-12', 'col-md-6'] },
                                                 formControl: new FormControl<Date | null>(null),
                                              } as any,
                                           },
@@ -485,7 +485,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                  title: 'Importi',
                                  type: TYPE_CONTROL_FORM.GROUP,
                                  formName: 'amounts',
-                                 css: {class: ['col-12', 'df-sub-card']},
+                                 css: { class: ['col-12', 'df-sub-card'] },
                                  formGroup: [
                                     {
                                        title: 'Importi',
@@ -497,8 +497,8 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                                 type: TYPE_CONTROL_FORM.CURRENCY,
                                                 formName: 'taxable',
                                                 placeholder: 'Imponibile',
-                                                css: {class: ['col-12', 'col-md-4']},
-                                                formControl: new FormControl<number | null>(0, {validators: [Validators.min(0)]}),
+                                                css: { class: ['col-12', 'col-md-4'] },
+                                                formControl: new FormControl<number | null>(0, { validators: [Validators.min(0)] }),
                                                 currency: 'EUR',
                                              } as any,
                                           },
@@ -508,8 +508,8 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                                 type: TYPE_CONTROL_FORM.NUMBER,
                                                 formName: 'vat',
                                                 placeholder: 'IVA',
-                                                css: {class: ['col-12', 'col-md-4']},
-                                                formControl: new FormControl<number | null>(22, {validators: [Validators.min(0), Validators.max(100)]}),
+                                                css: { class: ['col-12', 'col-md-4'] },
+                                                formControl: new FormControl<number | null>(22, { validators: [Validators.min(0), Validators.max(100)] }),
                                              } as any,
                                           },
                                           {
@@ -518,8 +518,8 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                                                 type: TYPE_CONTROL_FORM.CURRENCY,
                                                 formName: 'total',
                                                 placeholder: 'Totale',
-                                                css: {class: ['col-12', 'col-md-4']},
-                                                formControl: new FormControl<number | null>({value: 0, disabled: true}),
+                                                css: { class: ['col-12', 'col-md-4'] },
+                                                formControl: new FormControl<number | null>({ value: 0, disabled: true }),
                                                 currency: 'EUR',
                                              } as any,
                                           },
@@ -573,7 +573,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                   type: TYPE_CONTROL_FORM.TEXTAREA,
                   formName: 'internalNotes',
                   placeholder: 'Scrivi note interne',
-                  css: {class: ['col-12']},
+                  css: { class: ['col-12'] },
                   formControl: new FormControl<string | null>(null),
                   rows: 4,
                } as any,
@@ -584,7 +584,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                   type: TYPE_CONTROL_FORM.ARRAYSTRING,
                   formName: 'tags',
                   placeholder: 'Aggiungi tag',
-                  css: {class: ['col-12']},
+                  css: { class: ['col-12'] },
                   formControl: new FormControl<string[]>(['cliente', 'test', 'annidato']),
                } as any,
             },
@@ -593,7 +593,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                   title: 'Allegato documento',
                   type: TYPE_CONTROL_FORM.FILE,
                   formName: 'attachment',
-                  css: {class: ['col-12', 'col-md-6']},
+                  css: { class: ['col-12', 'col-md-6'] },
                   formControl: new FormControl<File | null>(null),
                   accept: '.pdf,.png,.jpg,.jpeg',
                } as any,
@@ -603,7 +603,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                   title: 'Link esterno',
                   type: TYPE_CONTROL_FORM.LINK,
                   formName: 'externalLink',
-                  css: {class: ['col-12', 'col-md-6']},
+                  css: { class: ['col-12', 'col-md-6'] },
                   label: 'Apri documento esterno',
                   href: 'https://example.com',
                   target: '_blank',

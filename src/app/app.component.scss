@@ -1,129 +1,283 @@
-.playground-page {
-   min-height: 100vh;
-   padding: 24px;
-   background: #f4f7fb;
-   color: #172033;
+// ─────────────────────────────────────────────────────────────────────────────
+// NUTRICARE PRO — App shell styles
+// Palette: deep green #1b5e20 / mid green #2e7d32 / light green #a5d6a7
+// ─────────────────────────────────────────────────────────────────────────────
+
+:host {
+  display: block;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-.playground-header,
-.playground-card,
-.value-card {
-   border: 1px solid rgba(17, 24, 39, 0.08);
-   border-radius: 18px;
-   background: #ffffff;
-   box-shadow: 0 16px 40px rgba(17, 24, 39, 0.08);
+// ─── LAYOUT WRAPPER ──────────────────────────────────────────────────────────
+
+.nutri-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f1f8e9;
 }
 
-.playground-header {
-   display: flex;
-   gap: 18px;
-   justify-content: space-between;
-   align-items: flex-start;
-   padding: 20px;
-   margin-bottom: 20px;
+// ─── HEADER ──────────────────────────────────────────────────────────────────
+
+.nutri-header {
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 50%, #43a047 100%);
+  color: #fff;
+  box-shadow: 0 4px 24px rgba(27, 94, 32, 0.35);
+  position: sticky;
+  top: 0;
+  z-index: 200;
 }
 
-.playground-header h1 {
-   margin: 0 0 6px;
-   font-size: 26px;
-   font-weight: 800;
+.nutri-logo {
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  backdrop-filter: blur(4px);
+  flex-shrink: 0;
 }
 
-.playground-header p {
-   margin: 0;
-   color: #667085;
+.nutri-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
 }
 
-.playground-actions {
-   display: flex;
-   gap: 10px;
-   flex-wrap: wrap;
-   justify-content: flex-end;
+.nutri-subtitle {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  font-weight: 400;
 }
 
-.playground-actions button,
-.df-action-btn {
-   border: 0;
-   border-radius: 12px;
-   padding: 10px 14px;
-   background: #2563eb;
-   color: #fff;
-   font-weight: 700;
-   cursor: pointer;
+.nutri-pro-badge {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  backdrop-filter: blur(4px);
+
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    background: #a5d6a7;
+    border-radius: 50%;
+    animation: pulse-dot 2s infinite;
+    flex-shrink: 0;
+  }
 }
 
-.playground-actions button.secondary {
-   background: #475467;
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(1.4); }
 }
 
-.playground-card {
-   padding: 18px;
+// ─── MODE BAR ────────────────────────────────────────────────────────────────
+
+.nutri-mode-bar {
+  background: #fff;
+  border-bottom: 2px solid #e8f5e9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.value-grid {
-   display: grid;
-   grid-template-columns: repeat(3, minmax(0, 1fr));
-   gap: 16px;
-   margin-top: 20px;
+.nutri-tab-btn {
+  border: 2px solid #c8e6c9;
+  background: transparent;
+  color: #388e3c;
+  border-radius: 20px;
+  padding: 6px 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.active {
+    background: #2e7d32;
+    color: #fff;
+    border-color: #2e7d32;
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+  }
+
+  &:not(.active):hover {
+    background: #e8f5e9;
+  }
 }
 
-.value-card {
-   padding: 16px;
-   min-width: 0;
+.nutri-mode-hint {
+  font-size: 0.78rem;
+  color: #777;
 }
 
-.value-card h2 {
-   margin: 0 0 12px;
-   font-size: 16px;
+// ─── MAIN ────────────────────────────────────────────────────────────────────
+
+.nutri-main {
+  flex: 1;
+  padding: 2rem 0 3rem;
 }
 
-pre {
-   max-height: 360px;
-   overflow: auto;
-   padding: 14px;
-   border-radius: 12px;
-   background: #101828;
-   color: #d0d5dd;
-   font-size: 12px;
+// ─── INTRO CARD ──────────────────────────────────────────────────────────────
+
+.nutri-intro-card {
+  background: #fff;
+  border: 1px solid #c8e6c9;
+  border-left: 5px solid #4caf50;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  h5 {
+    color: #2e7d32;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  p {
+    font-size: 0.87rem;
+    line-height: 1.6;
+  }
 }
 
-:host ::ng-deep .df-section-main {
-   display: block;
+.nutri-intro-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
 }
 
-:host ::ng-deep .df-card {
-   margin-bottom: 16px;
-   padding: 16px;
-   border: 1px solid rgba(37, 99, 235, 0.14);
-   border-radius: 16px;
-   background: linear-gradient(180deg, #ffffff, #f8fbff);
+// ─── SIDEBAR ─────────────────────────────────────────────────────────────────
+
+.nutri-sidebar {
+  position: sticky;
+  top: 88px; // below sticky header + mode-bar
 }
 
-:host ::ng-deep .df-sub-group {
-   margin-bottom: 12px;
-   padding: 12px;
-   border-radius: 14px;
-   background: rgba(37, 99, 235, 0.035);
+// ─── BMI CARD ────────────────────────────────────────────────────────────────
+
+.nutri-bmi-card {
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+  color: #fff;
+  border-radius: 16px;
+  padding: 1.4rem 1.5rem;
+  box-shadow: 0 8px 28px rgba(27, 94, 32, 0.35);
+
+  .bmi-label {
+    font-size: 0.75rem;
+    opacity: 0.75;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+  }
+
+  .bmi-value {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+  }
+
+  .bmi-icon {
+    font-size: 2rem;
+    opacity: 0.6;
+  }
+
+  .bmi-category-badge {
+    display: inline-block;
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+
+  .bmi-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.2);
+
+    .bmi-indicator {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                  background 0.4s ease;
+    }
+  }
 }
 
-:host ::ng-deep .df-action-primary {
-   background: #2563eb !important;
+// ─── REFERENCE / TIPS CARDS ──────────────────────────────────────────────────
+
+.nutri-ref-card,
+.nutri-tips-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e8f5e9;
 }
 
-:host ::ng-deep .df-action-success {
-   background: #16a34a !important;
+.nutri-ref-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2e7d32;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-:host ::ng-deep .df-action-warning {
-   background: #f59e0b !important;
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
 }
 
-@media (max-width: 900px) {
-   .playground-header {
-      flex-direction: column;
-   }
+.nutri-tips-list {
+  font-size: 0.82rem;
+  color: #555;
+  padding-left: 1.2rem;
+  margin: 0;
 
-   .value-grid {
-      grid-template-columns: 1fr;
-   }
+  li {
+    margin-bottom: 0.4rem;
+    line-height: 1.5;
+  }
+}
+
+// ─── FOOTER ──────────────────────────────────────────────────────────────────
+
+.nutri-footer {
+  background: #1b5e20;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.82rem;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
+}
+
+// ─── RESPONSIVE ──────────────────────────────────────────────────────────────
+
+@media (max-width: 768px) {
+  .nutri-title {
+    font-size: 1.2rem;
+  }
+  .nutri-sidebar {
+    position: static;
+  }
+}
+
+// ─── PRINT ───────────────────────────────────────────────────────────────────
+
+@media print {
+  .nutri-header,
+  .nutri-mode-bar,
+  .nutri-sidebar,
+  .nutri-footer {
+    display: none !important;
+  }
+  .nutri-main {
+    padding: 0;
+  }
 }

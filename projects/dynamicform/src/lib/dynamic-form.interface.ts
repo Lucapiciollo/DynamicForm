@@ -84,7 +84,7 @@ export enum TYPE_CONTROL_FORM {
    COMBO,
    DATA,
    DATARANGE,
-   EMAIL,
+
    TIME,
    GROUP,
    SORTACTION,

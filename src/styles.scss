@@ -1,2 +1,152 @@
  @import '@angular/material/prebuilt-themes/indigo-pink.css';
  @import "node_modules/bootstrap/dist/css/bootstrap.min.css";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NUTRICARE PRO — DynamicForm section card & day card layout
+// ─────────────────────────────────────────────────────────────────────────────
+
+/* ── Section card wrapper ────────────────────────────────────────────────── */
+.nutri-section {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.25rem 1.75rem 0.75rem;
+  box-shadow: 0 3px 18px rgba(27, 94, 32, 0.10);
+  border: 1px solid #e8f5e9;
+  border-top: 4px solid #4caf50;
+  transition: padding-bottom 0.3s ease;
+}
+
+/* ── Section title — clickable accordion header ──────────────────────────── */
+.nutri-section .form-title {
+  font-size: 1.0rem !important;
+  font-weight: 700 !important;
+  color: #1b5e20 !important;
+  padding-bottom: 0.65rem !important;
+  border-bottom: 2px solid #e8f5e9 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.nutri-section .form-title::after {
+  content: '▾';
+  font-size: 1.05rem;
+  color: #4caf50;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.nutri-section.collapsed .form-title::after {
+  transform: rotate(-90deg);
+}
+
+/* ── Gutters override: fields row (hardcoded g-0 in DynamicForm TypeForm) ─ */
+/* Targets the row immediately wrapping form-field host elements            */
+.nutri-section > .row.g-0 {
+  --bs-gutter-x: 0.875rem;
+  --bs-gutter-y: 0.875rem;
+  overflow: hidden;
+  max-height: 4000px;
+  opacity: 1;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+}
+
+/* ── Collapsed state ─────────────────────────────────────────────────────── */
+.nutri-section.collapsed > .row.g-0 {
+  max-height: 0 !important;
+  opacity: 0;
+  --bs-gutter-y: 0;
+}
+
+.nutri-section.collapsed {
+  padding-bottom: 1.25rem;
+}
+
+.nutri-section.collapsed > .row.mb-4 {
+  margin-bottom: 0 !important;
+}
+
+/* ── Day card (each weekday GROUP inside Diario Alimentare) ──────────────── */
+.nutri-day-card {
+  background: #f9fbe7;
+  border: 1px solid #dcedc8;
+  border-left: 4px solid #8bc34a;
+  border-radius: 12px;
+  padding: 0.875rem 1.25rem 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ── Day card title ──────────────────────────────────────────────────────── */
+.nutri-day-card .form-title {
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  color: #33691e !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 1px solid #c5e1a5 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.nutri-day-card .form-title::after {
+  content: '\25BE';
+  font-size: 1rem;
+  color: #8bc34a;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.nutri-day-card.collapsed .form-title::after {
+  transform: rotate(-90deg);
+}
+
+/* ── Meal field gutters inside day card ──────────────────────────────────── */
+.nutri-day-card .row.g-0 {
+  --bs-gutter-x: 0.625rem;
+  --bs-gutter-y: 0.625rem;
+  overflow: hidden;
+  max-height: 2000px;
+  opacity: 1;
+  transition: max-height 0.3s ease, opacity 0.22s ease;
+}
+
+.nutri-day-card.collapsed .row.g-0 {
+  max-height: 0 !important;
+  opacity: 0;
+  --bs-gutter-y: 0;
+}
+
+.nutri-day-card.collapsed {
+  padding-bottom: 0.875rem;
+}
+
+.nutri-day-card.collapsed > .row.mb-4 {
+  margin-bottom: 0 !important;
+}
+
+.nutri-day-card {
+  transition: padding-bottom 0.3s ease;
+}
+
+/* ── GROUP sub-title rendered by the template for GROUP-type fields ───────── */
+.form-sub-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #2e7d32;
+  background: #e8f5e9;
+  border-radius: 6px;
+  padding: 0.3rem 0.75rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
