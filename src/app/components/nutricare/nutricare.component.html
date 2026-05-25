@@ -1,0 +1,47 @@
+<div class="nc-page">
+
+    <!-- Page header strip -->
+    <div class="nc-page-header">
+        <div class="nc-page-header-inner">
+            <div class="nc-page-breadcrumb">
+                <a routerLink="/" class="nc-breadcrumb-link">Home</a>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+                <span>Scheda Paziente</span>
+            </div>
+            <div class="nc-page-title-row">
+                <h1 class="nc-page-title">Valutazione Nutrizionale</h1>
+                <div class="nc-page-badge">Nuova scheda</div>
+            </div>
+            <p class="nc-page-sub">
+                Compila i campi per costruire un profilo paziente completo. BMI calcolato automaticamente.
+            </p>
+        </div>
+    </div>
+
+    <!-- Body -->
+    <div class="nc-page-body container-fluid px-4 py-4">
+        <div class="row g-4">
+
+            <!-- ── FORM COLUMN ──────────────────────────────────────────── -->
+            <div class="col-xl-9">
+                <div (click)="onFormClick($event)">
+                    <app-dynamic-form [questions]="nutritionistQuestions" (onFormCreate)="onFormCreate($event)">
+                    </app-dynamic-form>
+                </div>
+
+                <!-- Diario alimentare bisettimanale con tab settimane/giorni -->
+                <app-diario-settimanale></app-diario-settimanale>
+            </div>
+
+            <!-- ── SIDEBAR ─────────────────────────────────────────────── -->
+            <div class="col-xl-3">
+                <app-nutri-sidebar [bmiValue]="bmiValue" [bmiCategory]="bmiCategory">
+                </app-nutri-sidebar>
+            </div>
+
+        </div>
+    </div>
+
+</div>

@@ -13,58 +13,19 @@ function field(formAction: any): any {
 }
 
 // ---------------------------------------------------------------------------
-// Opzioni condivise (usate come signal per aggiornamenti reattivi)
+// Opzioni condivise — signal esportati per aggiornamento da NgRx Store
 // ---------------------------------------------------------------------------
-const livelloAttivitaOptions = signal([
-    { id: 'sedentario', description: '🛋️ Sedentario (nessun esercizio)' },
-    { id: 'leggero', description: '🚶 Leggero (1-2 volte/sett)' },
-    { id: 'moderato', description: '🏃 Moderato (3-5 volte/sett)' },
-    { id: 'intenso', description: '🏋️ Intenso (6-7 volte/sett)' },
-    { id: 'molto-intenso', description: '⚡ Molto intenso (2x/giorno)' },
-]);
+export const livelloAttivitaOptions = signal([]);
 
-const tipoAttivitaOptions = signal([
-    { id: 'nessuna', description: 'Nessuna' },
-    { id: 'camminata', description: '🚶 Camminata' },
-    { id: 'corsa', description: '🏃 Corsa / Running' },
-    { id: 'ciclismo', description: '🚴 Ciclismo' },
-    { id: 'nuoto', description: '🏊 Nuoto' },
-    { id: 'palestra', description: '🏋️ Palestra / Pesi' },
-    { id: 'yoga-pilates', description: '🧘 Yoga / Pilates' },
-    { id: 'sport-squadra', description: '⚽ Sport di squadra' },
-    { id: 'altro', description: 'Altro' },
-]);
+export const tipoAttivitaOptions = signal([]);
 
-const freqAllenamentoOptions = signal([
-    { id: '0', description: 'Mai' },
-    { id: '1', description: '1 volta a settimana' },
-    { id: '2-3', description: '2-3 volte a settimana' },
-    { id: '4-5', description: '4-5 volte a settimana' },
-    { id: '6+', description: '6+ volte a settimana' },
-]);
+export const freqAllenamentoOptions = signal([]);
 
-const sessoOptions = signal([
-    { id: 'M', description: 'Maschio' },
-    { id: 'F', description: 'Femmina' },
-    { id: 'A', description: 'Altro' },
-]);
+const sessoOptions = signal([]);
 
-const stressOptions = signal([
-    { id: '1', description: '1 – Minimo' },
-    { id: '2', description: '2 – Basso' },
-    { id: '3', description: '3 – Moderato' },
-    { id: '4', description: '4 – Alto' },
-    { id: '5', description: '5 – Molto alto' },
-]);
+const stressOptions = signal([]);
 
-const obiettivoOptions = signal([
-    { id: 'perdita-peso', description: '⬇️ Perdita di peso' },
-    { id: 'mantenimento', description: '⚖️ Mantenimento' },
-    { id: 'aumento-massa', description: '⬆️ Aumento massa muscolare' },
-    { id: 'miglioramento-salute', description: '❤️ Miglioramento salute generale' },
-    { id: 'patologia-specifica', description: '🏥 Gestione patologia specifica' },
-    { id: 'sport-performance', description: '🏅 Performance sportiva' },
-]);
+const obiettivoOptions = signal([]);
 
 // ---------------------------------------------------------------------------
 // onChange per BMI (firma completa di DynamicFormOnChange)
@@ -433,25 +394,13 @@ export function buildNutritionistForm(): ConfigForm {
         },
 
         // ───────────────────────────────────────────────────────────────────
-        // GRUPPO 6 · Diario Alimentare Settimanale
-        // Ogni giorno = campo GROUP → FormArray([FormGroup({ colazione, ... })])
+        // GRUPPO 6 · Diario Alimentare — gestito dal DiarioSettimanaleComponent
+        // (rimosso dalla ConfigForm: il componente dedicato con tab settimane
+        //  viene incluso direttamente nel template di NutriCareComponent)
         // ───────────────────────────────────────────────────────────────────
-        {
-            title: '📅 Diario Alimentare Settimanale',
-            class: ['col-12', 'nutri-section', 'mb-3'],
-            formGroup: [
-                giornoBuilder('lunedi', '🟢', 'Lunedì'),
-                giornoBuilder('martedi', '🔵', 'Martedì'),
-                giornoBuilder('mercoledi', '🟣', 'Mercoledì'),
-                giornoBuilder('giovedi', '🟠', 'Giovedì'),
-                giornoBuilder('venerdi', '🟡', 'Venerdì'),
-                giornoBuilder('sabato', '🔴', 'Sabato'),
-                giornoBuilder('domenica', '⚪', 'Domenica'),
-            ],
-        },
 
         // ───────────────────────────────────────────────────────────────────
-        // GRUPPO 7 · Obiettivi Terapeutici
+        // GRUPPO 6 · Obiettivi Terapeutici
         // ───────────────────────────────────────────────────────────────────
         {
             title: '🎯 Obiettivi Terapeutici',

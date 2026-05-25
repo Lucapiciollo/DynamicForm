@@ -1,0 +1,75 @@
+<!-- DiarioSettimanaleComponent — 2 settimane × 7 giorni con doppio tab -->
+
+<div class="ds-card nutri-section mb-3">
+
+    <!-- ── Card header (stesso stile delle nutri-section) ─────────────────── -->
+    <div class="row mb-4 g-1 ps-1">
+        <div class="form-title fs-13">📅 Diario Alimentare — 2 Settimane</div>
+    </div>
+
+    <!-- ── Tab settimane ──────────────────────────────────────────────────── -->
+    <div class="ds-body">
+        <mat-tab-group class="ds-week-tabs" animationDuration="200ms" disableRipple>
+
+            <mat-tab *ngFor="let sett of settimane; let si = index" [label]="sett.label">
+
+                <!-- ── Tab giorni ────────────────────────────────────────── -->
+                <mat-tab-group class="ds-day-tabs" animationDuration="150ms" disableRipple>
+
+                    <mat-tab *ngFor="let giorno of giorni; let gi = index">
+
+                        <!-- Day tab header -->
+                        <ng-template mat-tab-label>
+                            <span class="ds-day-label">
+                                <span class="ds-day-emoji">{{ giorno.emoji }}</span>
+                                <span class="ds-day-short">{{ giorno.short }}</span>
+                                <span class="ds-day-full">{{ giorno.label }}</span>
+                            </span>
+                        </ng-template>
+
+                        <!-- ── Day content ──────────────────────────────── -->
+                        <div class="ds-day-panel" [formGroup]="getDayGroup(sett.id, giorno.id)">
+
+                            <!-- Pasti: 5 fields in griglia 2+2+1 -->
+                            <div class="row g-3 mb-2">
+                                <div class="col-md-6" *ngFor="let pasto of pasti">
+                                    <mat-form-field class="w-100 customMY">
+                                        <mat-label>{{ pasto.label }}</mat-label>
+                                        <textarea matInput [rows]="pasto.rows" [formControlName]="pasto.id"
+                                            [placeholder]="'es. pasta al pomodoro, insalata...'" cdkTextareaAutosize
+                                            [cdkAutosizeMinRows]="pasto.rows" [cdkAutosizeMaxRows]="6">
+                                        </textarea>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <!-- Riga inferiore: Note + Sgarro -->
+                            <div class="row g-3 align-items-start">
+                                <div class="col-md-9">
+                                    <mat-form-field class="w-100 customMY">
+                                        <mat-label>📝 Note del giorno</mat-label>
+                                        <textarea matInput rows="2" formControlName="note"
+                                            placeholder="Annotazioni, sensazioni, variazioni...">
+                                        </textarea>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-3 ds-sgarro-col">
+                                    <mat-checkbox formControlName="sgarro" class="ds-sgarro-check">
+                                        🍕 Sgarro / Strappo
+                                    </mat-checkbox>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- /day content -->
+
+                    </mat-tab>
+                </mat-tab-group>
+                <!-- /tab giorni -->
+
+            </mat-tab>
+        </mat-tab-group>
+        <!-- /tab settimane -->
+    </div>
+
+</div>

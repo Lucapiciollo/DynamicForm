@@ -1,0 +1,97 @@
+<aside class="ns-sidebar">
+
+    <!-- ── BMI CARD ─────────────────────────────────────────────────────── -->
+    <div class="ns-bmi-card">
+        <div class="ns-bmi-header">
+            <div class="ns-bmi-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                    <circle cx="12" cy="9" r="2.5"/>
+                </svg>
+            </div>
+            <div>
+                <div class="ns-bmi-label">Indice di Massa Corporea</div>
+                <div class="ns-bmi-value">{{ bmiValue !== null ? bmiValue : '—' }}</div>
+            </div>
+        </div>
+
+        <div class="ns-bmi-category" [style.--cat-color]="bmiCategory.color">
+            {{ bmiCategory.label }}
+        </div>
+
+        <!-- Progress bar -->
+        <div class="ns-bmi-track">
+            <div class="ns-bmi-fill"
+                 [style.width.%]="bmiCategory.percent"
+                 [style.background]="bmiCategory.color">
+            </div>
+        </div>
+        <div class="ns-bmi-scale">
+            <span>Sotto</span>
+            <span>Normo</span>
+            <span>Sovra</span>
+            <span>Obeso</span>
+        </div>
+    </div>
+
+    <!-- ── REFERENCE TABLE ───────────────────────────────────────────────── -->
+    <div class="ns-card">
+        <div class="ns-card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="8" y1="6" x2="21" y2="6"/>
+                <line x1="8" y1="12" x2="21" y2="12"/>
+                <line x1="8" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6"  x2="3.01" y2="6"/>
+                <line x1="3" y1="12" x2="3.01" y2="12"/>
+                <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            Classificazione BMI
+        </div>
+        <div class="ns-bmi-table">
+            <div class="ns-bmi-row">
+                <span class="ns-dot" style="background:#3b82f6"></span>
+                <span class="ns-range">&lt; 18.5</span>
+                <span class="ns-desc">Sottopeso</span>
+            </div>
+            <div class="ns-bmi-row ns-bmi-row--hl">
+                <span class="ns-dot" style="background:#22c55e"></span>
+                <span class="ns-range">18.5 – 24.9</span>
+                <span class="ns-desc">Normopeso</span>
+            </div>
+            <div class="ns-bmi-row">
+                <span class="ns-dot" style="background:#f59e0b"></span>
+                <span class="ns-range">25 – 29.9</span>
+                <span class="ns-desc">Sovrappeso</span>
+            </div>
+            <div class="ns-bmi-row">
+                <span class="ns-dot" style="background:#ef4444"></span>
+                <span class="ns-range">30 – 34.9</span>
+                <span class="ns-desc">Obesita I</span>
+            </div>
+            <div class="ns-bmi-row">
+                <span class="ns-dot" style="background:#991b1b"></span>
+                <span class="ns-range">&#8805; 35</span>
+                <span class="ns-desc">Obesita grave</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── TIPS CARD ─────────────────────────────────────────────────────── -->
+    <div class="ns-card">
+        <div class="ns-card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4M12 8h.01"/>
+            </svg>
+            Note cliniche
+        </div>
+        <ul class="ns-tips-list">
+            <li>Verifica allergie prima di qualsiasi piano</li>
+            <li>Stima metabolismo basale (Harris-Benedict)</li>
+            <li>Considera attivita fisica per TDEE</li>
+            <li>Valuta stress e qualita del sonno</li>
+            <li>Rivaluta il peso ogni 2 – 4 settimane</li>
+        </ul>
+    </div>
+
+</aside>

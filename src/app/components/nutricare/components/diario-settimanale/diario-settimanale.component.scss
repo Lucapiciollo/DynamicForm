@@ -1,0 +1,176 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// DiarioSettimanaleComponent
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Body wrapper (inside nutri-section) ──────────────────────────────────────
+.ds-body {
+    padding: 0 1.25rem 0.875rem;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Settimana tabs (outer)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ds-week-tabs {
+
+    // Header bar
+    ::ng-deep .mat-mdc-tab-header {
+        background: transparent;
+        border-bottom: 2px solid #1e2d47;
+        margin-bottom: 1rem;
+    }
+
+    // Tab labels
+    ::ng-deep .mat-mdc-tab .mdc-tab__text-label {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #94a3b8;
+        letter-spacing: 0.1px;
+    }
+
+    ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+        color: #818cf8;
+    }
+
+    // Active ink bar → indigo
+    ::ng-deep .mdc-tab-indicator__content--underline {
+        border-color: #6366f1 !important;
+        border-top-width: 3px !important;
+        border-radius: 2px 2px 0 0;
+    }
+
+    // Ripple
+    ::ng-deep .mat-mdc-tab .mat-ripple-element {
+        background: rgba(99, 102, 241, 0.08);
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Giorno tabs (inner)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ds-day-tabs {
+
+    // Header row — pill style
+    ::ng-deep .mat-mdc-tab-header {
+        background: #f5f5ff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        margin-bottom: 1.25rem;
+        padding: 4px;
+        overflow: hidden;
+    }
+
+    ::ng-deep .mat-mdc-tab-header-pagination {
+        display: none !important;
+    }
+
+    // Tab list fills the header
+    ::ng-deep .mat-mdc-tab-list {
+        width: 100%;
+    }
+
+    ::ng-deep .mat-mdc-tab-labels {
+        gap: 2px;
+    }
+
+    // Each tab
+    ::ng-deep .mat-mdc-tab {
+        flex: 1;
+        min-width: 0;
+        height: 36px;
+        padding: 0 8px;
+        border-radius: 7px;
+        transition: background 0.15s ease;
+    }
+
+    ::ng-deep .mat-mdc-tab:hover:not(.mdc-tab--active) {
+        background: rgba(99, 102, 241, 0.08);
+    }
+
+    ::ng-deep .mat-mdc-tab.mdc-tab--active {
+        background: #4f46e5;
+    }
+
+    // Active ink bar — hidden, we use background instead
+    ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab-indicator__content--underline {
+        display: none;
+    }
+
+    ::ng-deep .mat-mdc-tab-indicator {
+        display: none;
+    }
+
+    // Label text
+    ::ng-deep .mat-mdc-tab .mdc-tab__text-label {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #64748b;
+        letter-spacing: 0;
+        transition: color 0.15s ease;
+    }
+
+    ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+        color: #ffffff !important;
+    }
+
+    // Ripple
+    ::ng-deep .mat-mdc-tab .mat-ripple-element {
+        background: rgba(22, 163, 74, 0.1);
+    }
+}
+
+// ── Day label inside tab ──────────────────────────────────────────────────────
+
+.ds-day-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.ds-day-emoji {
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+.ds-day-short {
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+// Show full name on wider screens, hide on mobile
+.ds-day-full {
+    display: none;
+
+    @media (min-width: 768px) {
+        display: inline;
+        font-size: 0.78rem;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Day content panel
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ds-day-panel {
+    padding-top: 0.25rem;
+}
+
+// Sgarro checkbox column — vertically centred relative to textarea
+.ds-sgarro-col {
+    display: flex;
+    align-items: center;
+    padding-top: 0.75rem;
+}
+
+.ds-sgarro-check {
+    ::ng-deep .mdc-form-field label {
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.875rem !important;
+        color: #374151 !important;
+        font-weight: 500 !important;
+    }
+}

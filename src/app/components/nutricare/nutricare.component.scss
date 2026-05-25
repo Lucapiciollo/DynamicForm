@@ -1,0 +1,96 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// NutriCareComponent — page layout + header strip
+// ─────────────────────────────────────────────────────────────────────────────
+
+.nc-page {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 64px);
+    background: #f5f5ff;
+}
+
+// ─── Page header strip ────────────────────────────────────────────────────────
+
+.nc-page-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e8e4ff;
+    padding: 1.25rem 0 1.5rem;
+}
+
+.nc-page-header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+// Breadcrumb
+.nc-page-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-bottom: 0.6rem;
+
+    svg { opacity: 0.5; }
+
+    span { color: #64748b; }
+}
+
+.nc-breadcrumb-link {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s ease;
+    &:hover { color: #4338ca; }
+}
+
+// Title row
+.nc-page-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.4rem;
+}
+
+.nc-page-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.nc-page-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #4f46e5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nc-page-sub {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.5;
+}
+
+// ─── Body ─────────────────────────────────────────────────────────────────────
+
+.nc-page-body {
+    flex: 1;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}

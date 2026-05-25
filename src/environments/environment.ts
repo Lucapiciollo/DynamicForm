@@ -11,11 +11,11 @@ export const environment = {
   production: false,
   /**
    * @author l.piciollo
-   * chiave preimpostata, da valorizzare con il puntamento al BE.. ne fa uso il cor applicativo
-   * E.S http://localhost:8080/
+   * URL base del BE Node.js (NutriCare API server)
+   * Avviare il server con: npm run server:start
    */
-  baseUrlRemoteApi: "",
-  
+  baseUrlRemoteApi: 'http://localhost:3000',
+
   http: {
     /**
      * @author l.piciollo
@@ -35,6 +35,13 @@ export const environment = {
        */
       exampleApi: `@cachable@/example/cache/api?param1={0}&param2={1}`,
       exampleApeNoCache: `example/no/cache/api?param1={0}&param2={1}`,
+
+      /** Route combo — popolano i campi select del form nutrizionista via NgRx */
+      combo: {
+        livelloAttivita: 'api/livello-attivita',
+        tipoAttivitaFisica: 'api/tipo-attivita-fisica',
+        freqAllenamento: 'api/freq-allenamento',
+      },
       /**
        *  @author l.piciollo
        *  è possibile dichiarare una chiamata ad un mock, si consiglia di rispettare il seguente formato dichiarativo
@@ -50,7 +57,7 @@ export const environment = {
       mock: {
         url: "/example/:api/:files",
         mocked: true,
-        method:"GET"
+        method: "GET"
       }
     }
   }

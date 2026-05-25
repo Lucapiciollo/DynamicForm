@@ -14,8 +14,9 @@ export const environment = {
    * chiave preimpostata, da valorizzare con il puntamento al BE.. ne fa uso il cor applicativo
    * E.S http://localhost:8080/
    */
-  baseUrlRemoteApi: "",
-    
+  /** URL base del BE in produzione — sostituire con l'endpoint reale */
+  baseUrlRemoteApi: '',
+
   http: {
     /**
      * @author l.piciollo
@@ -35,6 +36,13 @@ export const environment = {
        */
       exampleApi: `@cachable@/example/cacable/api?param1={0}&param2={1}`,
       exampleApeNoCache: `example/no/cache/api?param1={0}&param2={1}`,
+
+      /** Route combo — popolano i campi select del form nutrizionista via NgRx */
+      combo: {
+        livelloAttivita: 'api/livello-attivita',
+        tipoAttivitaFisica: 'api/tipo-attivita-fisica',
+        freqAllenamento: 'api/freq-allenamento',
+      },
       /**
        *  @author l.piciollo
        *  è possibile dichiarare una chiamata ad un mock, si consiglia di rispettare il seguente formato dichiarativo
@@ -50,7 +58,7 @@ export const environment = {
       mock: {
         url: "/example/:api/:files",
         mocked: true,
-        method:"GET"
+        method: "GET"
       }
     }
   }
