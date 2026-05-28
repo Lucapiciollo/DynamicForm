@@ -10,7 +10,7 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { Moment } from 'moment';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { MAX_DATE_CALENDAR, MIN_DATE_CALENDAR } from '../../dynamic-form.module';
+import { MAX_DATE_CALENDAR, MIN_DATE_CALENDAR } from '../../tokens/dynamic-form-injection-tokens';
 
 export const YEAR_MODE_FORMATS = {
    parse: {

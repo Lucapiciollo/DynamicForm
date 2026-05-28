@@ -29,7 +29,7 @@ import { FormComponentTemplate } from './FormComponentTemplate';
 import { GetErrorForm, GetErrorFormControl, GetErrorFormControlFromObj } from './error-message-utils';
 
 import { autoUnsubscribe } from '../custom.operator';
-import { COMBO_PAING_INIT, MAX_ELEMENT_COMBO_SHOW } from '../dynamic-form.module';
+import { COMBO_PAING_INIT, MAX_ELEMENT_COMBO_SHOW } from '../tokens/dynamic-form-injection-tokens';
 import {
    ConfigForm,
    DynamicFormActionButton,
@@ -134,7 +134,7 @@ export class BaseComponent implements IBaseComponent {
    constructor(
       protected injector: Injector,
       protected element: ElementRef,
-   ) {}
+   ) { }
 
    /***********************************************************************************************************************************
     * NORMALIZATION
@@ -204,7 +204,7 @@ export class BaseComponent implements IBaseComponent {
          });
    }
 
-   ngOnDestroy(): void {}
+   ngOnDestroy(): void { }
 
    /***********************************************************************************************************************************
     * SETUP
@@ -587,7 +587,7 @@ export class BaseComponent implements IBaseComponent {
     ***********************************************************************************************************************************/
 
    private readonly getActionByName = (actionName: string, parse: (action: DynamicFormActionButton) => any): void => {
-      const actions: Array<any> = JSON.findByKeyAndValue(this._allGroup, 'label', `${actionName}`, ['formControl', 'instance']) ?? [];
+      const actions: Array<any> = JSON["findByKeyAndValue"](this._allGroup, 'label', `${actionName}`, ['formControl', 'instance']) ?? [];
 
       const response = actions?.length > 1
          ? actions.map(m => ({ name: m.object?.name || m.object?.label, value: m.object }))
@@ -597,7 +597,7 @@ export class BaseComponent implements IBaseComponent {
    };
 
    private readonly getFormByName = (formName: string, parse: (form: FormAction, formObject?: any) => any): void => {
-      const forms: Array<any> = JSON.findByKeyAndValue(this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
+      const forms: Array<any> = JSON["findByKeyAndValue"](this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
 
       const response = forms?.length > 1
          ? forms.map(m => ({ name: m.object.formName, value: m.object }))
@@ -610,7 +610,7 @@ export class BaseComponent implements IBaseComponent {
       formName: string,
       parse: (response: any) => Partial<TypeComboOption | { items: Array<any>; totalCount: number }>,
    ): any => {
-      const forms: Array<any> = JSON.findByKeyAndValue(this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
+      const forms: Array<any> = JSON["findByKeyAndValue"](this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
 
       const parsedForm = forms.length > 1
          ? forms.map(m => ({ name: m.object.formName, value: m.object }))
@@ -629,7 +629,7 @@ export class BaseComponent implements IBaseComponent {
    };
 
    private readonly getSelectedOptions = (formName: string, parse: (option: Signal<TypeComboOption>) => any): TypeComboOption => {
-      const forms: Array<any> = JSON.findByKeyAndValue(this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
+      const forms: Array<any> = JSON["findByKeyAndValue"](this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
 
       const parsedForm = forms.length > 1
          ? forms.map(m => ({ name: m.object.formName, value: m.object }))
@@ -643,7 +643,7 @@ export class BaseComponent implements IBaseComponent {
    };
 
    private readonly onSettedOptions = (formName: string, parse: (event: Signal<TypeComboOption>) => any): TypeComboOption => {
-      const forms: Array<any> = JSON.findByKeyAndValue(this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
+      const forms: Array<any> = JSON["findByKeyAndValue"](this.group, 'formName', `${formName}`, ['formControl', 'instance']) ?? [];
 
       const parsedForm = forms.length > 1
          ? forms.map(m => ({ name: m.object.formName, value: m.object }))

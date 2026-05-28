@@ -38,32 +38,18 @@ registerLocaleData(locale);
       mockPath: 'public/mock',
       enableAlert: true
     }),
-
-
   ],
   providers: [
-
-
     { provide: APP_INITIALIZER, useFactory: AmbientModeProviderFactory, deps: [PlAmbientModeLoaderService], multi: true },
-
-
-
-
-
-
   ],
   exports: [
     PlCoreModule,
-
-
   ]
 })
 export class InitializerModule {
 
 
-  constructor() {
-
-  }
+  constructor() { }
 
 
   static forRoot() {

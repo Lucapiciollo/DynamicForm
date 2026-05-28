@@ -17,8 +17,7 @@ export class DynamicFormAssetsService {
   private readonly materialIconsId = 'df-material-icons-font';
   private readonly materialSymbolsId = 'df-material-symbols-font';
   private readonly globalStylesId = 'df-global-runtime-styles';
-  private readonly materialSymbolsUrl =
-    'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..500,0..1,-50..200';
+  private readonly materialSymbolsUrl = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..500,0..1,-50..200';
 
   constructor(
     @Inject(DOCUMENT) private readonly document: Document,
