@@ -238,6 +238,15 @@ export type Group = {
  */
 export type ConfigForm = Array<Group>;
 
+/**
+ * Modalità di visualizzazione dei gruppi del form.
+ *
+ * - `'default'`  — tutti i gruppi affiancati nella stessa riga (comportamento originale)
+ * - `'tabs'`     — ogni gruppo in un tab Angular Material (`<mat-tab-group>`)
+ * - `'steps'`    — ogni gruppo in uno step Angular Material Stepper (`<mat-stepper>`)
+ */
+export type DynamicFormLayout = 'default' | 'tabs' | 'steps';
+
 /***********************************************************************************************************************************
  * UTILITY
  ***********************************************************************************************************************************/

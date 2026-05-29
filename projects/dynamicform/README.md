@@ -39,9 +39,10 @@
 12. [Combo paginata remota — guida completa](#combo-paginata-remota--guida-completa)
 13. [Rating — guida completa](#rating--guida-completa)
 14. [Azioni (DynamicFormActionButton)](#azioni-dynamicformactionbutton)
-15. [Utilizzo nel template](#utilizzo-nel-template)
-16. [Esempio completo reale](#esempio-completo-reale)
-17. [Riferimento tipi TypeScript](#riferimento-tipi-typescript)
+15. [Layout gruppi](#layout-gruppi)
+16. [Utilizzo nel template](#utilizzo-nel-template)
+17. [Esempio completo reale](#esempio-completo-reale)
+18. [Riferimento tipi TypeScript](#riferimento-tipi-typescript)
 
 ---
 
@@ -1446,6 +1447,55 @@ action: (_questions, _id, groupForm, group, idGroup, allGroup, totalForm, utilit
 
 ---
 
+## Layout gruppi
+
+Il componente supporta tre modalità visive per la presentazione dei gruppi, controllate dall'input `[layout]`.
+
+### Modalità disponibili
+
+| Layout      | Comportamento                                                                   |
+| ----------- | ------------------------------------------------------------------------------- |
+| `'default'` | Tutti i gruppi affiancati in una riga, con le classi CSS del builder (default)  |
+| `'tabs'`    | Ogni gruppo in un tab Angular Material; `title` del gruppo come label del tab   |
+| `'steps'`   | Ogni gruppo in uno step Angular Material Stepper; pulsanti Indietro/Avanti auto |
+
+> **Nota:** in modalità `tabs` e `steps` le classi CSS Bootstrap del gruppo (es. `col-6`) vengono ignorate — ogni gruppo occupa sempre `col-12`.
+
+### Input del componente
+
+| Input                  | Tipo                             | Default        | Descrizione                                         |
+| ---------------------- | -------------------------------- | -------------- | --------------------------------------------------- |
+| `[layout]`             | `'default' \| 'tabs' \| 'steps'` | `'default'`    | Modalità di layout visivo                           |
+| `[linear]`             | `boolean`                        | `false`        | Solo `steps`: blocca l'avanzamento se step invalido |
+| `[stepperOrientation]` | `'horizontal' \| 'vertical'`     | `'horizontal'` | Solo `steps`: orientamento del stepper              |
+
+### Esempio — Tabs
+
+```html
+<app-dynamic-form [questions]="myConfig" [layout]="'tabs'" (onFormCreate)="onFormCreated($event)"> </app-dynamic-form>
+```
+
+### Esempio — Steps verticale con validazione lineare
+
+```html
+<app-dynamic-form
+  [questions]="myConfig"
+  [layout]="'steps'"
+  [linear]="true"
+  [stepperOrientation]="'vertical'"
+  (onFormCreate)="onFormCreated($event)"
+>
+</app-dynamic-form>
+```
+
+### Note sull'uso
+
+- Il `title` del gruppo (`addGroup('Titolo', ...)`) diventa il label del tab/step; se omesso verrà usato "Tab N" / "Step N".
+- I bottoni `.addActions()` vengono mostrati sopra la barra di navigazione step (solo in modalità `steps`).
+- I form annidati (`GROUP`) si renderizzano sempre correttamente indipendentemente dal layout del form padre.
+
+---
+
 ## Utilizzo nel template
 
 ```html
@@ -1459,10 +1509,13 @@ action: (_questions, _id, groupForm, group, idGroup, allGroup, totalForm, utilit
 
 ### Input
 
-| Input                      | Tipo                    | Descrizione                      |
-| -------------------------- | ----------------------- | -------------------------------- |
-| `[config]` o `[questions]` | `ConfigForm`            | Configurazione completa del form |
-| `[json]`                   | `DynamicFormJsonSchema` | Schema JSON alternativo          |
+| Input                      | Tipo                             | Default        | Descrizione                                       |
+| -------------------------- | -------------------------------- | -------------- | ------------------------------------------------- |
+| `[config]` o `[questions]` | `ConfigForm`                     | —              | Configurazione completa del form                  |
+| `[json]`                   | `DynamicFormJsonSchema`          | —              | Schema JSON alternativo                           |
+| `[layout]`                 | `'default' \| 'tabs' \| 'steps'` | `'default'`    | Modalità visiva dei gruppi                        |
+| `[linear]`                 | `boolean`                        | `false`        | Solo `steps`: step bloccato se FormGroup invalido |
+| `[stepperOrientation]`     | `'horizontal' \| 'vertical'`     | `'horizontal'` | Solo `steps`: orientamento del stepper            |
 
 ### Output
 

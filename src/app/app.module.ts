@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 import { provideHttpClient, withFetch } from '@angular/common/http';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -15,6 +17,8 @@ import { environment } from '../environments/environment';
    imports: [
       BrowserModule,
       BrowserAnimationsModule,
+      FormsModule,
+      MatButtonToggleModule,
       AppRoutingModule,
       SharedAppModule,
       // ─── NgRx root ─────────────────────────────────────────────────────

@@ -2,7 +2,7 @@
 
 import { Component, EventEmitter, Input, Output, ViewContainerRef, inject } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
-import { ConfigForm, TYPE_CONTROL_FORM } from './dynamic-form.interface';
+import { ConfigForm, DynamicFormLayout, TYPE_CONTROL_FORM } from './dynamic-form.interface';
 import { StepperService } from './dynamic-form.service';
 import { DynamicFormJsonSchema } from './models/dynamic-form-json-schema.model';
 import { DynamicFormJsonMapperService } from './services/dynamic-form-json-mapper.service';
@@ -72,6 +72,27 @@ export class DynamicFormComponent {
    public TYPE_CONTROL_FORM = TYPE_CONTROL_FORM;
    public formGroup!: FormGroup | FormArray;
 
+   /**
+    * Modalità di visualizzazione dei gruppi.
+    * - `'default'` — affiancati (comportamento originale)
+    * - `'tabs'`    — ogni gruppo in un tab Material
+    * - `'steps'`   — ogni gruppo in uno step Material Stepper
+    */
+   @Input() layout: DynamicFormLayout = 'default';
+
+   /**
+    * Solo per `layout='steps'`: attiva la modalità lineare del stepper.
+    * In modalità lineare lo step successivo è raggiungibile solo se quello corrente è valido.
+    */
+   @Input() linear: boolean = false;
+
+   /**
+    * Solo per `layout='steps'`: orientamento del stepper.
+    * - `'horizontal'` (default) — step affiancati in orizzontale
+    * - `'vertical'`  — step impilati in verticale
+    */
+   @Input() stepperOrientation: 'horizontal' | 'vertical' = 'horizontal';
+
    constructor(private viewContainerRef: ViewContainerRef) { }
 
    /**
@@ -119,5 +140,15 @@ export class DynamicFormComponent {
       return this.formGroup instanceof FormArray
          ? (this.formGroup.at(index) as FormGroup)
          : this.formGroup;
+   }
+
+   /**
+    * Restituisce `true` se il gruppo all'indice dato è invalido E
+    * almeno un controllo al suo interno è stato toccato o modificato.
+    * Usato per mostrare l'indicatore di errore su tab/step label.
+    */
+   isGroupInvalid(index: number): boolean {
+      const fg = this.getGroupForm(index);
+      return fg ? fg.invalid && (fg.dirty || fg.touched) : false;
    }
 }

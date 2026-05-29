@@ -1,6 +1,20 @@
 <div class="nc-app">
-    <!-- <app-dynamic-form [json]="nutritionistQuestions" (onFormCreate)="onFormCreate($event)">
-    </app-dynamic-form> -->
-    <app-dynamic-form [questions]="nutritionistQuestions" (onFormCreate)="onFormCreate($event)">
+    <!-- Selettore layout per test -->
+    <div class="layout-selector mb-3 d-flex align-items-center gap-2">
+        <label class="fw-semibold me-1">Layout:</label>
+        <mat-button-toggle-group [(ngModel)]="layout" name="layout" aria-label="Seleziona layout">
+            <mat-button-toggle value="default">Default</mat-button-toggle>
+            <mat-button-toggle value="tabs">Tabs</mat-button-toggle>
+            <mat-button-toggle value="steps">Steps</mat-button-toggle>
+        </mat-button-toggle-group>
+        <mat-button-toggle-group [(ngModel)]="stepperOrientation" name="orientation" aria-label="Orientamento stepper"
+            *ngIf="layout === 'steps'">
+            <mat-button-toggle value="horizontal">Orizzontale</mat-button-toggle>
+            <mat-button-toggle value="vertical">Verticale</mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+
+    <app-dynamic-form [questions]="nutritionistQuestions" [layout]="layout" [stepperOrientation]="stepperOrientation"
+        (onFormCreate)="onFormCreate($event)">
     </app-dynamic-form>
 </div>

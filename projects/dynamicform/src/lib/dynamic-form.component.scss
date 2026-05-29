@@ -1,0 +1,201 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// TABS layout
+// ─────────────────────────────────────────────────────────────────────────────
+
+.df-tab-group {
+    width: 100%;
+
+    ::ng-deep {
+
+        // Header tabs con sfondo sfumato e angoli arrotondati
+        .mat-mdc-tab-header {
+            background: linear-gradient(to bottom, #f5f7fa 0%, #ffffff 100%);
+            border-radius: 12px 12px 0 0;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-bottom: none;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+            padding: 0 4px;
+        }
+
+        // Tab singolo: opacità ridotta quando inattivo
+        .mat-mdc-tab {
+            min-width: 110px;
+            opacity: 0.6;
+            transition: opacity 0.2s ease;
+
+            &.mdc-tab--active {
+                opacity: 1;
+            }
+
+            &:not(.mdc-tab--active):hover {
+                opacity: 0.82;
+            }
+        }
+
+        // Indicatore linea attiva più spesso e arrotondato
+        .mdc-tab-indicator__content--underline {
+            border-radius: 3px 3px 0 0;
+            border-top-width: 3px;
+        }
+
+        // Tab in errore: label rossa nell'ink bar
+        .mat-mdc-tab:has(.df-tab-label--error) {
+            .mdc-tab__text-label {
+                color: #d32f2f !important;
+            }
+
+            &.mdc-tab--active .mdc-tab-indicator__content--underline {
+                border-color: #d32f2f;
+            }
+        }
+    }
+
+    // Contenuto del tab
+    .df-tab-content {
+        padding: 20px 12px 12px;
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    }
+
+    // Label custom con icona errore
+    .df-tab-label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+
+        &--error {
+            color: #d32f2f;
+        }
+    }
+
+    .df-tab-error-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+        color: #d32f2f;
+        animation: df-error-pulse 1.8s ease-in-out infinite;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STEPS layout
+// ─────────────────────────────────────────────────────────────────────────────
+
+.df-stepper {
+    width: 100%;
+    background: transparent;
+
+    ::ng-deep {
+
+        // Sfondo trasparente su tutti i wrapper Material
+        .mat-stepper-horizontal,
+        .mat-stepper-vertical,
+        .mat-horizontal-stepper-wrapper,
+        .mat-horizontal-content-container {
+            background: transparent;
+        }
+
+        // Header stepper: sfondo chiaro + bordo sottile
+        .mat-horizontal-stepper-header-container {
+            background: linear-gradient(to bottom, #f5f7fa, #ffffff);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            margin-bottom: 16px;
+            padding: 4px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        // Icona step circolare: ombra e peso
+        .mat-step-icon {
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .mat-step-icon-selected {
+            box-shadow: 0 3px 10px rgba(var(--mdc-theme-primary-rgb, 63, 81, 181), 0.4);
+        }
+
+        // Step in stato errore: icona rossa
+        .mat-step-icon-state-error {
+            background-color: #d32f2f !important;
+            box-shadow: 0 2px 8px rgba(211, 47, 47, 0.4);
+        }
+
+        // Label step in errore
+        .mat-step-label:has(.df-step-label--error) {
+            .mat-step-text-label {
+                color: #d32f2f;
+            }
+        }
+    }
+
+    // Contenuto step: card con bordo e ombra
+    .df-step-content {
+        padding: 20px 12px 8px;
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    // Label step con classe errore
+    .df-step-label {
+        font-weight: 500;
+        letter-spacing: 0.01em;
+
+        &--error {
+            color: #d32f2f;
+            font-weight: 600;
+        }
+    }
+
+    // Barra navigazione Indietro / Avanti
+    .df-step-nav {
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        padding-top: 12px;
+        margin-top: 4px;
+
+        .df-step-btn-prev {
+            .mat-icon {
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        .df-step-btn-next {
+            margin-left: auto;
+
+            .mat-icon {
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Animazione pulse per icona errore tab
+// ─────────────────────────────────────────────────────────────────────────────
+
+@keyframes df-error-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.65;
+        transform: scale(0.88);
+    }
+}

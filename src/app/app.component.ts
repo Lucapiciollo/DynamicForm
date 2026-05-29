@@ -1,5 +1,5 @@
 import { Component, inject, Injector } from '@angular/core';
-import { ConfigForm } from 'projects/dynamicform/src/public-api';
+import { ConfigForm, DynamicFormLayout } from 'projects/dynamicform/src/public-api';
 import { MINIMAL_FORM_JSON_SCHEMA } from './components/nutricare/form/minimal-form.json-schema';
 import { buildComboTestForm } from './components/nutricare/form/nutritionist-form.builder';
 
@@ -15,6 +15,9 @@ export class AppComponent {
   // public nutritionistQuestions = MINIMAL_FORM_JSON_SCHEMA;
   public nutritionistQuestions: ConfigForm;
   public injector: Injector = inject(Injector);
+  public layout: DynamicFormLayout = 'default';
+  public stepperOrientation: 'horizontal' | 'vertical' = 'horizontal';
+
   constructor() {
     this.nutritionistQuestions = buildComboTestForm<AppComponent>(this);
   }

@@ -4,8 +4,20 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" /> -->
 <div class="df-form">
    <ng-container>
+
+      <!-- ═══════════════════════════════════════════════════════════════════
+           DEFAULT — tutti i gruppi affiancati in una riga (comportamento originale)
+           Usa [ngIf] direttamente sul ng-template: si auto-renderizza quando la
+           condizione è vera, passando _questions come variabile implicita.
+           Quando chiamato via ngTemplateOutlet da FormAction (GROUP annidati),
+           configForm = formAction.formGroup → si renderizza sempre indipendentemente
+           dal layout. Il check `configForm !== _questions || layout === 'default'`
+           distingue i due casi:
+             - auto-render root  → mostra solo in layout 'default'
+             - nested GROUP      → mostra sempre (configForm è un altro riferimento)
+      ═══════════════════════════════════════════════════════════════════════ -->
       <ng-template #ConfigForm let-configForm [ngIf]="_questions">
-         @if (configForm != null) {
+         @if (configForm != null && (configForm !== _questions || layout === 'default')) {
          <div class="row g-0" #containerForm>
             <ng-container *ngFor="let data of configForm; let formGroupIndex = index" [ngTemplateOutlet]="TypeForm"
                [ngTemplateOutletContext]="{
@@ -18,11 +30,98 @@
                      actions: data.actions || [],
                      cfForm: configForm,
                   }">
-               <!-- <div *ngIf="data.title" class="form-title col-4">{{data.title }} </div>   -->
             </ng-container>
          </div>
          }
       </ng-template>
+
+      <!-- ═══════════════════════════════════════════════════════════════════
+           TABS — ogni gruppo in un tab Angular Material
+      ═══════════════════════════════════════════════════════════════════════ -->
+      @if (layout === 'tabs' && _questions) {
+      <mat-tab-group class="df-tab-group" animationDuration="200ms">
+         @for (data of _questions; track data; let formGroupIndex = $index) {
+         <mat-tab>
+            <ng-template mat-tab-label>
+               <span class="df-tab-label" [class.df-tab-label--error]="isGroupInvalid(formGroupIndex)">
+                  @if (isGroupInvalid(formGroupIndex)) {
+                  <mat-icon class="df-tab-error-icon">error_outline</mat-icon>
+                  }
+                  {{ data.title || ('Tab ' + (formGroupIndex + 1)) }}
+               </span>
+            </ng-template>
+            <div class="df-tab-content pt-3" #tabContainer>
+               <div class="row g-0">
+                  <ng-container [ngTemplateOutlet]="TypeForm" [ngTemplateOutletContext]="{
+                           $implicit: data.formGroup,
+                           cssClass: ['col-12', 'p-0'],
+                           title: null,
+                           formGroupIndex: formGroupIndex,
+                           group: data,
+                           containerForm: tabContainer,
+                           actions: data.actions || [],
+                           cfForm: _questions,
+                        }">
+                  </ng-container>
+               </div>
+            </div>
+         </mat-tab>
+         }
+      </mat-tab-group>
+      }
+
+      <!-- ═══════════════════════════════════════════════════════════════════
+           STEPS — ogni gruppo in uno step Angular Material Stepper
+           Ogni step mostra i bottoni Indietro / Avanti automaticamente.
+           Le azioni .addActions() del gruppo vengono mostrate sopra i bottoni nav.
+      ═══════════════════════════════════════════════════════════════════════ -->
+      @if (layout === 'steps' && _questions) {
+      <mat-stepper [linear]="linear" [orientation]="stepperOrientation" class="df-stepper">
+         @for (data of _questions; track data; let formGroupIndex = $index; let isFirst = $first; let isLast = $last) {
+         <mat-step [state]="isGroupInvalid(formGroupIndex) ? 'error' : undefined">
+            <ng-template matStepLabel>
+               <span class="df-step-label" [class.df-step-label--error]="isGroupInvalid(formGroupIndex)">
+                  {{ data.title || ('Step ' + (formGroupIndex + 1)) }}
+               </span>
+            </ng-template>
+            <div class="df-step-content" #stepContainer>
+               <div class="row g-0 mt-2">
+                  <ng-container [ngTemplateOutlet]="TypeForm" [ngTemplateOutletContext]="{
+                           $implicit: data.formGroup,
+                           cssClass: ['col-12', 'p-0'],
+                           title: null,
+                           formGroupIndex: formGroupIndex,
+                           group: data,
+                           containerForm: stepContainer,
+                           actions: data.actions || [],
+                           cfForm: _questions,
+                        }">
+                  </ng-container>
+               </div>
+               <!-- Navigazione step (Indietro / Avanti) -->
+               <div class="df-step-nav mt-3 d-flex gap-2 flex-wrap align-items-center">
+                  @if (!isFirst) {
+                  <button mat-button matStepperPrevious type="button" class="df-step-btn-prev">
+                     <mat-icon>arrow_back</mat-icon>
+                     Indietro
+                  </button>
+                  }
+                  @if (!isLast) {
+                  <button mat-raised-button color="primary" matStepperNext type="button" class="df-step-btn-next">
+                     Avanti
+                     <mat-icon>arrow_forward</mat-icon>
+                  </button>
+                  }
+               </div>
+            </div>
+         </mat-step>
+         }
+      </mat-stepper>
+      }
+
+      <!-- ═══════════════════════════════════════════════════════════════════
+           TEMPLATE CONDIVISI — usati da tutti e tre i layout
+      ═══════════════════════════════════════════════════════════════════════ -->
 
       <ng-template #TypeForm let-typeForm let-cssClass="cssClass" let-title="title" let-formGroupIndex="formGroupIndex"
          let-group="group" let-containerForm="containerForm" let-actions="actions" let-cfForm="cfForm">
@@ -48,7 +147,6 @@
                </ng-container>
                }
 
-               <!-- <div style="position: absolute;  bottom   : 2%;" > -->
                <ng-content></ng-content>
                @for (action of actions; track action; let formActionIndex = $index; let last = $last) {
                <ng-container>
@@ -61,8 +159,6 @@
                   }
                </ng-container>
                }
-
-               <!-- </div> -->
             </div>
          </div>
       </ng-template>
