@@ -598,17 +598,7 @@ export function createNestedActionsFormBuilder(): ConfigForm {
                   accept: '.pdf,.png,.jpg,.jpeg',
                } as any,
             },
-            {
-               formAction: {
-                  title: 'Link esterno',
-                  type: TYPE_CONTROL_FORM.LINK,
-                  formName: 'externalLink',
-                  css: { class: ['col-12', 'col-md-6'] },
-                  label: 'Apri documento esterno',
-                  href: 'https://example.com',
-                  target: '_blank',
-               } as any,
-            },
+
          ],
          actions: [
             {

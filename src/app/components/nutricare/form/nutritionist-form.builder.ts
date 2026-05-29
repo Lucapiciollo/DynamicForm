@@ -67,7 +67,11 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
     }
 
     return DynamicFormBuilder.create(context)
-        .addGroup('ComboBox Test', ['col-4 px-3'])
+
+        // ═══════════════════════════════════════════════════════════════════
+        // RIGA 1 — Combo (2 × col-6)
+        // ═══════════════════════════════════════════════════════════════════
+        .addGroup('Combo Semplice', ['col-6', 'px-3', 'mb-4'])
         .addForm({
             formName: 'combo_normale',
             title: 'Combo normale',
@@ -106,6 +110,8 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
             onInitialize: (_ig, _if, _fc, _fn, _fg, _t, _all, utility) => logEvent('onInitialize', 'combo_multipla', utility),
             onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) => logEvent('onChange', 'combo_multipla', utility, { field: fn, prev, curr: fc?.value }),
         })
+
+        .addGroup('Combo Paginata', ['col-6', 'px-3', 'mb-4'])
         .addForm({
             formName: 'combo_paginate',
             title: 'Combo paginata (remota)',
@@ -125,10 +131,8 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
             pageSize: 10,
             paging: { page: 1, count: 10, totalCount: 0 },
             remoteData: ({ param, append }) => {
-                // param.page, param.count, param.search
                 return new Promise((resolve, reject) => {
                     loadRemoteOptions({ page: param.page, search: param.search, pageSize: param.count }, 'livello', append);
-                    // Simula async: risolvi dopo che le options sono state aggiornate
                     setTimeout(() => {
                         console.log('[DEBUG remoteData] remoteOptionsLivello:', remoteOptionsLivello().map(o => o.id));
                         resolve({ items: remoteOptionsLivello(), totalCount: totalLivello });
@@ -158,7 +162,6 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
             formControl: new FormControl([]),
             multiple: true,
             autocomplete: true,
-            // totalCount: () => totalTipo,
             enableInfiniteScroll: true,
             keyCombo: { keySearch: 'search', keyId: 'id', keyDescription: 'description' },
             pageSize: 10,
@@ -186,8 +189,11 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
                 }
             },
         })
-        // --- GRUPPO: Testo e numeri ---
-        .addGroup('Testo e Numeri', ['col-4 px-3'])
+
+        // ═══════════════════════════════════════════════════════════════════
+        // RIGA 2 — Input / Numeri / Date / Orari  (4 × col-3)
+        // ═══════════════════════════════════════════════════════════════════
+        .addGroup('Input Testo', ['col-3', 'px-3', 'mb-4'])
         .addForm({
             formName: 'campo_text',
             title: 'Input Text',
@@ -209,6 +215,8 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
             onFocus: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onFocus', 'campo_textarea', utility),
             onBlur: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onBlur', 'campo_textarea', utility),
         })
+
+        .addGroup('Numeri', ['col-3', 'px-3', 'mb-4'])
         .addForm({
             formName: 'campo_number',
             title: 'Number',
@@ -231,8 +239,7 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
             onBlur: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onBlur', 'campo_currency', utility),
         })
 
-        // --- GRUPPO: Date e Tempo ---
-        .addGroup('Date e Tempo', ['col-4 px-3'])
+        .addGroup('Date', ['col-3', 'px-3', 'mb-4'])
         .addForm({
             formName: 'campo_data',
             title: 'Data',
@@ -242,9 +249,6 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
             onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) => logEvent('onChange', 'campo_data', utility, { field: fn, prev, curr: fc?.value }),
             onFocus: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onFocus', 'campo_data', utility),
             onBlur: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onBlur', 'campo_data', utility),
-
-
-
         })
         .addForm({
             formName: 'campo_datarange',
@@ -266,6 +270,8 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
             onFocus: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onFocus', 'campo_datetime', utility),
             onBlur: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onBlur', 'campo_datetime', utility),
         })
+
+        .addGroup('Orari e Anno', ['col-3', 'px-3', 'mb-4'])
         .addForm({
             formName: 'campo_time',
             title: 'Time',
@@ -287,36 +293,11 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
             onFocus: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onFocus', 'campo_year', utility),
             onBlur: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onBlur', 'campo_year', utility),
         })
-        .addForm((context) => ({
-            formName: 'campo_rating',
-            title: 'Rating (stelle)',
-            type: TYPE_CONTROL_FORM.RATING,
-            formControl: new FormControl({ value: null, disabled: true }),
-            optionRating: { max: 10 },
-            onInitialize: (_ig, _if, _fc, _fn, _fg, _t, _all, paging, onOptionSetted, utility) => {
-                logEvent('onInitialize', 'campo_rating', utility);
 
-                effect(() => {
-                    const stats = utility?.formCompletion?.();
-                    const completion = stats
-                        ? `[Form ${stats.percentage}% | ${stats.filled}/${stats.total}] [Required ${stats.required.percentage}% | ${stats.required.filled}/${stats.required.total}]`
-                        : '';
-                    _fc.setValue(stats.percentage / 10, { emitEvent: false, onlySelf: true, emitModelToViewChange: true, emitViewToModelChange: true });
-                    stats.groups.map(g =>
-                        console.log(g)
-                    )
-
-                }, { injector: context["injector"], allowSignalWrites: true });
-
-
-            },
-            onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) => logEvent('onChange', 'campo_rating', utility, { field: fn, prev, curr: fc?.value }),
-            onFocus: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onFocus', 'campo_rating', utility),
-            onBlur: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onBlur', 'campo_rating', utility),
-        }))
-
-        // --- GRUPPO: Selezione e Toggle ---
-        .addGroup('Selezione e Toggle', ['col-4 px-3'])
+        // ═══════════════════════════════════════════════════════════════════
+        // RIGA 3 — Selezione / File-Display / Rating  (4+4+4)
+        // ═══════════════════════════════════════════════════════════════════
+        .addGroup('Selezione e Toggle', ['col-4', 'px-3', 'mb-4'])
         .addForm({
             formName: 'campo_checkbox',
             title: 'Checkbox',
@@ -353,8 +334,41 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
             onBlur: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onBlur', 'campo_arraystring', utility),
         })
 
-        // --- GRUPPO: File e Display ---
-        .addGroup('File e Display', ['col-4 px-3'])
+        .addGroup('File e Display', ['col-4', 'px-3', 'mb-4']).addActions([
+            {
+                label: 'Salva',
+                visible: true,
+                cssClassButton: ['btn-primary', "col-6"],
+                action: (_questions, _id, groupForm, _group, _idx, _allGroup, totalForm) => {
+                    alert('Salva!');
+                    console.log('[Azione Salva] gruppo:', groupForm?.value, '| totale:', totalForm?.value);
+                },
+            },
+            {
+                label: 'Reset',
+                visible: true,
+                cssClassButton: ['btn-secondary', "col-6"],
+                action: (_questions, _id, groupForm) => {
+                    if (groupForm?.reset) groupForm.reset();
+                },
+            },
+        ]).addForm((context) => ({
+            formName: 'campo_rating',
+            title: 'Rating — completamento form',
+            type: TYPE_CONTROL_FORM.RATING,
+            formControl: new FormControl({ value: null, disabled: true }),
+            optionRating: { max: 10 },
+            onInitialize: (_ig, _if, _fc, _fn, _fg, _t, _all, paging, onOptionSetted, utility) => {
+                logEvent('onInitialize', 'campo_rating', utility);
+                effect(() => {
+                    const stats = utility?.formCompletion?.();
+                    _fc.setValue(stats.groups[_ig].percentage / 10, { emitEvent: false, onlySelf: true, emitModelToViewChange: true, emitViewToModelChange: true });
+                    stats.groups.forEach(g => console.log(g));
+                }, { injector: context["injector"], allowSignalWrites: true });
+            },
+            onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) => logEvent('onChange', 'campo_rating', utility, { field: fn, prev, curr: fc?.value }),
+        }))
+
         .addForm({
             formName: 'campo_file',
             title: 'File Upload',
@@ -365,43 +379,24 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
             onFocus: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onFocus', 'campo_file', utility),
             onBlur: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onBlur', 'campo_file', utility),
         })
-        .addForm({
-            formName: 'campo_label',
-            title: 'Label',
-            type: TYPE_CONTROL_FORM.LABEL,
-            formControl: new FormControl('Questo è un campo label di sola lettura'),
-            onInitialize: (_ig, _if, _fc, _fn, _fg, _t, _all, utility) => logEvent('onInitialize', 'campo_label', utility),
-        })
-        .addForm({
-            formName: 'campo_link',
-            title: 'Link',
-            type: TYPE_CONTROL_FORM.LINK,
-            formControl: new FormControl('https://example.com'),
-            onInitialize: (_ig, _if, _fc, _fn, _fg, _t, _all, utility) => logEvent('onInitialize', 'campo_link', utility),
-        })
-        .addForm({
-            formName: 'campo_separator',
-            title: 'Separatore',
-            type: TYPE_CONTROL_FORM.SEPARATOR,
-            formControl: new FormControl(null),
-        })
 
-        .addActions([
-            {
-                label: 'Salva',
-                visible: true,
-                action: (...args) => {
-                    alert('Salva!');
-                    console.log('[Azione Salva]', ...args);
-                },
+        .addGroup('Completamento', ['col-4', 'px-3', 'mb-4'])
+        .addForm((context) => ({
+            formName: 'campo_rating',
+            title: 'Rating — completamento form',
+            type: TYPE_CONTROL_FORM.RATING,
+            formControl: new FormControl({ value: null, disabled: true }),
+            optionRating: { max: 10 },
+            onInitialize: (_ig, _if, _fc, _fn, _fg, _t, _all, paging, onOptionSetted, utility) => {
+                logEvent('onInitialize', 'campo_rating', utility);
+                effect(() => {
+                    const stats = utility?.formCompletion?.();
+                    _fc.setValue(stats.percentage / 10, { emitEvent: false, onlySelf: true, emitModelToViewChange: true, emitViewToModelChange: true });
+                    stats.groups.forEach(g => console.log(g));
+                }, { injector: context["injector"], allowSignalWrites: true });
             },
-            {
-                label: 'Reset',
-                visible: true,
-                action: (_q: any, _id: any, formGroup: any) => {
-                    if (formGroup?.reset) formGroup.reset();
-                },
-            },
-        ])
+            onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) => logEvent('onChange', 'campo_rating', utility, { field: fn, prev, curr: fc?.value }),
+        }))
+
         .build();
 }

@@ -68,12 +68,9 @@ export type RxMethod<Input> = ((
 export enum TYPE_CONTROL_FORM {
    ARRAYSTRING,
    COMBOPAGINATE,
-   SEPARATOR,
    BUTTON,
    DATETIME,
-   LABEL,
    ACTIONREPORT,
-   LINK,
    RADIOGROUP,
    TEXT,
    TEXTAREA,
@@ -186,10 +183,11 @@ export type TypeForm = Array<Form>;
  * L'action ora riceve tutti i parametri utili:
  * - questions: campi del gruppo
  * - idForm: id del gruppo (string o number)
- * - formGroup: FormGroup o FormArray del gruppo
+ * - formGroup: FormGroup o FormArray del gruppo (solo questo gruppo)
  * - group: il Group corrente
  * - idGroup: indice del gruppo
  * - allGroup: ConfigForm completo
+ * - totalForm: FormGroup o FormArray dell'intero form
  * - utility: oggetto helper
  */
 export type DynamicFormActionButton = {
@@ -211,6 +209,7 @@ export type DynamicFormActionButton = {
       group?: Group,
       idGroup?: number,
       allGroup?: ConfigForm,
+      totalForm?: FormGroup | FormArray,
       utility?: Utility
    ) => void;
 };

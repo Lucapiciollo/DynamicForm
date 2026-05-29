@@ -31,14 +31,13 @@ export * from './lib/component/date-year/date-year.component';
 export * from './lib/component/rating/rating.component';
 export * from './lib/component/arraystring/arraystring.component';
 export * from './lib/component/date/date.component';
-export * from './lib/component/label/label.component';
-export * from './lib/component/link/link.component';
+
 export * from './lib/component/textarea/textarea.component';
 export * from './lib/component/question-radion-button/question-radion-button.component';
 export * from './lib/component/number/number.component';
 export * from './lib/component/date-time/date-time.component';
 export * from './lib/component/input-time/input-time.component';
-export * from './lib/component/separator/separator.component';
+
 export * from './lib/component/sort-action/sort-action.component';
 export * from './lib/component/file/file.component';
 export * from './lib/pipe/form.pipe';

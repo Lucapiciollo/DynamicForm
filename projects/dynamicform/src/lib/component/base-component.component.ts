@@ -685,9 +685,6 @@ export class BaseComponent implements IBaseComponent {
     ***********************************************************************************************************************************/
 
    private _SKIP_COMPLETION = new Set<TYPE_CONTROL_FORM>([
-      TYPE_CONTROL_FORM.SEPARATOR,
-      TYPE_CONTROL_FORM.LABEL,
-      TYPE_CONTROL_FORM.LINK,
       TYPE_CONTROL_FORM.GROUP,
    ]);
 

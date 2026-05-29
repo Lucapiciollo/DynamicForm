@@ -54,8 +54,10 @@
                <ng-container>
                   @if (action?.visible != null && action?.visible == true) {
                   <button mat-button #button [class]="action.cssClassButton?.join(' ')"
-                     [disabled]="action?.disabled || false" (click)="action.action(_questions,   formGroup)"><i #icon
-                        [class]="action.cssClassIcon?.join(' ')" aria-hidden="true"> </i>{{ action.label }}</button>
+                     [disabled]="action?.disabled || false"
+                     (click)="action.action(group.formGroup, group.id ?? formGroupIndex, getGroupForm(formGroupIndex), group, formGroupIndex, _questions, formGroup)"><i
+                        #icon [class]="action.cssClassIcon?.join(' ')" aria-hidden="true"> </i>{{ action.label
+                     }}</button>
                   }
                </ng-container>
                }
@@ -116,14 +118,6 @@
                <app-input-time class="scaled" [question]="formAction" [formActionIndex]="formActionIndex"
                   [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-input-time>
                }
-               @case (TYPE_CONTROL_FORM.LABEL) {
-               <app-label class="scaled" [question]="formAction" [formActionIndex]="formActionIndex"
-                  [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-label>
-               }
-               @case (TYPE_CONTROL_FORM.LINK) {
-               <app-link class="scaled" [question]="formAction" [formActionIndex]="formActionIndex"
-                  [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-link>
-               }
                @case (TYPE_CONTROL_FORM.NUMBER) {
                <app-number class="scaled" [question]="formAction" [formActionIndex]="formActionIndex"
                   [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-number>
@@ -148,9 +142,7 @@
                <app-rating class="scaled" [question]="formAction" [formActionIndex]="formActionIndex"
                   [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-rating>
                }
-               @case (TYPE_CONTROL_FORM.SEPARATOR) {
-               <app-separator [question]="formAction"></app-separator>
-               }
+
                }
             </ng-container>
             }

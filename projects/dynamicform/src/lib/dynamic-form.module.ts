@@ -13,8 +13,7 @@ import { DateTimeComponent } from './component/date-time/date-time.component';
 import { DateComponent } from './component/date/date.component';
 import { FileComponent } from './component/file/file.component';
 import { InputTimeComponent } from './component/input-time/input-time.component';
-import { LabelComponent } from './component/label/label.component';
-import { LinkComponent } from './component/link/link.component';
+
 import { NumberComponent } from './component/number/number.component';
 import { QuestionRadioButtonComponent } from './component/question-radion-button/question-radion-button.component';
 import { SortActionComponent } from './component/sort-action/sort-action.component';
@@ -25,7 +24,7 @@ import { SpeechDirective } from './directive/speech-recognition';
 import { DynamicFormComponent } from './dynamic-form.component';
 import { LanguagePipe, TimeToNumberPipe } from './pipe/form.pipe';
 import { MaterialModule } from './material.module';
-import { SeparatorComponent } from './component/separator/separator.component';
+
 import { FixSearchBox } from './directive/fixSearchBox.directive';
 import { DateYearComponent } from './component/date-year/date-year.component';
 import { RatingComponent } from './component/rating/rating.component';
@@ -65,9 +64,9 @@ const minYearCalendar = () => {
       { provide: MIN_DATE_CALENDAR, useFactory: minYearCalendar },
    ],
 
-   declarations: [TimeToNumberPipe, ArrayStringComponent, SeparatorComponent, LanguagePipe, CamScanDirective, LoadChildDirective, InputTextComponent, ComboComponent, DynamicFormComponent, CheckboxComponent, CurrencyComponent, DateComponent, DateRangeComponent, DateTimeComponent, FileComponent, InputTimeComponent, LabelComponent, NumberComponent, QuestionRadioButtonComponent, TextareaComponent, LinkComponent, SpeechDirective, SortActionComponent, FixSearchBox, DateYearComponent, RatingComponent],
+   declarations: [TimeToNumberPipe, ArrayStringComponent, LanguagePipe, CamScanDirective, LoadChildDirective, InputTextComponent, ComboComponent, DynamicFormComponent, CheckboxComponent, CurrencyComponent, DateComponent, DateRangeComponent, DateTimeComponent, FileComponent, InputTimeComponent, NumberComponent, QuestionRadioButtonComponent, TextareaComponent, SpeechDirective, SortActionComponent, FixSearchBox, DateYearComponent, RatingComponent],
    imports: [CommonModule, ReactiveFormsModule, FormsModule, MaterialModule],
-   exports: [TimeToNumberPipe, DateYearComponent, RatingComponent, ArrayStringComponent, SeparatorComponent, LanguagePipe, LoadChildDirective, CamScanDirective, SortActionComponent, ReactiveFormsModule, FormsModule, ComboComponent, CommonModule, DynamicFormComponent, InputTextComponent, CheckboxComponent, CurrencyComponent, DateComponent, DateRangeComponent, DateTimeComponent, FileComponent, InputTimeComponent, LabelComponent, NumberComponent, QuestionRadioButtonComponent, TextareaComponent, LinkComponent, MaterialModule, FixSearchBox],
+   exports: [TimeToNumberPipe, DateYearComponent, RatingComponent, ArrayStringComponent, LanguagePipe, LoadChildDirective, CamScanDirective, SortActionComponent, ReactiveFormsModule, FormsModule, ComboComponent, CommonModule, DynamicFormComponent, InputTextComponent, CheckboxComponent, CurrencyComponent, DateComponent, DateRangeComponent, DateTimeComponent, FileComponent, InputTimeComponent, NumberComponent, QuestionRadioButtonComponent, TextareaComponent, MaterialModule, FixSearchBox],
 })
 export class DynamicFormModule {
    constructor(

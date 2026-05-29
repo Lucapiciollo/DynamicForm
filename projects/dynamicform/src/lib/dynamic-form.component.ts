@@ -109,4 +109,15 @@ export class DynamicFormComponent {
    initializeForm() {
       this.compile();
    }
+
+   /**
+    * Restituisce il `FormGroup` reattivo del gruppo all'indice dato.
+    * Se il form ha un solo gruppo `formGroup` è già il `FormGroup` diretto;
+    * se ha più gruppi `formGroup` è un `FormArray` e si accede all'elemento per indice.
+    */
+   getGroupForm(index: number): FormGroup | FormArray {
+      return this.formGroup instanceof FormArray
+         ? (this.formGroup.at(index) as FormGroup)
+         : this.formGroup;
+   }
 }
