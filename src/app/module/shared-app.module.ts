@@ -5,16 +5,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { DynamicFormModule } from 'projects/dynamicform/src/public-api';
-import { InitializerModule } from '../core/module/initializer.module';
-import { DYNAMIC_FORM_NESTED_EVENTS } from '../components/nutricare/form/minimal-form.json-schema-events';
+import { DYNAMIC_FORM_NESTED_EVENTS, DynamicFormModule } from 'projects/dynamicform/src/public-api';
 import { NUTRITIONIST_EVENTS } from '../components/nutricare/form/nutritionist-form.events';
-import { AppStoreModule } from '../store/store.module';
 
-import { HomeComponent } from '../components/home/home.component';
-import { NutriSidebarComponent } from '../components/nutricare/components/nutri-sidebar/nutri-sidebar.component';
-import { DiarioSettimanaleComponent } from '../components/nutricare/components/diario-settimanale/diario-settimanale.component';
-import { NutriCareComponent } from '../components/nutricare/nutricare.component';
 
 /**
  * SharedAppModule — modulo condiviso dell'applicazione.
@@ -35,10 +28,8 @@ import { NutriCareComponent } from '../components/nutricare/nutricare.component'
         ReactiveFormsModule,
 
         // Modulo di inizializzazione applicativo (APP_INITIALIZER, locale IT, PlCore)
-        InitializerModule,
 
-        // NgRx feature store (combo reducer + effects)
-        AppStoreModule,
+
 
         // DynamicForm con eventi, azioni e tema — chiamato una sola volta qui
         DynamicFormModule.forRoot({
@@ -60,15 +51,11 @@ import { NutriCareComponent } from '../components/nutricare/nutricare.component'
         }),
     ],
     declarations: [
-        HomeComponent,
-        NutriCareComponent,
-        NutriSidebarComponent,
-        DiarioSettimanaleComponent,
+
     ],
     exports: [
-        HomeComponent,
-        NutriCareComponent,
-        NutriSidebarComponent,
+
+        DynamicFormModule,
         // Re-esportati per i template dei componenti dichiarati qui sopra
         CommonModule,
         RouterModule,
