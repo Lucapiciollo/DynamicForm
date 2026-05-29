@@ -880,6 +880,7 @@ export function buildComboTestForm(): ConfigForm {
         })
         .addForm({
             formName: 'campo_year',
+            optionDate: { min: "2000", max: "2002" },
             title: 'Year',
             type: TYPE_CONTROL_FORM.YEAR,
             formControl: new FormControl(null),

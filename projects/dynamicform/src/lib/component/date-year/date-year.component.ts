@@ -9,6 +9,7 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/materia
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { Moment } from 'moment';
+import moment from 'moment';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MAX_DATE_CALENDAR, MIN_DATE_CALENDAR } from '../../tokens/dynamic-form-injection-tokens';
 
@@ -45,8 +46,18 @@ export const YEAR_MODE_FORMATS = {
    ],
 })
 export class DateYearComponent extends BaseComponent {
-   public minDate: string = inject(MIN_DATE_CALENDAR);
-   public maxDate: string = inject(MAX_DATE_CALENDAR);
+   private _minDateToken: string = inject(MIN_DATE_CALENDAR);
+   private _maxDateToken: string = inject(MAX_DATE_CALENDAR);
+
+   get minDate(): Moment | null {
+      const min = this.control?.formAction?.optionDate?.min;
+      return min ? moment(min, 'YYYY').startOf('year') : null;
+   }
+
+   get maxDate(): Moment | null {
+      const max = this.control?.formAction?.optionDate?.max;
+      return max ? moment(max, 'YYYY').endOf('year') : null;
+   }
 
    constructor(
       protected override injector: Injector,
@@ -55,15 +66,56 @@ export class DateYearComponent extends BaseComponent {
       super(injector, element);
    }
 
-   ngAfterViewInit(): void {
-      if (this.control.formAction.optionDate == null) {
-         this.control.formAction.optionDate = {
-            min: this.minDate,
-            max: this.maxDate,
-         };
-      }
-
+   override ngAfterViewInit(): void {
+      // Non imporre min/max automatici per l'anno: l'utente deve settare optionDate esplicitamente.
+      // I token di default del modulo sono troppo restrittivi per un picker annuale.
       super.ngAfterViewInit?.();
+   }
+
+   get currentYear(): number {
+      const v = this.control?.formAction?.formControl?.value;
+      if (v && moment.isMoment(v)) return (v as Moment).year();
+      if (v instanceof Date) return v.getFullYear();
+      return moment().year();
+   }
+
+   get minYear(): number {
+      const min = this.control?.formAction?.optionDate?.min;
+      return min ? moment(min, 'YYYY').year() : 1900;
+   }
+
+   get maxYear(): number {
+      const max = this.control?.formAction?.optionDate?.max;
+      return max ? moment(max, 'YYYY').year() : 2100;
+   }
+
+   prevYear(): void {
+      const current = this.currentYear;
+      if (current > this.maxYear) {
+         // valore fuori range superiore → salta al massimo consentito
+         this._setYear(this.maxYear);
+      } else {
+         const y = current - 1;
+         if (y >= this.minYear) this._setYear(y);
+      }
+   }
+
+   nextYear(): void {
+      const current = this.currentYear;
+      if (current < this.minYear) {
+         // valore fuori range inferiore → salta al minimo consentito
+         this._setYear(this.minYear);
+      } else {
+         const y = current + 1;
+         if (y <= this.maxYear) this._setYear(y);
+      }
+   }
+
+   private _setYear(year: number): void {
+      const date = moment().year(year).startOf('year');
+      this.control.formAction.formControl.setValue(date);
+      this.control.formAction.formControl.markAsDirty();
+      this.control.formAction.formControl.updateValueAndValidity();
    }
 
    openedStream(): void {
@@ -74,19 +126,8 @@ export class DateYearComponent extends BaseComponent {
       this.emitClosed();
    }
 
-   /**
-    * Toglie il focus dall'input per evitare riaperture indesiderate.
-    */
-   _takeFocusAway(datepicker: MatDatepicker<Moment>): void {
-      this.closedStream();
-   }
-
    _yearSelectedHandler(chosenDate: Moment, datepicker: MatDatepicker<Moment>): void {
-      chosenDate.set({ date: 1 });
-
-      this.control.formAction.formControl.markAsDirty();
-      this.control.formAction.formControl.setValue(chosenDate);
-
+      this._setYear(chosenDate.year());
       datepicker.close();
    }
 }
