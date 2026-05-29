@@ -132,6 +132,56 @@
           }
         }
       }
+    },
+    "dynamicform-wc": {
+      "projectType": "application",
+      "root": "projects/dynamicform-wc",
+      "sourceRoot": "projects/dynamicform-wc/src",
+      "prefix": "wc",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/dynamicform-wc",
+            "index": "projects/dynamicform-wc/src/index.html",
+            "main": "projects/dynamicform-wc/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "projects/dynamicform-wc/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [],
+            "styles": [
+              "projects/dynamicform-wc/src/styles.scss"
+            ],
+            "scripts": [],
+            "outputHashing": "none",
+            "vendorChunk": false,
+            "extractLicenses": false,
+            "namedChunks": false,
+            "optimization": true
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "none",
+              "optimization": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "5mb",
+                  "maximumError": "20mb"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true,
+              "outputHashing": "none"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
     }
   }
 }

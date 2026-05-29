@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DynamicForm Web Component — Demo</title>
+
+    <!-- Google Fonts: Material Icons + Inter -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Angular Material prebuilt theme -->
+    <link rel="stylesheet" href="../../../node_modules/@angular/material/prebuilt-themes/indigo-pink.css" />
+    <!-- Bootstrap grid/utilities -->
+    <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- WC bundle CSS (generato da: npm run build:wc) -->
+    <link rel="stylesheet" href="../../../dist/dynamicform-wc/dynamicform-wc.css" />
+    <!-- WC bundle JS (defer: si carica dopo il DOM) -->
+    <script src="../../../dist/dynamicform-wc/dynamicform-wc.js" defer></script>
+    <script src="./styles.scss" defer></script>
+
+
+    <style>
+        /* ── Reset & Base ─────────────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: #1a1a2e;
+        }
+
+        /* ── Header ───────────────────────────────────────────── */
+        .demo-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.35);
+        }
+
+        .demo-header h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .demo-header span.badge {
+            background: rgba(255, 255, 255, 0.22);
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* ── Layout container ─────────────────────────────────── */
+        .demo-page {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 28px 24px;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .demo-page {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── Card ─────────────────────────────────────────────── */
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            background: linear-gradient(to right, #f8f9ff, #fff);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .card-header .material-icons {
+            font-size: 18px;
+            color: #667eea;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* ── Toolbar layout selector ──────────────────────────── */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 14px 20px;
+            background: #f8f9ff;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .toolbar label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #555;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 3px;
+            border-radius: 10px;
+        }
+
+        .btn-group button {
+            padding: 5px 14px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            color: #555;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+
+        .btn-group button:hover {
+            background: rgba(255, 255, 255, 0.7);
+            color: #333;
+        }
+
+        .btn-group button.active {
+            background: #fff;
+            color: #667eea;
+            font-weight: 600;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+        }
+
+        /* ── Dynamic form container ───────────────────────────── */
+        .form-host {
+            padding: 20px;
+        }
+
+        dynamic-form,
+        nutrition-demo-form {
+            display: block;
+        }
+
+        /* ── Sidebar panels ───────────────────────────────────── */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* ── Form value output ────────────────────────────────── */
+        #formValueOutput {
+            background: #1e1e2e;
+            color: #a6e3a1;
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            padding: 14px;
+            border-radius: 10px;
+            max-height: 300px;
+            overflow: auto;
+            white-space: pre;
+            user-select: text;
+        }
+
+        #formValueOutput:empty::before {
+            content: '// In attesa della creazione del form...';
+            color: #6c7086;
+        }
+
+        /* ── Event log ────────────────────────────────────────── */
+        #eventLog {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .event-entry {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            font-size: 0.75rem;
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: #f8f9ff;
+            border-left: 3px solid #667eea;
+            animation: fadeInDown 0.2s ease;
+        }
+
+        .event-entry .event-time {
+            color: #aaa;
+            font-size: 0.65rem;
+            flex-shrink: 0;
+        }
+
+        .event-entry .event-type {
+            font-weight: 700;
+            color: #667eea;
+            flex-shrink: 0;
+        }
+
+        .event-entry .event-detail {
+            color: #555;
+            word-break: break-all;
+        }
+
+        #eventLog:empty::after {
+            content: 'Nessun evento ancora';
+            color: #aaa;
+            font-size: 0.8rem;
+            padding: 8px 10px;
+        }
+
+        /* ── Status chip ──────────────────────────────────────── */
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .chip.green {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .chip.gray {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .chip.purple {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        /* ── Action buttons ───────────────────────────────────── */
+        .action-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            box-shadow: 0 3px 12px rgba(102, 126, 234, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 18px rgba(102, 126, 234, 0.45);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn .material-icons {
+            font-size: 16px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ── Header ──────────────────────────────────────────────── -->
+    <header class="demo-header">
+        <span class="material-icons" style="font-size:28px">dynamic_form</span>
+        <h1>DynamicForm Web Component — Demo</h1>
+        <span class="badge">v1.0.0 · Angular Elements · JSON Schema</span>
+    </header>
+
+    <div class="demo-page">
+
+        <!-- ── Colonna sinistra: form ──────────────────────────────── -->
+        <div class="card">
+
+            <!-- Toolbar layout -->
+            <div class="toolbar">
+                <label>Layout</label>
+                <div class="btn-group" id="layoutBtns">
+                    <button class="active" data-layout="default">Default</button>
+                    <button data-layout="tabs">Tabs</button>
+                    <button data-layout="steps">Steps</button>
+                </div>
+
+                <label id="orientLbl" style="display:none; margin-left:8px">Orientamento</label>
+                <div class="btn-group" id="orientBtns" style="display:none">
+                    <button class="active" data-orient="horizontal">Orizzontale</button>
+                    <button data-orient="vertical">Verticale</button>
+                </div>
+
+                <div style="margin-left:auto" class="status-row">
+                    <span id="formStatus" class="chip gray">
+                        <span class="material-icons" style="font-size:13px">pending</span>
+                        In attesa
+                    </span>
+                </div>
+            </div>
+
+            <!-- Web Component generico: riceve il JSON schema via property JS -->
+            <!-- Le combo COMBOPAGINATE chiamano il server Node su http://localhost:3000 -->
+            <div class="form-host">
+                <dynamic-form id="dfWc"></dynamic-form>
+            </div>
+
+        </div>
+
+        <!-- ── Colonna destra: sidebar ────────────────────────────── -->
+        <aside class="sidebar">
+
+            <!-- Azioni manuali sidebar -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons">play_circle</span>
+                    <h2>Azioni</h2>
+                </div>
+                <div class="card-body">
+                    <div class="action-row">
+                        <button class="btn btn-primary" onclick="readFormValue()">
+                            <span class="material-icons">data_object</span> Leggi valori
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetForm()">
+                            <span class="material-icons">restart_alt</span> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form value output -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons">code</span>
+                    <h2>Form value (getRawValue)</h2>
+                </div>
+                <div class="card-body" style="padding:8px">
+                    <div id="formValueOutput"></div>
+                </div>
+            </div>
+
+            <!-- Event log -->
+            <div class="card">
+                <div class="card-header" style="justify-content:space-between">
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <span class="material-icons">bolt</span>
+                        <h2>Event log</h2>
+                    </div>
+                    <button onclick="clearLog()"
+                        style="border:none;background:none;cursor:pointer;font-size:0.75rem;color:#888;">Pulisci</button>
+                </div>
+                <div class="card-body" style="padding:8px 12px">
+                    <div id="eventLog"></div>
+                </div>
+            </div>
+
+        </aside>
+    </div>
+
+    <script>
+        'use strict';
+
+        /* ─────────────────────────────────────────────────────────────────────
+           Stato runtime
+        ───────────────────────────────────────────────────────────────────── */
+        let currentLayout = 'default';
+        let currentOrient = 'horizontal';
+        let formGroup = null;   // FormGroup Angular — ricevuto via onFormCreate
+
+        /* ─────────────────────────────────────────────────────────────────────
+           buildConfig()
+           Usa window.DynamicFormLib (esposto dal WC al bootstrap) per costruire
+           la ConfigForm con il DynamicFormBuilder di Angular — niente JSON schema.
+
+           I remoteData delle COMBOPAGINATE usano la CHIAVE stringa registrata
+           nel registro DEMO_WC_EVENTS (wc-bootstrap.module.ts / wc-demo-events.ts):
+             loadLivelloAttivita    → GET http://localhost:3000/api/livello-attivita
+             loadTipoAttivitaFisica → GET http://localhost:3000/api/tipo-attivita-fisica
+             loadFreqAllenamento    → GET http://localhost:3000/api/freq-allenamento
+
+           Gli handler onChange/onInit/onSalva/onReset sparano CustomEvent su window
+           che la demo intercetta (dfChange, dfInit, dfAction).
+        ───────────────────────────────────────────────────────────────────── */
+        function buildConfig() {
+            const {
+                DynamicFormBuilder,
+                FormControl,
+                Validators,
+                TYPE_CONTROL_FORM,
+                signal,
+            } = window.DynamicFormLib;
+
+            return DynamicFormBuilder.create()
+
+                /* ── Gruppo 1: Dati anagrafici ───────────────────────────── */
+                .addGroup('Dati anagrafici', ['col-12'])
+                .addForm({
+                    formName: 'nome',
+                    title: 'Nome',
+                    type: TYPE_CONTROL_FORM.TEXT,
+                    formControl: new FormControl(null, Validators.required),
+                    css: { class: ['col-md-4'] },
+                    onChange: (idGroup, idForm, fc, formName) => {
+                        window.dispatchEvent(new CustomEvent('dfChange', {
+                            detail: { formName, value: fc?.value },
+                        }));
+                        readFormValue();
+                    },
+                    onInitialize: (_ig, _if, _fc, formName) => {
+                        window.dispatchEvent(new CustomEvent('dfInit', {
+                            detail: { formName },
+                        }));
+                    },
+                })
+                .addForm({
+                    formName: 'cognome',
+                    title: 'Cognome',
+                    type: TYPE_CONTROL_FORM.TEXT,
+                    formControl: new FormControl(null, Validators.required),
+                    css: { class: ['col-md-4'] },
+                    onChange: (_ig, _if, fc, formName) => {
+                        window.dispatchEvent(new CustomEvent('dfChange', { detail: { formName, value: fc?.value } }));
+                        readFormValue();
+                    },
+                })
+                .addForm({
+                    formName: 'email',
+                    title: 'Email',
+                    type: TYPE_CONTROL_FORM.TEXT,
+                    formControl: new FormControl(null, [Validators.required, Validators.email]),
+                    css: { class: ['col-md-4'] },
+                    onChange: (_ig, _if, fc, formName) => {
+                        window.dispatchEvent(new CustomEvent('dfChange', { detail: { formName, value: fc?.value } }));
+                        readFormValue();
+                    },
+                })
+                .addForm({
+                    formName: 'dataNascita',
+                    title: 'Data di nascita',
+                    type: TYPE_CONTROL_FORM.DATA,
+                    formControl: new FormControl(null),
+                    css: { class: ['col-md-4'] },
+                })
+                .addForm({
+                    formName: 'peso',
+                    title: 'Peso (kg)',
+                    type: TYPE_CONTROL_FORM.NUMBER,
+                    formControl: new FormControl(null),
+                    css: { class: ['col-md-4'] },
+                    optionNumber: { min: 30, max: 300, step: 0.1 },
+                    onChange: (_ig, _if, fc, formName) => {
+                        window.dispatchEvent(new CustomEvent('dfChange', { detail: { formName, value: fc?.value } }));
+                        readFormValue();
+                    },
+                })
+                .addForm({
+                    formName: 'altezza',
+                    title: 'Altezza (cm)',
+                    type: TYPE_CONTROL_FORM.NUMBER,
+                    formControl: new FormControl(null),
+                    css: { class: ['col-md-4'] },
+                    optionNumber: { min: 100, max: 250, step: 1 },
+                    onChange: (_ig, _if, fc, formName) => {
+                        window.dispatchEvent(new CustomEvent('dfChange', { detail: { formName, value: fc?.value } }));
+                        readFormValue();
+                    },
+                })
+
+                /* ── Gruppo 2: Attività fisica — COMBOPAGINATE remote ────── */
+                .addGroup('Attività fisica', ['col-12'])
+                .addForm({
+                    formName: 'livelloAttivita',
+                    title: 'Livello attività fisica',
+                    type: TYPE_CONTROL_FORM.COMBOPAGINATE,
+                    formControl: new FormControl(null),
+                    css: { class: ['col-md-6'] },
+                    /*
+                     * remoteData come funzione diretta: stessa logica di DEMO_WC_EVENTS
+                     * ma inline, senza passare per il registro a stringa.
+                     * Chiama GET http://localhost:3000/api/livello-attivita?page=&pageSize=&search=
+                     */
+                    remoteData: (ctx) => {
+                        const p = ctx.param ?? {};
+                        const url = new URL('http://localhost:3000/api/livello-attivita');
+                        if (p.page != null) url.searchParams.set('page', String(p.page));
+                        if (p.count != null) url.searchParams.set('pageSize', String(p.count));
+                        if (p.search) url.searchParams.set('search', String(p.search));
+                        return fetch(url.toString()).then(r => r.json())
+                            .catch(() => ({ items: [], totalCount: 0 }));
+                    },
+                    paging: { count: 5, page: 1 },
+                    keyCombo: { keyId: 'id', keyDescription: 'description' },
+                    onChange: (_ig, _if, fc, formName) => {
+                        window.dispatchEvent(new CustomEvent('dfChange', { detail: { formName, value: fc?.value } }));
+                        readFormValue();
+                    },
+                    onInitialize: (_ig, _if, _fc, formName) => {
+                        window.dispatchEvent(new CustomEvent('dfInit', { detail: { formName } }));
+                    },
+                })
+                .addForm({
+                    formName: 'tipoAttivita',
+                    title: 'Tipo attività fisica',
+                    type: TYPE_CONTROL_FORM.COMBOPAGINATE,
+                    formControl: new FormControl(null),
+                    css: { class: ['col-md-6'] },
+                    remoteData: (ctx) => {
+                        const p = ctx.param ?? {};
+                        const url = new URL('http://localhost:3000/api/tipo-attivita-fisica');
+                        if (p.page != null) url.searchParams.set('page', String(p.page));
+                        if (p.count != null) url.searchParams.set('pageSize', String(p.count));
+                        if (p.search) url.searchParams.set('search', String(p.search));
+                        return fetch(url.toString()).then(r => r.json())
+                            .catch(() => ({ items: [], totalCount: 0 }));
+                    },
+                    paging: { count: 5, page: 1 },
+                    keyCombo: { keyId: 'id', keyDescription: 'description' },
+                    onChange: (_ig, _if, fc, formName) => {
+                        window.dispatchEvent(new CustomEvent('dfChange', { detail: { formName, value: fc?.value } }));
+                        readFormValue();
+                    },
+                    onInitialize: (_ig, _if, _fc, formName) => {
+                        window.dispatchEvent(new CustomEvent('dfInit', { detail: { formName } }));
+                    },
+                })
+                .addForm({
+                    formName: 'freqAllenamento',
+                    title: 'Frequenza allenamento',
+                    type: TYPE_CONTROL_FORM.COMBOPAGINATE,
+                    formControl: new FormControl(null),
+                    css: { class: ['col-md-6'] },
+                    remoteData: (ctx) => {
+                        const p = ctx.param ?? {};
+                        const url = new URL('http://localhost:3000/api/freq-allenamento');
+                        if (p.page != null) url.searchParams.set('page', String(p.page));
+                        if (p.count != null) url.searchParams.set('pageSize', String(p.count));
+                        if (p.search) url.searchParams.set('search', String(p.search));
+                        return fetch(url.toString()).then(r => r.json())
+                            .catch(() => ({ items: [], totalCount: 0 }));
+                    },
+                    paging: { count: 5, page: 1 },
+                    keyCombo: { keyId: 'id', keyDescription: 'description' },
+                    onChange: (_ig, _if, fc, formName) => {
+                        window.dispatchEvent(new CustomEvent('dfChange', { detail: { formName, value: fc?.value } }));
+                        readFormValue();
+                    },
+                    onInitialize: (_ig, _if, _fc, formName) => {
+                        window.dispatchEvent(new CustomEvent('dfInit', { detail: { formName } }));
+                    },
+                })
+                .addForm({
+                    formName: 'accettaPrivacy',
+                    title: 'Accetto il trattamento dei dati personali (GDPR)',
+                    type: TYPE_CONTROL_FORM.CHECKBOX,
+                    formControl: new FormControl(false, Validators.requiredTrue),
+                    css: { class: ['col-12'] },
+                    onChange: (_ig, _if, fc, formName) => {
+                        window.dispatchEvent(new CustomEvent('dfChange', { detail: { formName, value: fc?.value } }));
+                        readFormValue();
+                    },
+                })
+
+                /* ── Gruppo 3: Note e preferenze ─────────────────────────── */
+                .addGroup('Note e preferenze', ['col-12'])
+                .addForm({
+                    formName: 'allergie',
+                    title: 'Allergie / intolleranze',
+                    type: TYPE_CONTROL_FORM.ARRAYSTRING,
+                    formControl: new FormControl([]),
+                    css: { class: ['col-md-6'] },
+                })
+                .addForm({
+                    formName: 'note',
+                    title: 'Note aggiuntive',
+                    type: TYPE_CONTROL_FORM.TEXTAREA,
+                    formControl: new FormControl(null),
+                    css: { class: ['col-12'], rows: 4 },
+                })
+                .addActions([
+                    {
+                        label: 'Salva',
+                        visible: true,
+                        cssClassButton: ['btn-primary', 'col-4'],
+                        action: (_questions, _idForm, _fg, _group, _idGroup, _allGroup, totalForm) => {
+                            const raw = typeof totalForm?.getRawValue === 'function'
+                                ? totalForm.getRawValue()
+                                : totalForm?.value;
+                            window.dispatchEvent(new CustomEvent('dfAction', {
+                                detail: { type: 'salva', value: raw },
+                            }));
+                        },
+                    },
+                    {
+                        label: 'Reset',
+                        visible: true,
+                        cssClassButton: ['btn-secondary', 'col-4'],
+                        action: (_questions, _idForm, _fg, _group, _idGroup, _allGroup, totalForm) => {
+                            totalForm?.reset();
+                            window.dispatchEvent(new CustomEvent('dfAction', {
+                                detail: { type: 'reset' },
+                            }));
+                        },
+                    },
+                ])
+
+                .build();
+        }
+
+        /* ─────────────────────────────────────────────────────────────────────
+           Bootstrap CE
+        ───────────────────────────────────────────────────────────────────── */
+        function initWc() {
+            const el = document.getElementById('dfWc');
+
+            el.addEventListener('onFormCreate', (e) => {
+                formGroup = e.detail;
+                setStatus('green', 'check_circle', 'Form pronto');
+                logEvent('onFormCreate', 'FormGroup Angular creato', '#06b6d4');
+                readFormValue();
+            });
+
+            el.addEventListener('onQuestionsCreate', (e) => {
+                const nGroups = Array.isArray(e.detail) ? e.detail.length : '?';
+                logEvent('onQuestionsCreate', `${nGroups} gruppi costruiti`, '#8b5cf6');
+            });
+
+            /* ── window: eventi sparati dagli handler inline ── */
+            window.addEventListener('dfAction', (e) => {
+                const type = e.detail?.type;
+                if (type === 'reset') {
+                    readFormValue();
+                    logEvent('dfAction:reset', 'form resettato', '#ef4444');
+                } else if (type === 'salva') {
+                    const raw = e.detail?.value ?? readFormValue();
+                    if (raw !== null) {
+                        document.getElementById('formValueOutput').textContent = JSON.stringify(raw, null, 2);
+                        logEvent('dfAction:salva', 'dati acquisiti (vedi Form value)', '#22c55e');
+                        console.info('[demo] salva →', raw);
+                    }
+                }
+            });
+
+            window.addEventListener('dfChange', (e) => {
+                const { formName, value } = e.detail ?? {};
+                logEvent(`onChange: ${formName}`, JSON.stringify(value), '#f59e0b');
+            });
+
+            window.addEventListener('dfInit', (e) => {
+                const { formName } = e.detail ?? {};
+                logEvent(`onInit: ${formName}`, '', '#a78bfa');
+            });
+
+            /* ── Costruisce la ConfigForm con il builder e la passa al CE ── */
+            el.config = buildConfig();
+            el.layout = currentLayout;
+            el.stepperOrientation = currentOrient;
+        }
+
+        if (customElements.get('dynamic-form')) {
+            initWc();
+        } else {
+            customElements.whenDefined('dynamic-form').then(initWc);
+        }
+
+        /* ─────────────────────────────────────────────────────────────────────
+           Layout switcher
+        ───────────────────────────────────────────────────────────────────── */
+        document.getElementById('layoutBtns').addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-layout]');
+            if (!btn) return;
+            currentLayout = btn.dataset.layout;
+            document.querySelectorAll('#layoutBtns button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            applyLayout();
+            const showOrient = currentLayout === 'steps';
+            document.getElementById('orientLbl').style.display = showOrient ? '' : 'none';
+            document.getElementById('orientBtns').style.display = showOrient ? '' : 'none';
+        });
+
+        document.getElementById('orientBtns').addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-orient]');
+            if (!btn) return;
+            currentOrient = btn.dataset.orient;
+            document.querySelectorAll('#orientBtns button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            applyLayout();
+        });
+
+        function applyLayout() {
+            const el = document.getElementById('dfWc');
+            el.layout = currentLayout;
+            el.stepperOrientation = currentOrient;
+            logEvent('layoutChange', `layout="${currentLayout}" orient="${currentOrient}"`, '#f59e0b');
+        }
+
+        /* ─────────────────────────────────────────────────────────────────────
+           Azioni sidebar
+        ───────────────────────────────────────────────────────────────────── */
+        function readFormValue() {
+            if (!formGroup) return null;
+            const raw = typeof formGroup.getRawValue === 'function'
+                ? formGroup.getRawValue()
+                : formGroup.value;
+            document.getElementById('formValueOutput').textContent = JSON.stringify(raw, null, 2);
+            return raw;
+        }
+
+        function resetForm() {
+            if (!formGroup) return;
+            formGroup.reset();
+            readFormValue();
+        }
+
+        /* ─────────────────────────────────────────────────────────────────────
+           Status chip
+        ───────────────────────────────────────────────────────────────────── */
+        function setStatus(color, icon, text) {
+            const el = document.getElementById('formStatus');
+            el.className = `chip ${color}`;
+            el.innerHTML = `<span class="material-icons" style="font-size:13px">${icon}</span> ${text}`;
+        }
+
+        /* ─────────────────────────────────────────────────────────────────────
+           Event log
+        ───────────────────────────────────────────────────────────────────── */
+        function logEvent(type, detail, color = '#667eea') {
+            const log = document.getElementById('eventLog');
+            const time = new Date().toLocaleTimeString('it-IT', { hour12: false });
+            const entry = document.createElement('div');
+            entry.className = 'event-entry';
+            entry.style.borderLeftColor = color;
+            entry.innerHTML = `
+          <span class="event-time">${time}</span>
+          <span class="event-type" style="color:${color}">${escHtml(type)}</span>
+          <span class="event-detail">${escHtml(String(detail))}</span>`;
+            log.prepend(entry);
+            while (log.children.length > 60) log.removeChild(log.lastChild);
+        }
+
+        function clearLog() {
+            document.getElementById('eventLog').innerHTML = '';
+        }
+
+        function escHtml(s) {
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+    </script>
+</body>
+
+</html>

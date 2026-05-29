@@ -1,0 +1,20 @@
+/* Stili globali del Web Component build.
+   Angular Material prebuilt theme + Bootstrap vengono inclusi qui
+   in modo da essere bundlati nel file CSS finale. */
+
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import 'node_modules/bootstrap/dist/css/bootstrap.min.css';
+
+/* Anni disabilitati nel year-picker */
+.jp-year-picker .mat-calendar-body-disabled {
+    opacity: 0.3;
+}
+
+/* Rating field: altezza ridotta */
+.rating-field {
+    .mat-mdc-form-field-infix {
+        min-height: 0 !important;
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+    }
+}
