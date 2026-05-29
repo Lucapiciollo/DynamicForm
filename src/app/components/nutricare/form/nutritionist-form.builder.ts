@@ -2,8 +2,9 @@
 
 import { signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ConfigForm, TYPE_CONTROL_FORM } from 'projects/dynamicform/src/public-api';
+import { ConfigForm, DynamicFormActionButton, TYPE_CONTROL_FORM } from 'projects/dynamicform/src/public-api';
 import { calcBMIHelper } from './nutritionist-form.events';
+import { DynamicFormBuilder } from 'projects/dynamicform/src/lib/dynamic-form.builder';
 
 // ---------------------------------------------------------------------------
 // Helper: avvolge un oggetto FormAction nella struttura Form
@@ -63,6 +64,135 @@ function giornoBuilder(id: string, emoji: string, giorno: string): any {
     });
 }
 
+
+const salvaAction: DynamicFormActionButton = {
+    label: 'Salva',
+    visible: true,
+    action: (
+        formControl,
+        formName,
+        formGroup,
+        allGroup,
+        utility,
+        idGroup,
+        idForm
+    ) => {
+        alert('Hai cliccato il bottone!');
+        console.log({
+            formControl,
+            formName,
+            formGroup,
+            allGroup,
+            utility,
+            idGroup,
+            idForm,
+        });
+    },
+
+};
+
+// Campo con azione custom (es. bottone)
+
+
+// Campo con onChange
+const nome = {
+    formName: 'nome',
+    title: 'Nome',
+    type: TYPE_CONTROL_FORM.COMBO,
+    options: signal([{ id: '1', description: 'Opzione 1' }, { id: '2', description: 'Opzione 2' }]),
+    formControl: new FormControl('', Validators.required),
+    onChange: (idGroup, idForm, formControl, formName, formGroup, type, prevValue, allGroup, utility) => {
+        console.log('[onChange]', { idGroup, idForm, formControl, formName, formGroup, type, prevValue, allGroup, utility });
+    },
+    onInitialize: (idGroup, idForm, formControl, formName, formGroup, type, allGroup) => {
+        console.log('[onInitialize]', { idGroup, idForm, formControl, formName, formGroup, type, allGroup });
+    },
+    onFocus: (idGroup, idForm, formControl, formName, formGroup, allGroup, utility) => {
+        console.log('[onFocus]', { idGroup, idForm, formControl, formName, formGroup, allGroup, utility });
+    },
+    onBlur: (idGroup, idForm, formControl, formName, formGroup, allGroup, utility) => {
+        console.log('[onBlur]', { idGroup, idForm, formControl, formName, formGroup, allGroup, utility });
+    },
+    onSearch: (idGroup, idForm, formControl, formName, formGroup, search, utility) => {
+        console.log('[onSearch]', { idGroup, idForm, formControl, formName, formGroup, search, utility });
+    },
+    onScrollEnd: (idGroup, idForm, formControl, formName, formGroup, paging, utility) => {
+        console.log('[onScrollEnd]', { idGroup, idForm, formControl, formName, formGroup, paging, utility });
+    }
+};
+
+// Campo con onInitialize
+const email = {
+    formName: 'email',
+    title: 'Email',
+    type: TYPE_CONTROL_FORM.TEXT,
+    formControl: new FormControl('', Validators.email),
+    onInitialize: () => console.log('Campo email inizializzato'),
+};
+const campoConAction = {
+    formName: 'bottoneCustom',
+    type: TYPE_CONTROL_FORM.BUTTON,
+    title: 'Clicca qui',
+    action: () => alert('Hai cliccato il bottone!'),
+};
+
+const campoConOnChange = {
+    formName: 'nome',
+    title: 'Nome',
+    type: TYPE_CONTROL_FORM.COMBO,
+    options: signal([{ id: '1', description: 'Opzione 1' }, { id: '2', description: 'Opzione 2' }]),
+    formControl: new FormControl(''),
+    onChange: (idGroup, idForm, formControl, formName, formGroup, type, prevValue, allGroup, utility) => {
+        console.log('[onChange]', { idGroup, idForm, formControl, formName, formGroup, type, prevValue, allGroup, utility });
+    },
+    onInitialize: (idGroup, idForm, formControl, formName, formGroup, type, allGroup) => {
+        console.log('[onInitialize]', { idGroup, idForm, formControl, formName, formGroup, type, allGroup });
+    },
+    onFocus: (idGroup, idForm, formControl, formName, formGroup, allGroup, utility) => {
+        console.log('[onFocus]', { idGroup, idForm, formControl, formName, formGroup, allGroup, utility });
+    },
+    onBlur: (idGroup, idForm, formControl, formName, formGroup, allGroup, utility) => {
+        console.log('[onBlur]', { idGroup, idForm, formControl, formName, formGroup, allGroup, utility });
+    },
+    onSearch: (idGroup, idForm, formControl, formName, formGroup, search, utility) => {
+        console.log('[onSearch]', { idGroup, idForm, formControl, formName, formGroup, search, utility });
+    },
+    onScrollEnd: (idGroup, idForm, formControl, formName, formGroup, paging, utility) => {
+        console.log('[onScrollEnd]', { idGroup, idForm, formControl, formName, formGroup, paging, utility });
+    },
+};
+
+const campoConOnInitialize = {
+    formName: 'email',
+    title: 'Email',
+    type: TYPE_CONTROL_FORM.TEXT,
+    formControl: new FormControl(''),
+    onChange: (idGroup, idForm, formControl, formName, formGroup, type, prevValue, allGroup, utility) => {
+        console.log('Campo email cambiato')
+    },
+    onInitialize: (idGroup, idForm, formControl, formName, formGroup, type, allGroup) => {
+        console.log('Campo email inizializzato')
+    }
+};
+// Usa il builder guidato
+const cc = DynamicFormBuilder.create()
+    .addGroup('Dati Anagrafici', ['col-12'])
+    .addForm(nome)
+    .addForm(email)
+    .addActions([salvaAction])
+    .addGroup('Note')
+    .addForm({
+        formName: 'note',
+        title: 'Note',
+        type: TYPE_CONTROL_FORM.TEXTAREA,
+        formControl: new FormControl(''),
+        formGroup: DynamicFormBuilder.create().addGroup('Giorno 1').addForm(giornoBuilder('giorno1', '📅', 'Lunedì')).build(),
+    })
+    .addActions([salvaAction])
+    .build();
+
+
+
 // ---------------------------------------------------------------------------
 // Builder principale
 // ---------------------------------------------------------------------------
@@ -72,6 +202,7 @@ export function buildNutritionistForm(): ConfigForm {
     const pesoCtrl = new FormControl<number | null>(null, Validators.required);
     const bmiCtrl = new FormControl<number | null>({ value: null, disabled: true });
 
+    return cc;
     return [
         // ───────────────────────────────────────────────────────────────────
         // GRUPPO 1 · Dati Personali
@@ -86,6 +217,24 @@ export function buildNutritionistForm(): ConfigForm {
                     title: 'Nome *',
                     formControl: new FormControl(null, Validators.required),
                     css: { class: ['col-md-6'] },
+                    onChange: (idGroup, idForm, formControl, formName, formGroup, type, prevValue, allGroup, utility) => {
+                        console.log('[onChange]', { idGroup, idForm, formControl, formName, formGroup, type, prevValue, allGroup, utility });
+                    },
+                    onInitialize: (idGroup, idForm, formControl, formName, formGroup, type, allGroup) => {
+                        console.log('[onInitialize]', { idGroup, idForm, formControl, formName, formGroup, type, allGroup });
+                    },
+                    onFocus: (idGroup, idForm, formControl, formName, formGroup, allGroup, utility) => {
+                        console.log('[onFocus]', { idGroup, idForm, formControl, formName, formGroup, allGroup, utility });
+                    },
+                    onBlur: (idGroup, idForm, formControl, formName, formGroup, allGroup, utility) => {
+                        console.log('[onBlur]', { idGroup, idForm, formControl, formName, formGroup, allGroup, utility });
+                    },
+                    onSearch: (idGroup, idForm, formControl, formName, formGroup, search, utility) => {
+                        console.log('[onSearch]', { idGroup, idForm, formControl, formName, formGroup, search, utility });
+                    },
+                    onScrollEnd: (idGroup, idForm, formControl, formName, formGroup, paging, utility) => {
+                        console.log('[onScrollEnd]', { idGroup, idForm, formControl, formName, formGroup, paging, utility });
+                    },
                 }),
                 field({
                     formName: 'cognome',

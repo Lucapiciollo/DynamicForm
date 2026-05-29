@@ -333,6 +333,17 @@ export class BaseComponent implements IBaseComponent {
       formControl.valueChanges
          .pipe(autoUnsubscribe(this.obs), takeUntilDestroyed(this.destroyRef), startWith(null), pairwise())
          .subscribe(([prevValue, next]: [any, any]) => {
+            const t = control?.formAction?.type;
+            // Blocca il trigger generico per COMBO e COMBOPAGINATE (solo il componente custom deve chiamare onChange)
+            if (
+               t === TYPE_CONTROL_FORM.GROUP ||
+               t === TYPE_CONTROL_FORM.ARRAYSTRING ||
+               t === TYPE_CONTROL_FORM.COMBO ||
+               t === TYPE_CONTROL_FORM.COMBOPAGINATE ||
+               !control?.formAction?.onChange
+            ) return;
+            if (prevValue === next) return;
+            if (prevValue === null && next === null) return;
             this.callOnChange(prevValue, next);
          });
    }
@@ -389,6 +400,8 @@ export class BaseComponent implements IBaseComponent {
       if (!formAction?.onChange) {
          return;
       }
+
+
 
       formAction.onChange(
          this.formGroupIndex,

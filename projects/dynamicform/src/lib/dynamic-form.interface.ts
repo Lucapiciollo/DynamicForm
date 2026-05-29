@@ -173,6 +173,20 @@ export type TypeForm = Array<Form>;
  * Viene renderizzato come bottone nella footer del gruppo e riceve
  * l'intero stato del form al click.
  */
+/**
+ * Pulsante di azione associato a un gruppo del form.
+ * Viene renderizzato come bottone nella footer del gruppo e riceve
+ * l'intero stato del form al click.
+ *
+ * L'action ora riceve tutti i parametri utili:
+ * - questions: campi del gruppo
+ * - idForm: id del gruppo (string o number)
+ * - formGroup: FormGroup o FormArray del gruppo
+ * - group: il Group corrente
+ * - idGroup: indice del gruppo
+ * - allGroup: ConfigForm completo
+ * - utility: oggetto helper
+ */
 export type DynamicFormActionButton = {
    label?: string;
    name?: string;
@@ -187,8 +201,12 @@ export type DynamicFormActionButton = {
 
    action: (
       questions: Array<Form>,
-      idForm: string,
+      idForm: string | number,
       formGroup: FormGroup | FormArray,
+      group?: Group,
+      idGroup?: number,
+      allGroup?: ConfigForm,
+      utility?: Utility
    ) => void;
 };
 
@@ -198,6 +216,10 @@ export type DynamicFormActionButton = {
  * e un array di pulsanti di azione (`actions`).
  */
 export type Group = {
+   /**
+    * Identificatore univoco del gruppo (assegnato dal builder o manualmente)
+    */
+   id?: string;
    title?: string;
    class?: Array<string>;
    formGroup?: TypeForm;
@@ -324,6 +346,10 @@ export type DynamicFormFocusBlur = (
  ***********************************************************************************************************************************/
 
 export type FormActionBase = {
+   /**
+    * Identificatore univoco del campo (assegnato dal builder o manualmente)
+    */
+   id?: string;
    formName?: string;
    disabled?: boolean;
    title?: string;

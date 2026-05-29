@@ -15,18 +15,18 @@ function field(formAction: any): any {
 // ---------------------------------------------------------------------------
 
 function createBuilderAddressGroup(idx: number): { config: any; fg: FormGroup } {
-    const via   = new FormControl(null, Validators.required);
+    const via = new FormControl(null, Validators.required);
     const citta = new FormControl(null, Validators.required);
-    const cap   = new FormControl(null, Validators.pattern(/^[0-9]{5}$/));
+    const cap = new FormControl(null, Validators.pattern(/^[0-9]{5}$/));
     const fg = new FormGroup({ via, citta, cap });
 
     const config = {
         title: `Indirizzo ${idx}`,
         class: ['row'],
         formGroup: [
-            field({ formName: 'via',   type: TYPE_CONTROL_FORM.TEXT, title: 'Via',   formControl: via,   css: { class: ['col-12'] } }),
+            field({ formName: 'via', type: TYPE_CONTROL_FORM.TEXT, title: 'Via', formControl: via, css: { class: ['col-12'] } }),
             field({ formName: 'citta', type: TYPE_CONTROL_FORM.TEXT, title: 'Città', formControl: citta, css: { class: ['col-md-8'] } }),
-            field({ formName: 'cap',   type: TYPE_CONTROL_FORM.TEXT, title: 'CAP',  formControl: cap,   css: { class: ['col-md-4'] } }),
+            field({ formName: 'cap', type: TYPE_CONTROL_FORM.TEXT, title: 'CAP', formControl: cap, css: { class: ['col-md-4'] } }),
         ],
         actions: [
             {
@@ -71,6 +71,10 @@ function addBuilderAddress(questions: any, _idForm: string, formGroup: FormGroup
 // ---------------------------------------------------------------------------
 
 export function buildMinimalForm(): ConfigForm {
+
+
+
+
     const { config: addr1 } = createBuilderAddressGroup(1);
 
     return [

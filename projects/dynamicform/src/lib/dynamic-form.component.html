@@ -54,8 +54,7 @@
                <ng-container>
                   @if (action?.visible != null && action?.visible == true) {
                   <button mat-button #button [class]="action.cssClassButton?.join(' ')"
-                     [disabled]="action?.disabled || false"
-                     (click)="action.action(_questions, group.id || '', formGroup)"><i #icon
+                     [disabled]="action?.disabled || false" (click)="action.action(_questions,   formGroup)"><i #icon
                         [class]="action.cssClassIcon?.join(' ')" aria-hidden="true"> </i>{{ action.label }}</button>
                   }
                </ng-container>
