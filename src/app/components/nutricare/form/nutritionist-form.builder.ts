@@ -1,12 +1,12 @@
 
 // --- FORM BUILDER DI TEST PER TUTTE LE COMBO PRINCIPALI ---
-import { inject, signal } from '@angular/core';
+import { effect, inject, signal } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { DynamicFormBuilder } from 'projects/dynamicform/src/lib/dynamic-form.builder';
 import { ConfigForm, TYPE_CONTROL_FORM } from 'projects/dynamicform/src/public-api';
 import { ComboApiService } from 'src/app/store/services/combo-api.service';
 
-export function buildComboTestForm(): ConfigForm {
+export function buildComboTestForm<T>(context: T): ConfigForm {
     // Signal per le opzioni locali
     const options = signal([
         { id: '1', description: 'Opzione 1' },
@@ -66,7 +66,7 @@ export function buildComboTestForm(): ConfigForm {
         console.log(`%c[${event}] ${field} ${completion}`, 'color:#6366f1;font-weight:600', extra ?? '');
     }
 
-    return DynamicFormBuilder.create()
+    return DynamicFormBuilder.create(context)
         .addGroup('ComboBox Test', ['col-4 px-3'])
         .addForm({
             formName: 'combo_normale',
@@ -287,17 +287,33 @@ export function buildComboTestForm(): ConfigForm {
             onFocus: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onFocus', 'campo_year', utility),
             onBlur: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onBlur', 'campo_year', utility),
         })
-        .addForm({
+        .addForm((context) => ({
             formName: 'campo_rating',
             title: 'Rating (stelle)',
             type: TYPE_CONTROL_FORM.RATING,
-            formControl: new FormControl(null),
+            formControl: new FormControl({ value: null, disabled: true }),
             optionRating: { max: 10 },
-            onInitialize: (_ig, _if, _fc, _fn, _fg, _t, _all, utility) => logEvent('onInitialize', 'campo_rating', utility),
+            onInitialize: (_ig, _if, _fc, _fn, _fg, _t, _all, paging, onOptionSetted, utility) => {
+                logEvent('onInitialize', 'campo_rating', utility);
+
+                effect(() => {
+                    const stats = utility?.formCompletion?.();
+                    const completion = stats
+                        ? `[Form ${stats.percentage}% | ${stats.filled}/${stats.total}] [Required ${stats.required.percentage}% | ${stats.required.filled}/${stats.required.total}]`
+                        : '';
+                    _fc.setValue(stats.percentage / 10, { emitEvent: false, onlySelf: true, emitModelToViewChange: true, emitViewToModelChange: true });
+                    stats.groups.map(g =>
+                        console.log(g)
+                    )
+
+                }, { injector: context["injector"], allowSignalWrites: true });
+
+
+            },
             onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) => logEvent('onChange', 'campo_rating', utility, { field: fn, prev, curr: fc?.value }),
             onFocus: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onFocus', 'campo_rating', utility),
             onBlur: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onBlur', 'campo_rating', utility),
-        })
+        }))
 
         // --- GRUPPO: Selezione e Toggle ---
         .addGroup('Selezione e Toggle', ['col-4 px-3'])

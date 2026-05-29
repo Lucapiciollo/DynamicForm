@@ -85,6 +85,7 @@ export class BaseComponent implements IBaseComponent {
    private readonly _completionSignal: WritableSignal<FormCompletionStats> = signal<FormCompletionStats>({
       total: 0, filled: 0, percentage: 0,
       required: { total: 0, filled: 0, percentage: 0 },
+      groups: [],
    });
    private _completionSub: import('rxjs').Subscription | null = null;
 
@@ -711,21 +712,41 @@ export class BaseComponent implements IBaseComponent {
       return true;
    }
 
+   private _computeGroupStats(groupFas: FormAction[]): FormCompletionStats['required'] {
+      const reqFas = groupFas.filter(fa => {
+         try { return fa.formControl?.hasValidator?.(Validators.required) ?? false; }
+         catch { return false; }
+      });
+      const reqTotal = reqFas.length;
+      const reqFilled = reqFas.filter(fa => this._isFieldFilled(fa)).length;
+      return { total: reqTotal, filled: reqFilled, percentage: reqTotal > 0 ? Math.round((reqFilled / reqTotal) * 100) : 0 };
+   }
+
    private _computeCompletion(): FormCompletionStats {
       const fas = this._getTrackableFormActions();
       const total = fas.length;
       const filled = fas.filter(fa => this._isFieldFilled(fa)).length;
       const percentage = total > 0 ? Math.round((filled / total) * 100) : 0;
 
-      const requiredFas = fas.filter(fa => {
-         try { return fa.formControl?.hasValidator?.(Validators.required) ?? false; }
-         catch { return false; }
-      });
-      const requiredTotal = requiredFas.length;
-      const requiredFilled = requiredFas.filter(fa => this._isFieldFilled(fa)).length;
-      const requiredPercentage = requiredTotal > 0 ? Math.round((requiredFilled / requiredTotal) * 100) : 0;
+      const required = this._computeGroupStats(fas);
 
-      return { total, filled, percentage, required: { total: requiredTotal, filled: requiredFilled, percentage: requiredPercentage } };
+      const groups = (this._allGroup ?? []).map(group => {
+         const groupFas = (group.formGroup ?? [])
+            .map(f => f?.formAction)
+            .filter(fa => fa?.formControl && !this._SKIP_COMPLETION.has(fa.type as unknown as TYPE_CONTROL_FORM)) as FormAction[];
+         const gTotal = groupFas.length;
+         const gFilled = groupFas.filter(fa => this._isFieldFilled(fa)).length;
+         return {
+            id: group.id ?? '',
+            title: group.title ?? '',
+            total: gTotal,
+            filled: gFilled,
+            percentage: gTotal > 0 ? Math.round((gFilled / gTotal) * 100) : 0,
+            required: this._computeGroupStats(groupFas),
+         };
+      });
+
+      return { total, filled, percentage, required, groups };
    }
 
    private _subscribeToCompletion(): void {
@@ -734,7 +755,7 @@ export class BaseComponent implements IBaseComponent {
 
       const fas = this._getTrackableFormActions();
       if (!fas.length) {
-         this._completionSignal.set({ total: 0, filled: 0, percentage: 0, required: { total: 0, filled: 0, percentage: 0 } });
+         this._completionSignal.set({ total: 0, filled: 0, percentage: 0, required: { total: 0, filled: 0, percentage: 0 }, groups: [] });
          return;
       }
 

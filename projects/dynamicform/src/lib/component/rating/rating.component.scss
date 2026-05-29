@@ -37,6 +37,21 @@
     align-items: center;
     gap: 0;
     margin-left: -4px;
+
+    &.disabled {
+        pointer-events: none;
+
+        // mat-icon-button inserisce un mat-mdc-button-touch-target (span 48x48)
+        // che cattura eventi mouse prima del button stesso — va disabilitato
+        // esplicitamente su tutti i discendenti
+        .star-btn,
+        .star-btn * {
+            pointer-events: none;
+            --mdc-icon-button-state-layer-color: transparent;
+            --mdc-icon-button-hover-state-layer-opacity: 0;
+            --mat-icon-button-hover-state-layer-opacity: 0;
+        }
+    }
 }
 
 .star-btn {

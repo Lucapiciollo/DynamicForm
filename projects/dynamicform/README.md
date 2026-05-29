@@ -1,843 +1,1739 @@
 # DynamicForm
 
-**DynamicForm** è una libreria open source per Angular che consente di generare form dinamici, complessi e completamente configurabili tramite oggetti TypeScript o JSON, senza scrivere template HTML manualmente.
+> Libreria Angular per la creazione dichiarativa di form reattivi complessi.  
+> Niente template HTML manuali — descrivi il form in TypeScript, la libreria fa il resto.
 
 ---
 
 ## Indice
 
-1. [Cos'è DynamicForm](#cosè-dynamicform)
-2. [Caratteristiche e Vantaggi](#caratteristiche-e-vantaggi)
-3. [Quando usarla](#quando-usarla)
-4. [Installazione](#installazione)
-5. [Configurazione e Import](#configurazione-e-import)
-6. [Utilizzo Base](#utilizzo-base)
-7. [Tipi di Campo e Parametri](#tipi-di-campo-e-parametri)
-8. [Action, Eventi e Utility](#action-eventi-e-utility)
-9. [Esempi Avanzati](#esempi-avanzati)
-10. [Best Practice](#best-practice)
-11. [Estensione e Personalizzazione](#estensione-e-personalizzazione)
-12. [Supporto](#supporto)
+1. [Panoramica](#panoramica)
+2. [Installazione e setup](#installazione-e-setup)
+3. [Concetti fondamentali](#concetti-fondamentali)
+4. [DynamicFormBuilder — API fluente](#dynamicformbuilder--api-fluente)
+5. [Contesto tipizzato](#contesto-tipizzato)
+6. [Catalogo componenti](#catalogo-componenti)
+   - [TEXT](#text)
+   - [TEXTAREA](#textarea)
+   - [NUMBER](#number)
+   - [CURRENCY](#currency)
+   - [CHECKBOX](#checkbox)
+   - [RADIOGROUP](#radiogroup)
+   - [COMBO](#combo)
+   - [COMBOPAGINATE](#combopaginate)
+   - [ARRAYSTRING](#arraystring)
+   - [DATA](#data)
+   - [DATARANGE](#datarange)
+   - [DATETIME](#datetime)
+   - [TIME](#time)
+   - [YEAR](#year)
+   - [RATING](#rating)
+   - [FILE](#file)
+   - [LABEL](#label)
+   - [LINK](#link)
+   - [SEPARATOR](#separator)
+   - [BUTTON](#button)
+   - [GROUP](#group)
+7. [Parametri comuni (FormActionBase)](#parametri-comuni-formactionbase)
+8. [Sistema di eventi](#sistema-di-eventi)
+9. [Oggetto Utility](#oggetto-utility)
+10. [formCompletion — statistiche di completamento](#formcompletion--statistiche-di-completamento)
+11. [Combo statiche con tag e initialOptions](#combo-statiche-con-tag-e-initialoptions)
+12. [Combo paginata remota — guida completa](#combo-paginata-remota--guida-completa)
+13. [Rating — guida completa](#rating--guida-completa)
+14. [Azioni (DynamicFormActionButton)](#azioni-dynamicformactionbutton)
+15. [Utilizzo nel template](#utilizzo-nel-template)
+16. [Esempio completo reale](#esempio-completo-reale)
+17. [Riferimento tipi TypeScript](#riferimento-tipi-typescript)
 
 ---
 
-## Cos'è DynamicForm
+## Panoramica
 
-DynamicForm nasce per semplificare la creazione di interfacce di input avanzate, wizard, anagrafiche, configuratori e qualsiasi scenario in cui la struttura del form può cambiare a runtime o deriva da dati esterni (API, configurazioni, database, ecc.).
+DynamicForm elimina la duplicazione nella scrittura di form Angular. Invece di un template HTML per ogni form, si descrive la struttura con oggetti TypeScript; la libreria genera automaticamente tutti i controlli, la validazione, gli eventi e il layout.
 
-## Caratteristiche e Vantaggi
+**Funzionalità principali:**
 
-- **Zero template HTML**: definisci la struttura del form in modo dichiarativo, il rendering è automatico.
-- **Supporto a tutti i tipi di campo**: text, combo, multi-combo, paginati, date, file, textarea, checkbox, radio, array di stringhe, gruppi annidati, ecc.
-- **Eventi e azioni custom**: puoi reagire a ogni cambiamento, ricerca, scroll, validazione, click su pulsanti custom.
-- **Paginazione e ricerca remota**: combo e multi-combo con caricamento asincrono e paginazione.
-- **Temi e personalizzazione**: supporto a Material, dark/light mode, custom CSS.
-- **Injection token/config provider**: configurazione centralizzata e override per moduli/feature.
-- **Estendibile**: aggiungi facilmente nuovi tipi di campo o comportamenti.
-
-## Quando usarla
-
-- Quando vuoi generare form da configurazione (anche da backend)
-- Quando la struttura del form può cambiare a runtime
-- Per wizard, anagrafiche, configuratori, CRUD generici, backend form builder
-- Per ridurre la duplicazione di codice nei form Angular
+| Funzionalità | Descrizione |
+|---|---|
+| 21 tipi di campo | TEXT, NUMBER, CURRENCY, COMBO, COMBOPAGINATE, DATA, DATARANGE, DATETIME, TIME, YEAR, RATING, CHECKBOX, RADIOGROUP, TEXTAREA, FILE, LABEL, LINK, SEPARATOR, ARRAYSTRING, BUTTON, GROUP |
+| Builder fluente generico | `DynamicFormBuilder.create(this)` inferisce il tipo del componente |
+| Contesto tipizzato | factory `(ctx: TCtx) => FormAction` con autocompletamento pieno |
+| Tutti gli eventi | `onChange`, `onInitialize`, `onFocus`, `onBlur`, `opened`, `closed`, `onSearch`, `onScrollEnd` |
+| Utility globale | `getFormByName`, `getActionByName`, `setDefaultOptions`, `getSelectedOptions`, `formCompletion` |
+| Combo remote paginate | infinite scroll, Signal-based, ricerca debounced |
+| initialOptions + tag | opzioni fisse in cima alla lista con badge SVG colorati |
+| formCompletion Signal | percentuale di completamento reattiva (totale + required) |
+| Stato disabled corretto | `new FormControl({ value, disabled: true })` per bloccare interazioni |
 
 ---
 
-
-## Installazione
+## Installazione e setup
 
 ```bash
 npm install dynamicform
+npm install @angular/material @angular/cdk @angular/forms moment @angular/material-moment-adapter
 ```
 
-> **Attenzione:** DynamicForm richiede alcune dipendenze esterne come peerDependencies. Se usi la libreria in un tuo progetto, assicurati di installare anche queste (versioni >=19 per Angular, >=5 per ionic-native/camera, >=2.29 per moment):
-
-```bash
-npm install @angular/material @angular/cdk @angular/forms @ionic-native/camera moment @angular/material-moment-adapter
-```
-
-La libreria è compatibile con tutte le versioni di Angular dalla 19 in su (>=19.0.0).
-
----
-
-
-## Configurazione e Import
-
-
-### Modulo classico (NgModule)
+### NgModule
 
 ```ts
 import { DynamicFormModule } from 'dynamicform';
 
-@NgModule({
-  imports: [DynamicFormModule],
-})
+@NgModule({ imports: [DynamicFormModule] })
 export class AppModule {}
 ```
 
-
-### Standalone (Angular 16+)
----
-
-## Compatibilità e dipendenze
-
-- DynamicForm è compatibile con Angular >=19.
-- Tutte le dipendenze principali sono dichiarate come peerDependencies: il tuo progetto deve già includerle o installarle.
-- Se ricevi errori come "Cannot find module '@angular/material'" o simili, installa le dipendenze mancanti come indicato sopra.
+### Standalone
 
 ```ts
-import { provideDynamicForm } from 'dynamicform';
-bootstrapApplication(AppComponent, {
-  providers: [
-    provideDynamicForm({
-      theme: { name: 'modern-dark' },
-      events: { onNomeChange: ctx => console.log(ctx) },
-    }),
+import { DynamicFormModule } from 'dynamicform';
+
+@Component({ standalone: true, imports: [DynamicFormModule] })
+export class MyComponent {}
+```
+
+---
+
+## Concetti fondamentali
+
+```
+ConfigForm = Array<Group>
+  └── Group            { id, title, class, formGroup[], actions[] }
+        └── Form       { formAction: FormAction }
+              └── FormAction  { formName, type, formControl, eventi, opzioni, ... }
+```
+
+- **`ConfigForm`** — array di gruppi, è ciò che si passa al componente template
+- **`Group`** — sezione visiva del form con titolo, classi CSS e bottoni in fondo
+- **`Form`** — wrapper `{ formAction }` di un singolo campo
+- **`FormAction`** — configurazione completa di un campo: tipo, `FormControl`, eventi, opzioni, validazioni, stile
+
+---
+
+## DynamicFormBuilder — API fluente
+
+### Metodi
+
+| Metodo | Firma | Descrizione |
+|--------|-------|-------------|
+| `create()` | `DynamicFormBuilder.create()` | Builder senza contesto |
+| `create(ctx)` | `DynamicFormBuilder.create(this)` | Builder con contesto tipizzato (tipo inferito) |
+| `addGroup` | `(title, classList?, id?) => this` | Apre un nuovo gruppo |
+| `addForm` | `(formAction \| (ctx) => formAction) => this` | Aggiunge un campo al gruppo corrente |
+| `addActions` | `(actions[] \| (ctx) => actions[]) => this` | Aggiunge bottoni al gruppo corrente |
+| `build` | `() => ConfigForm` | Restituisce la configurazione finale |
+
+### Regola base
+
+`addGroup` deve sempre precedere `addForm`. Il builder lancia un errore esplicito altrimenti.
+
+```ts
+const config = DynamicFormBuilder.create()
+  .addGroup('Dati personali', ['col-6'])  // apre gruppo
+  .addForm({ formName: 'nome', ... })     // campo nel gruppo
+  .addForm({ formName: 'email', ... })    // altro campo
+  .addActions([{ label: 'Salva', ... }])  // bottoni del gruppo
+  .addGroup('Note', ['col-12'])           // nuovo gruppo
+  .addForm({ formName: 'note', ... })
+  .build();
+```
+
+---
+
+## Contesto tipizzato
+
+Il generico `TCtx` di `DynamicFormBuilder<TCtx>` viene inferito automaticamente dal valore passato a `create()`. Quando presente, `addForm`, `addGroup` e `addActions` accettano una **factory function** `(ctx: TCtx) => valore` che riceve il componente tipizzato.
+
+### Come si usa
+
+```ts
+// my.component.ts
+@Component({ ... })
+export class MyComponent {
+  userName = 'Mario';
+  myService = inject(MyService);
+
+  config = DynamicFormBuilder.create(this)           // TCtx = MyComponent
+    .addGroup(ctx => `Ciao ${ctx.userName}`)         // factory per il titolo
+    .addForm(ctx => ({                               // factory per il campo
+      formName: 'preferenza',
+      type: TYPE_CONTROL_FORM.COMBO,
+      formControl: new FormControl(null),
+      options: ctx.myService.getOptions(),           // servizio del componente
+      onChange: () => ctx.onPreferenzaChange(),      // metodo del componente
+    }))
+    .addActions(ctx => [{
+      label: 'Salva',
+      visible: true,
+      action: () => ctx.save(),                      // metodo del componente
+    }])
+    .build();
+}
+```
+
+### Pattern consigliato: builder esterno
+
+Per form complessi è preferibile estrarre il builder in un file separato:
+
+```ts
+// form.builder.ts
+export function buildMyForm<T extends MyComponent>(context: T): ConfigForm {
+  return DynamicFormBuilder.create(context)
+    .addGroup('Sezione')
+    .addForm(ctx => ({
+      formName: 'nome',
+      type: TYPE_CONTROL_FORM.TEXT,
+      formControl: new FormControl(''),
+      onChange: () => ctx.onNomeChange(),   // ctx tipizzato come MyComponent
+    }))
+    .build();
+}
+
+// my.component.ts
+export class MyComponent {
+  config = buildMyForm(this);
+  onNomeChange() { /* ... */ }
+}
+```
+
+### Accesso all'injector dal contesto
+
+Quando si usa `effect()` o `inject()` dentro `onInitialize`, passare l'injector dal contesto:
+
+```ts
+.addForm(ctx => ({
+  formName: 'rating_automatico',
+  type: TYPE_CONTROL_FORM.RATING,
+  formControl: new FormControl({ value: null, disabled: true }),
+  optionRating: { max: 10 },
+  onInitialize: (_ig, _if, fc, _fn, _fg, _t, _all, _p, _o, utility) => {
+    effect(() => {
+      const stats = utility?.formCompletion?.();
+      fc.setValue(Math.round((stats?.percentage ?? 0) / 10));
+    }, { injector: ctx['injector'], allowSignalWrites: true });
+  },
+}))
+```
+
+---
+
+## Catalogo componenti
+
+### TEXT
+
+Input testo a riga singola. Supporta modalità password e lunghezza massima.
+
+```ts
+{
+  formName: 'nome',
+  title: 'Nome completo',
+  type: TYPE_CONTROL_FORM.TEXT,
+  formControl: new FormControl('', Validators.required),
+  placeholder: 'Es. Mario Rossi',
+  optionInputText: {
+    maxlength: 100,
+    password: false,   // true per mascherare il testo
+  },
+  resetButton: true,   // mostra X per svuotare
+  autocomplete: false,
+}
+```
+
+---
+
+### TEXTAREA
+
+Area di testo multi-riga.
+
+```ts
+{
+  formName: 'descrizione',
+  title: 'Descrizione',
+  type: TYPE_CONTROL_FORM.TEXTAREA,
+  formControl: new FormControl(''),
+  rows: 5,             // altezza in righe (default: 3)
+  placeholder: 'Inserisci una descrizione...',
+}
+```
+
+---
+
+### NUMBER
+
+Campo numerico con vincoli min/max/step. Mostra frecce su/giù.
+
+```ts
+{
+  formName: 'eta',
+  title: 'Età',
+  type: TYPE_CONTROL_FORM.NUMBER,
+  formControl: new FormControl(null, [Validators.min(0), Validators.max(120)]),
+  optionNumber: {
+    min: 0,
+    max: 120,
+    step: 1,
+  },
+}
+```
+
+---
+
+### CURRENCY
+
+Come NUMBER ma formattato come valuta. Gestisce separatori decimali e migliaia.
+
+```ts
+{
+  formName: 'stipendio',
+  title: 'Stipendio mensile',
+  type: TYPE_CONTROL_FORM.CURRENCY,
+  formControl: new FormControl(null),
+  currency: 'EUR',            // simbolo usato nell'input (EUR, USD, £, ...)
+  optionNumber: { min: 0 },
+}
+```
+
+---
+
+### CHECKBOX
+
+Casella di spunta booleana. Il FormControl contiene `true` o `false`.
+
+```ts
+{
+  formName: 'accetta_termini',
+  title: 'Accetto i termini e condizioni',
+  type: TYPE_CONTROL_FORM.CHECKBOX,
+  formControl: new FormControl(false, Validators.requiredTrue),
+}
+```
+
+---
+
+### RADIOGROUP
+
+Gruppo di opzioni mutuamente esclusive. Le opzioni sono fornite come Signal.
+
+```ts
+{
+  formName: 'genere',
+  title: 'Genere',
+  type: TYPE_CONTROL_FORM.RADIOGROUP,
+  formControl: new FormControl(null, Validators.required),
+  options: signal([
+    { id: 'M', description: 'Maschio' },
+    { id: 'F', description: 'Femmina' },
+    { id: 'A', description: 'Preferisco non specificare' },
+    { id: 'X', description: 'Altro', disabled: true },   // opzione non selezionabile
+  ]),
+}
+```
+
+---
+
+### COMBO
+
+Select con lista di opzioni. Supporta singola selezione, selezione multipla e ricerca inline.
+
+```ts
+import { signal } from '@angular/core';
+
+const categorieOptions = signal([
+  { id: 1, description: 'Sport', tag: { bgTag: 'tag-blue', bgText: 'tag-text-blue', name: 'A' } },
+  { id: 2, description: 'Nutrizione' },
+  { id: 3, description: 'Benessere', disabled: true },
+]);
+
+// Singola selezione
+{
+  formName: 'categoria',
+  title: 'Categoria',
+  type: TYPE_CONTROL_FORM.COMBO,
+  formControl: new FormControl(null, Validators.required),
+  options: categorieOptions,
+  multiple: false,
+  resetButton: true,
+  keyCombo: {
+    keyId: 'id',                  // campo usato come valore del FormControl
+    keyDescription: 'description', // campo mostrato nella lista
+    keySearch: 'search',           // parametro inviato all'API (solo COMBOPAGINATE)
+  },
+  initialOptions: [
+    { id: null, description: 'Nessuna selezione', tag: { bgTag: 'tag-gray', bgText: 'tag-text-gray', name: 'Default' } },
   ],
+  opened: (_ig, _if, _fc, fn) => console.log(`${fn} aperto`),
+  closed: (_ig, _if, _fc, fn) => console.log(`${fn} chiuso`),
+}
+
+// Selezione multipla
+{
+  formName: 'interessi',
+  title: 'Interessi',
+  type: TYPE_CONTROL_FORM.COMBO,
+  formControl: new FormControl([]),
+  options: categorieOptions,
+  multiple: true,
+  autocomplete: true,   // mostra campo di ricerca nella lista
+}
+```
+
+**Aggiornamento dinamico delle opzioni:**
+
+```ts
+// Dal callback di un altro campo:
+onChange: (_ig, _if, fc, _fn, _fg, _t, _prev, _all, utility) => {
+  utility.setDefaultOptions('sottocategoria', () => [
+    { id: 1, description: `Sotto A di ${fc.value}` },
+    { id: 2, description: `Sotto B di ${fc.value}` },
+  ]);
+}
+```
+
+---
+
+### COMBOPAGINATE
+
+Select con caricamento dati remoto, paginazione e infinite scroll.  
+Usa un Signal per le opzioni correnti e riceve la funzione `remoteData` per il caricamento.
+
+#### Struttura base
+
+```ts
+import { signal } from '@angular/core';
+
+// 1. Stato condiviso tra i callback
+const options = signal<any[]>([]);
+let total = 0;
+let currentPage = 1;
+let currentSearch = '';
+const PAGE_SIZE = 10;
+
+// 2. Funzione di caricamento
+function loadItems(
+  { page = 1, search = '', pageSize = PAGE_SIZE } = {},
+  append = false
+) {
+  myApi.getItems({ page, pageSize, search }).subscribe(result => {
+    total = result.totalCount;
+    currentPage = page;
+    currentSearch = search;
+
+    if (append) {
+      // Infinite scroll: aggiunge senza duplicati
+      const existingIds = new Set(options().map(o => o.id));
+      options.set([
+        ...options(),
+        ...result.items.filter(o => !existingIds.has(o.id))
+      ]);
+    } else {
+      // Reset lista (nuova ricerca o prima pagina)
+      options.set(result.items);
+    }
+  });
+}
+
+// 3. Campo nel form
+{
+  formName: 'utente',
+  title: 'Utente',
+  type: TYPE_CONTROL_FORM.COMBOPAGINATE,
+  formControl: new FormControl(null, Validators.required),
+  options,                              // Signal con i dati correnti
+  totalCount: () => total,              // funzione che restituisce il totale
+  enableInfiniteScroll: true,
+  autocomplete: true,                   // mostra campo di ricerca
+  multiple: false,                      // true per selezione multipla
+  keyCombo: {
+    keyId: 'id',
+    keyDescription: 'description',
+    keySearch: 'search',                // nome del parametro di ricerca per l'API
+  },
+  pageSize: PAGE_SIZE,
+  paging: { page: 1, count: PAGE_SIZE, totalCount: 0 },
+
+  // Chiamata remota — param contiene { page, count, search }
+  remoteData: ({ param, append }) =>
+    new Promise(resolve => {
+      loadItems({ page: param.page, search: param.search, pageSize: param.count }, append);
+      setTimeout(() => resolve({ items: options(), totalCount: total }), 100);
+    }),
+
+  // Caricamento iniziale
+  onInitialize: () => loadItems({ page: 1 }),
+
+  // Ricerca: l'utente digita nel campo di ricerca
+  onSearch: (_ig, _if, _fc, _fn, _fg, search) => {
+    loadItems({ page: 1, search });   // reset alla pagina 1 con nuovo testo
+  },
+
+  // Infinite scroll: raggiunto il fondo della lista
+  onScrollEnd: () => {
+    if (options().length < total) {
+      loadItems({ page: currentPage + 1, search: currentSearch }, true);
+    }
+  },
+
+  onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) => {
+    console.log(`${fn}:`, prev, '->', fc.value);
+  },
+}
+```
+
+#### Selezione multipla paginata
+
+```ts
+{
+  formName: 'tags',
+  title: 'Tag',
+  type: TYPE_CONTROL_FORM.COMBOPAGINATE,
+  formControl: new FormControl([]),    // array per multipla
+  options: tagsOptions,
+  multiple: true,                      // selezione multipla
+  autocomplete: true,
+  enableInfiniteScroll: true,
+  keyCombo: { keyId: 'id', keyDescription: 'nome', keySearch: 'q' },
+  pageSize: 15,
+  paging: { page: 1, count: 15, totalCount: 0 },
+  remoteData: ({ param, append }) => /* ... */,
+  onInitialize: () => loadTags({ page: 1 }),
+  onSearch: (_ig, _if, _fc, _fn, _fg, search) => loadTags({ page: 1, search }),
+  onScrollEnd: () => { if (tagsOptions().length < totalTags) loadTags({ page: tagsPage + 1 }, true); },
+}
+```
+
+#### Parametri specifici di COMBOPAGINATE
+
+| Proprietà | Tipo | Obbligatorio | Descrizione |
+|---|---|---|---|
+| `options` | `Signal<any[]>` | Sì | Signal con le opzioni correnti |
+| `remoteData` | `function` | Sì | Funzione di caricamento dati |
+| `paging` | `{ page, count, totalCount }` | Sì | Stato iniziale della paginazione |
+| `pageSize` | `number` | Raccomandato | Elementi per pagina |
+| `totalCount` | `() => number` | Raccomandato | Totale elementi disponibili |
+| `enableInfiniteScroll` | `boolean` | No | Caricamento auto allo scroll |
+| `autocomplete` | `boolean` | No | Mostra input di ricerca |
+| `keyCombo.keySearch` | `string` | No | Nome parametro ricerca per l'API |
+
+---
+
+### ARRAYSTRING
+
+Input per inserimento di stringhe multiple come chip/token. Ogni `Enter` o `,` aggiunge un elemento. Il FormControl contiene un array di stringhe.
+
+```ts
+{
+  formName: 'tags_liberi',
+  title: 'Tag liberi',
+  type: TYPE_CONTROL_FORM.ARRAYSTRING,
+  formControl: new FormControl([]),
+  placeholder: 'Scrivi e premi Invio...',
+  onChange: (_ig, _if, fc) => console.log('Array:', fc.value), // es. ['tag1','tag2']
+}
+```
+
+---
+
+### DATA
+
+Datepicker Angular Material. Il FormControl contiene un oggetto `Date` o `moment`.
+
+```ts
+{
+  formName: 'data_nascita',
+  title: 'Data di nascita',
+  type: TYPE_CONTROL_FORM.DATA,
+  formControl: new FormControl(null, Validators.required),
+  optionDate: {
+    min: '1920-01-01',                        // stringa ISO o moment
+    max: new Date().toISOString().slice(0,10), // data massima = oggi
+  },
+  readonly: false,   // se true non è editabile ma è apribile
+}
+```
+
+---
+
+### DATARANGE
+
+Selettore di intervallo date (from/to). Il FormControl contiene `{ start: Date | null, end: Date | null }`.
+
+```ts
+{
+  formName: 'periodo',
+  title: 'Periodo di riferimento',
+  type: TYPE_CONTROL_FORM.DATARANGE,
+  formControl: new FormControl(null),
+  optionDate: { min: '2000-01-01', max: '2030-12-31' },
+  onClose: (value, fc, utility) => {
+    // chiamato quando si chiude il pannello del range
+    console.log('Range:', value?.start, '->', value?.end);
+  },
+}
+```
+
+---
+
+### DATETIME
+
+Selettore combinato di data e ora.
+
+```ts
+{
+  formName: 'appuntamento',
+  title: 'Data e ora appuntamento',
+  type: TYPE_CONTROL_FORM.DATETIME,
+  formControl: new FormControl(null, Validators.required),
+  optionDate: { min: new Date().toISOString() },
+}
+```
+
+---
+
+### TIME
+
+Selettore solo orario. Il FormControl contiene una stringa `'HH:MM'`.
+
+```ts
+{
+  formName: 'orario_apertura',
+  title: 'Orario apertura',
+  type: TYPE_CONTROL_FORM.TIME,
+  formControl: new FormControl(null),
+  optionsTime: {
+    min: '07:00',
+    max: '22:00',
+  },
+}
+```
+
+---
+
+### YEAR
+
+Selettore solo anno con frecce prev/next. Il FormControl contiene un numero (es. `2024`).
+
+```ts
+{
+  formName: 'anno_diploma',
+  title: 'Anno di diploma',
+  type: TYPE_CONTROL_FORM.YEAR,
+  formControl: new FormControl(null),
+  optionDate: {
+    min: '1970',    // anno minimo come stringa
+    max: '2030',    // anno massimo come stringa
+  },
+}
+```
+
+---
+
+### RATING
+
+Valutazione a stelle. Il FormControl contiene un numero da `0` a `max` (0 = nessuna stella).
+
+```ts
+// Base — modificabile
+{
+  formName: 'valutazione',
+  title: 'Valutazione',
+  type: TYPE_CONTROL_FORM.RATING,
+  formControl: new FormControl(null),
+  optionRating: { max: 5 },   // numero di stelle (default: 5)
+  resetButton: true,           // mostra X per tornare a null
+}
+
+// Sola lettura — non cliccabile, senza hover
+{
+  formName: 'punteggio_readonly',
+  title: 'Punteggio calcolato',
+  type: TYPE_CONTROL_FORM.RATING,
+  formControl: new FormControl({ value: 3, disabled: true }),  // IMPORTANTE: disabled nel FormControl
+  optionRating: { max: 10 },
+}
+
+// Rating reattivo — aggiornato automaticamente tramite effect
+// Mostra la percentuale di completamento del form come stelle
+.addForm(ctx => ({
+  formName: 'completamento',
+  title: 'Completamento form',
+  type: TYPE_CONTROL_FORM.RATING,
+  formControl: new FormControl({ value: 0, disabled: true }),
+  optionRating: { max: 10 },
+  onInitialize: (_ig, _if, fc, _fn, _fg, _t, _all, _p, _o, utility) => {
+    effect(() => {
+      const stats = utility?.formCompletion?.();
+      const stelle = Math.round((stats?.percentage ?? 0) / 10);
+      fc.setValue(stelle);
+    }, { injector: ctx['injector'], allowSignalWrites: true });
+  },
+}))
+```
+
+> **Importante:** per disabilitare interamente il componente rating (no hover, no click), usare  
+> `new FormControl({ value: ..., disabled: true })` invece di `disabled: true` sulla FormAction.  
+> La proprietà `disabled` del FormAction è solo visiva e non blocca le interazioni.
+
+**Comportamento click:**
+- Click su stella non selezionata → seleziona quella stella
+- Click sulla stessa stella già selezionata → porta il valore a `0` (nessuna stella)
+- `resetButton: true` → mostra X che imposta il valore a `null`
+
+---
+
+### FILE
+
+Upload file con validazione tipo e dimensione.
+
+```ts
+{
+  formName: 'documento',
+  title: 'Allega documento',
+  type: TYPE_CONTROL_FORM.FILE,
+  formControl: new FormControl(null),
+  accept: 'application/pdf,image/*',  // MIME types accettati
+  size: 10,                           // dimensione massima in MB
+  hint: 'Max 10MB — PDF o immagini',
+  onChange: (_ig, _if, fc) => {
+    const file: File = fc.value;
+    console.log('File:', file?.name, file?.size);
+  },
+}
+```
+
+---
+
+### LABEL
+
+Testo statico di sola lettura. Non ha interazione utente.
+
+```ts
+{
+  formName: 'info_legale',
+  title: 'Nota legale',
+  type: TYPE_CONTROL_FORM.LABEL,
+  formControl: new FormControl('Il trattamento dei dati avviene secondo il GDPR.'),
+  css: { font: { color: '#6b7280' } },
+}
+```
+
+---
+
+### LINK
+
+Collegamento ipertestuale. Il FormControl contiene l'URL, `href` sovrascrive l'URL.
+
+```ts
+{
+  formName: 'privacy_link',
+  title: 'Privacy Policy',
+  type: TYPE_CONTROL_FORM.LINK,
+  formControl: new FormControl('https://example.com/privacy'),
+  href: 'https://example.com/privacy',  // opzionale, sovrascrive il valore del FC
+  target: '_blank',
+}
+```
+
+---
+
+### SEPARATOR
+
+Separatore visivo orizzontale. Non ha valore né interazione.
+
+```ts
+{
+  formName: 'sep1',
+  title: '',           // titolo opzionale come label sopra la riga
+  type: TYPE_CONTROL_FORM.SEPARATOR,
+  formControl: new FormControl(null),
+}
+```
+
+---
+
+### BUTTON
+
+Bottone con azione custom inline nel form (diverso dalle azioni di gruppo).
+
+```ts
+{
+  formName: 'carica_dati',
+  title: 'Carica dal profilo',
+  type: TYPE_CONTROL_FORM.BUTTON,
+  formControl: new FormControl(null),
+  action: (fc) => {
+    // logica al click
+    console.log('Bottone premuto');
+  },
+  css: { class: ['btn-outline-primary'] },
+}
+```
+
+---
+
+### GROUP
+
+Campo che contiene un sotto-form annidato (espandibile o sempre visibile).
+
+```ts
+{
+  formName: 'indirizzo',
+  title: 'Indirizzo',
+  type: TYPE_CONTROL_FORM.GROUP,
+  formControl: new FormControl(null),
+  formGroup: DynamicFormBuilder.create()
+    .addGroup('Indirizzo', ['col-12'])
+    .addForm({ formName: 'via', title: 'Via', type: TYPE_CONTROL_FORM.TEXT, formControl: new FormControl('') })
+    .addForm({ formName: 'cap', title: 'CAP', type: TYPE_CONTROL_FORM.NUMBER, formControl: new FormControl(null) })
+    .addForm({ formName: 'citta', title: 'Città', type: TYPE_CONTROL_FORM.TEXT, formControl: new FormControl('') })
+    .build(),
+}
+```
+
+---
+
+## Parametri comuni (FormActionBase)
+
+Tutte le `FormAction` ereditano questi parametri:
+
+| Proprietà | Tipo | Descrizione |
+|---|---|---|
+| `formName` | `string` | **Identificatore univoco** del campo — usato da `getFormByName` |
+| `title` | `string` | Label visualizzata sopra il campo |
+| `type` | `TYPE_CONTROL_FORM` | Tipo del campo |
+| `formControl` | `FormControl / FormArray / FormGroup` | Control Angular Reactive Forms |
+| `disabled` | `boolean` | Visivo — non blocca le interazioni; per bloccare usare `new FormControl({ value, disabled: true })` |
+| `readonly` | `boolean` | Campo visibile ma non modificabile |
+| `hidden` | `boolean` | Nasconde il campo; il valore esiste comunque nel FormGroup |
+| `placeholder` | `string` | Testo segnaposto |
+| `hint` | `string` | Testo di suggerimento sotto il campo |
+| `info` | `{ msg: string; color: string }` | Icona info con tooltip |
+| `tipContent` | `string` | Tooltip sull'intero campo |
+| `resetButton` | `boolean` | Mostra bottone X per azzerare il valore |
+| `autocomplete` | `boolean` | Abilita autocomplete browser / ricerca inline combo |
+| `multiple` | `boolean` | Selezione multipla (COMBO / COMBOPAGINATE) |
+| `css` | `TypeCss` | Classi CSS custom, colore font, icone, ecc. |
+| `formGroup` | `ConfigForm` | Sotto-form annidato |
+| `rows` | `number` | Righe (TEXTAREA) |
+| `options` | `Signal / Array` | Opzioni per COMBO, COMBOPAGINATE, RADIOGROUP |
+| `initialOptions` | `TypeComboOption` | Opzioni fisse sempre in cima alla lista |
+| `onChange` | `DynamicFormOnChange` | Callback al cambio valore |
+| `onInitialize` | `DynamicFormOnInitialize` | Callback all'init del campo |
+| `onFocus` | `DynamicFormFocusBlur` | Callback al focus |
+| `onBlur` | `DynamicFormFocusBlur` | Callback alla perdita del focus |
+| `opened` | `DynamicFormOpenClose` | Callback apertura pannello |
+| `closed` | `DynamicFormOpenClose` | Callback chiusura pannello |
+| `onSearch` | `DynamicFormSearch` | Callback digitazione nella ricerca |
+| `onScrollEnd` | `DynamicFormScrollEnd` | Callback fondo lista paginata |
+
+---
+
+## Sistema di eventi
+
+Tutti i callback hanno una firma consistente. L'ultimo parametro è sempre `utility`.
+
+### Firme complete
+
+```ts
+// onChange — cambio valore
+onChange: (
+  idGroup: number,           // indice del Group nel ConfigForm
+  idForm: number,            // indice del Form nel Group
+  formControl: FormControl,  // FormControl con il NUOVO valore
+  formName: string,          // formName del campo
+  formGroup: Form[],         // campi del gruppo corrente
+  type: TYPE_CONTROL_FORM,   // tipo del campo
+  prevValue: any,            // valore PRECEDENTE
+  allGroup: ConfigForm,      // intero ConfigForm
+  utility: Utility,
+) => void | Promise<void>
+
+// onInitialize — montaggio del campo nel DOM
+onInitialize: (
+  idGroup: number,
+  idForm: number,
+  formControl: FormControl,
+  formName: string,
+  formGroup: Form[],
+  type: TYPE_CONTROL_FORM,
+  allGroup: ConfigForm,
+  paging?: { count: number; page: number; totalCount?: number } | null,
+  onOptionSetted?: Signal<any[]> | null,
+  utility?: Utility,
+) => void | Promise<void>
+
+// onFocus / onBlur — focus sul campo
+onFocus: (
+  idGroup: number,
+  idForm: number,
+  formControl: FormControl,
+  formName: string,
+  formGroup: Form[],
+  allGroup: ConfigForm,
+  utility: Utility,
+) => void | Promise<void>
+
+// opened / closed — pannello aperto/chiuso (stessa firma di onFocus)
+
+// onSearch — testo digitato nella ricerca della combo
+onSearch: (
+  idGroup: number,
+  idForm: number,
+  formControl: FormControl,
+  formName: string,
+  formGroup: Form[],
+  search: string,     // testo corrente nel campo di ricerca
+  utility: Utility,
+) => void | Promise<void>
+
+// onScrollEnd — fondo lista raggiunto (infinite scroll)
+onScrollEnd: (
+  idGroup: number,
+  idForm: number,
+  formControl: FormControl,
+  formName: string,
+  formGroup: Form[],
+  paging: { count: number; page: number; totalCount?: number },
+  utility: Utility,
+) => void | Promise<void>
+```
+
+### Convenzione di nomenclatura parametri inutilizzati
+
+```ts
+// Usare il prefisso _ per i parametri non usati — chiarisce l'intenzione
+onChange: (_ig, _if, fc, formName, _fg, _t, prevValue, _all, utility) => {
+  console.log(`${formName}: ${prevValue} → ${fc.value}`);
+}
+```
+
+---
+
+## Oggetto Utility
+
+Iniettato come ultimo parametro in **tutti** gli eventi. Fornisce accesso diretto ai campi e alle azioni del form senza navigare manualmente il `ConfigForm`.
+
+### `getFormByName(formName, parse)`
+
+Legge o modifica un altro campo del form per nome.
+
+```ts
+// Disabilitare un campo in base al valore di un altro
+onChange: (_ig, _if, fc, _fn, _fg, _t, _prev, _all, utility) => {
+  utility.getFormByName('campo_dipendente', (fa) => {
+    if (fc.value === 'speciale') {
+      fa.hidden = false;
+      fa.formControl?.setValidators(Validators.required);
+      fa.formControl?.updateValueAndValidity();
+    } else {
+      fa.hidden = true;
+      fa.formControl?.clearValidators();
+      fa.formControl?.updateValueAndValidity();
+    }
+  });
+}
+```
+
+### `setDefaultOptions(formName, parse)`
+
+Imposta dinamicamente le opzioni di una combo da un evento di un altro campo.
+
+```ts
+onChange: (_ig, _if, fc, _fn, _fg, _t, _prev, _all, utility) => {
+  const regioneId = fc.value;
+  myApi.getProvince(regioneId).subscribe(province => {
+    utility.setDefaultOptions('provincia', () => province);
+  });
+}
+```
+
+### `getSelectedOptions(formName, parse)`
+
+Recupera gli oggetti completi delle opzioni selezionate (non solo l'id).
+
+```ts
+utility.getSelectedOptions('categorie', (opts) => {
+  const selezionati = opts();   // Signal — chiamare come funzione
+  console.log('Selezionati completi:', selezionati);
+  const nomi = selezionati.map(o => o.description).join(', ');
 });
 ```
 
----
+### `onSettedOptions(formName, parse)`
 
-## Utilizzo Base
+Si sottoscrive all'evento di settaggio delle opzioni di una combo.
 
-### 1. Configurazione TypeScript (`ConfigForm`)
+### `getActionByName(name, parse)`
+
+Recupera un bottone del form per nome e ne modifica lo stato.
 
 ```ts
-import { TYPE_CONTROL_FORM, ConfigForm } from 'dynamicform';
-
-const myForm: ConfigForm = [
-   {
-      title: 'Dati Anagrafici',
-      formGroup: [
-         { formAction: { formName: 'nome', label: 'Nome', type: TYPE_CONTROL_FORM.TEXT, required: true } },
-         { formAction: { formName: 'cognome', label: 'Cognome', type: TYPE_CONTROL_FORM.TEXT } },
-         { formAction: { formName: 'sesso', label: 'Sesso', type: TYPE_CONTROL_FORM.COMBO, options: [ { id: 'M', description: 'Maschio' }, { id: 'F', description: 'Femmina' } ] } },
-      ],
-      actions: [
-         { label: 'Salva', action: (questions, idForm, formGroup) => { ... } }
-      ]
-   }
-];
-```
-
-### 2. Configurazione JSON
-
-```json
-{
-  "groups": [
-    {
-      "title": "Dati Anagrafici",
-      "formGroup": [
-        { "formAction": { "formName": "nome", "label": "Nome", "type": "TEXT", "required": true } },
-        { "formAction": { "formName": "cognome", "label": "Cognome", "type": "TEXT" } },
-        {
-          "formAction": {
-            "formName": "sesso",
-            "label": "Sesso",
-            "type": "COMBO",
-            "options": [
-              { "id": "M", "description": "Maschio" },
-              { "id": "F", "description": "Femmina" }
-            ]
-          }
-        }
-      ],
-      "actions": [{ "label": "Salva" }]
-    }
-  ]
+// Disabilita il bottone Salva dinamicamente
+onChange: (_ig, _if, _fc, _fn, _fg, _t, _prev, _all, utility) => {
+  const stats = utility.formCompletion();
+  utility.getActionByName('salva', (action) => {
+    action.disabled = stats.required.percentage < 100;
+  });
 }
 ```
 
-### Utilizzo nel template
+### `formCompletion`
 
-```html
-<!-- Con configurazione TypeScript -->
-<app-dynamic-form [config]="myForm" (onFormCreate)="onForm($event)"></app-dynamic-form>
-
-<!-- Con schema JSON -->
-<app-dynamic-form [json]="myJsonSchema" (onFormCreate)="onForm($event)"></app-dynamic-form>
-```
+Vedi [sezione dedicata](#formcompletion--statistiche-di-completamento).
 
 ---
 
-## Tipi di Campo e Parametri
+## formCompletion — statistiche di completamento
 
-### Tipi di campo (`TYPE_CONTROL_FORM`)
+`utility.formCompletion` è un `Signal<FormCompletionStats>` condiviso tra tutti i campi dello stesso form. Si aggiorna automaticamente a ogni `valueChange`.
 
-- `TEXT`, `TEXTAREA`, `NUMBER`, `CHECKBOX`, `COMBO`, `COMBOPAGINATE`, `ARRAYSTRING`, `DATE`, `DATETIME`, `DATARANGE`, `YEAR`, `CURRENCY`, `FILE`, `RADIOGROUP`, `LABEL`, `LINK`, `SEPARATOR`, `SORTACTION`, ...
-
-### Parametri comuni (`FormActionBase`)
-
-- `formName`: nome univoco del campo
-- `label`: etichetta visualizzata
-- `type`: tipo di campo (vedi sopra)
-- `formControl`: FormControl associato (opzionale)
-- `options`: per combo/radio, array di opzioni `{ id, description }`
-- `multiple`: multi-selezione (combo)
-- `remoteData`: funzione per caricamento asincrono (combo paginate)
-- `onChange`, `onSearch`, `onScrollEnd`, `onInitialize`: handler eventi
-- `disabled`, `readonly`, `hidden`, `placeholder`, `hint`, `info`, `css`, ...
-
-### Combo, Multi-combo, Paginazione
-
-- **Combo**: usa `options` statiche o caricate da API
-- **Multi-combo**: aggiungi `multiple: true`
-- **Combo paginata**: usa `type: COMBOPAGINATE`, `remoteData`, `paging`, `onScrollEnd`
-
----
-
-## Action, Eventi e Utility
-
-### Action sui pulsanti
-
-Ogni gruppo può avere un array di `actions` che genera pulsanti custom. Ogni action riceve:
-
-- `questions`: la configurazione del form (ConfigForm)
-- `idForm`: indice del gruppo
-- `formGroup`: il FormGroup/FormArray associato
-
-Esempio:
+### Struttura
 
 ```ts
-actions: [
-  {
-    label: 'Valida',
-    action: (questions, idForm, formGroup) => {
-      formGroup.markAllAsTouched();
-      console.log('Valido:', formGroup.valid);
-    },
-  },
-  {
-    label: 'Aggiungi indirizzo',
-    action: (questions, idForm, formGroup) => {
-      // Aggiunge un nuovo gruppo indirizzo (fratello)
-      const addresses = formGroup.get('addresses') as FormArray;
-      addresses.push(
-        new FormGroup({
-          street: new FormControl(''),
-          city: new FormControl(''),
-        }),
-      );
-    },
-  },
-];
+type FormCompletionStats = {
+  total: number;       // campi tracciati (globale)
+  filled: number;      // campi con valore non vuoto (globale)
+  percentage: number;  // percentuale (0–100, intera) (globale)
+  required: {
+    total: number;
+    filled: number;
+    percentage: number;
+  };
+  /** Statistiche suddivise per gruppo */
+  groups: Array<{
+    id: string;        // UUID del gruppo (assegnato dal builder)
+    title: string;     // titolo del gruppo
+    total: number;
+    filled: number;
+    percentage: number;
+    required: {
+      total: number;
+      filled: number;
+      percentage: number;
+    };
+  }>;
+};
 ```
 
-### Utility helpers
+### Campi esclusi dal conteggio
 
-Per manipolare facilmente la struttura del form puoi usare funzioni helper come:
+`SEPARATOR`, `LABEL`, `LINK`, `GROUP`
 
-- `groupAt(formGroup, 'mainAddress')`: ottieni un gruppo annidato
-- `controlAt(formGroup, 'mainAddress.city')`: ottieni un controllo annidato
-- `collectFormErrors(formGroup)`: raccogli tutti gli errori
-  Queste funzioni sono disponibili in `nested-actions-form.builder.ts` e possono essere copiate nei tuoi servizi.
+### Un campo è "compilato" quando
 
-### Esempio avanzato: aggiungere/rimuovere gruppi dinamicamente
+- Non è `null`
+- Non è `undefined`
+- Non è stringa vuota `''`
+- Se array: ha almeno un elemento
 
-Supponiamo di voler permettere all'utente di aggiungere più indirizzi:
+### Un campo è "required" quando
+
+Il suo `FormControl` ha `Validators.required` tra i validatori.
+
+### Utilizzo tipico
 
 ```ts
-actions: [
-  {
-    label: 'Aggiungi indirizzo',
-    action: (questions, idForm, formGroup) => {
-      const indirizzi = formGroup.get('addresses') as FormArray;
-      indirizzi.push(
-        new FormGroup({
-          street: new FormControl(''),
-          city: new FormControl(''),
-        }),
-      );
-    },
-  },
-  {
-    label: 'Rimuovi ultimo indirizzo',
-    action: (questions, idForm, formGroup) => {
-      const indirizzi = formGroup.get('addresses') as FormArray;
-      if (indirizzi.length > 0) indirizzi.removeAt(indirizzi.length - 1);
-    },
-  },
-];
-```
+onChange: (_ig, _if, _fc, _fn, _fg, _t, _prev, _all, utility) => {
+  const s = utility.formCompletion();
+  
+  // ── Statistiche globali ───────────────────────────────────────────────────
+  console.log(`Completamento: ${s.percentage}% (${s.filled}/${s.total} campi)`);
+  console.log(`Obbligatori: ${s.required.percentage}% (${s.required.filled}/${s.required.total})`);
 
-### Modifica della configurazione (questions)
+  // ── Statistiche per gruppo ─────────────────────────────────────────────── 
+  s.groups.forEach(g => {
+    console.log(
+      `Gruppo [${g.id}] "${g.title}":`,
+      `${g.percentage}% (${g.filled}/${g.total})`,
+      `| req: ${g.required.percentage}%`
+    );
+  });
 
-Puoi anche modificare la configurazione `questions` per aggiungere/rimuovere campi a runtime (ad esempio per mostrare/nascondere campi in base a scelte dell'utente). Dopo la modifica, puoi forzare la ricompilazione del form aggiornando l'input `[config]`.
+  // Esempio: trovare un gruppo per titolo
+  const datiPersonali = s.groups.find(g => g.title === 'Dati Personali');
+  if (datiPersonali) {
+    console.log('Dati personali completati al', datiPersonali.percentage + '%');
+  }
 
----
+  // Abilita/disabilita il bottone Salva
+  utility.getActionByName('salva', action => {
+    action.disabled = s.required.percentage < 100;
+  });
 
----
-
-## Action, Eventi e Utility
-
-### Action sui pulsanti
-
-Ogni gruppo può avere un array di `actions` che genera pulsanti custom. Ogni action riceve:
-
-- `questions`: la configurazione del form (ConfigForm)
-- `idForm`: indice del gruppo
-- `formGroup`: il FormGroup/FormArray associato
-
-Esempio:
-
-```ts
-actions: [
-  {
-    label: 'Valida',
-    action: (questions, idForm, formGroup) => {
-      formGroup.markAllAsTouched();
-      console.log('Valido:', formGroup.valid);
-    },
-  },
-  {
-    label: 'Aggiungi indirizzo',
-    action: (questions, idForm, formGroup) => {
-      // Aggiunge un nuovo gruppo indirizzo (fratello)
-      const addresses = formGroup.get('addresses') as FormArray;
-      addresses.push(
-        new FormGroup({
-          street: new FormControl(''),
-          city: new FormControl(''),
-        }),
-      );
-    },
-  },
-];
-```
-
-### Utility helpers
-
-Per manipolare facilmente la struttura del form puoi usare funzioni helper come:
-
-- `groupAt(formGroup, 'mainAddress')`: ottieni un gruppo annidato
-- `controlAt(formGroup, 'mainAddress.city')`: ottieni un controllo annidato
-- `collectFormErrors(formGroup)`: raccogli tutti gli errori
-  Queste funzioni sono disponibili in `nested-actions-form.builder.ts` e possono essere copiate nei tuoi servizi.
-
-### Esempio avanzato: aggiungere/rimuovere gruppi dinamicamente
-
-Supponiamo di voler permettere all'utente di aggiungere più indirizzi:
-
-```ts
-actions: [
-  {
-    label: 'Aggiungi indirizzo',
-    action: (questions, idForm, formGroup) => {
-      const indirizzi = formGroup.get('addresses') as FormArray;
-      indirizzi.push(
-        new FormGroup({
-          street: new FormControl(''),
-          city: new FormControl(''),
-        }),
-      );
-    },
-  },
-  {
-    label: 'Rimuovi ultimo indirizzo',
-    action: (questions, idForm, formGroup) => {
-      const indirizzi = formGroup.get('addresses') as FormArray;
-      if (indirizzi.length > 0) indirizzi.removeAt(indirizzi.length - 1);
-    },
-  },
-];
-```
-
-### Modifica della configurazione (questions)
-
-Puoi anche modificare la configurazione `questions` per aggiungere/rimuovere campi a runtime (ad esempio per mostrare/nascondere campi in base a scelte dell'utente). Dopo la modifica, puoi forzare la ricompilazione del form aggiornando l'input `[config]`.
-
----
-
-## Esempi Avanzati
-
-Consulta il file `nested-actions-form.builder.ts` per esempi di form annidati, action avanzate, validazione, patch dinamico dei dati, calcoli automatici, copia di sezioni, ecc.
-
----
-
-## Best Practice
-
-- Usa `formName` univoci per ogni campo
-- Gestisci eventi con funzioni pure o servizi
-- Per combo remote, gestisci cache e paginazione lato API
-- Personalizza il tema tramite provider
-- Usa `onFormCreate` per accedere al FormGroup e integrarlo nella tua logica
-
----
-
-## Estensione e Personalizzazione
-
-- Puoi aggiungere nuovi tipi di campo estendendo `BaseComponent`
-- Puoi fornire nuovi handler eventi tramite provider
-- Puoi customizzare il tema e i CSS
-
----
-
-
-## Supporto
-
-Per domande, segnalazioni o supporto: lucapiciollo@gmail.com
-
-## Vantaggi
-
-- **Zero template HTML**: definisci tutto da configurazione.
-- **Supporto a tutti i tipi di campo**: text, combo, multi-combo, paginati, date, file, textarea, checkbox, radio, array di stringhe, ecc.
-- **Paginazione e ricerca remota**: combo e multi-combo con caricamento asincrono e paginazione.
-- **Eventi e azioni custom**: onChange, onSearch, onScrollEnd, onInitialize, ecc.
-- **Temi e personalizzazione**: supporto a Material, dark/light mode, custom CSS.
-- **Injection token/config provider**: configurazione centralizzata e override per moduli/feature.
-- **Estendibile**: aggiungi facilmente nuovi tipi di campo o comportamenti.
-
----
-
-## Installazione e Import
-
-1. Installa la libreria (se pubblicata su npm):
-
-   ```bash
-   npm install dynamicform
-   ```
-
-2. Importa il modulo nel tuo `AppModule` o modulo feature:
-
-   ```ts
-   import { DynamicFormModule } from 'dynamicform';
-
-   @NgModule({
-     imports: [DynamicFormModule],
-   })
-   export class AppModule {}
-   ```
-
-3. Oppure, per applicazioni standalone Angular 16+:
-   ```ts
-   import { provideDynamicForm } from 'dynamicform';
-   bootstrapApplication(AppComponent, {
-     providers: [
-       provideDynamicForm({
-         theme: { name: 'modern-dark' },
-         events: { onNomeChange: ctx => console.log(ctx) },
-       }),
-     ],
-   });
-   ```
-
----
-
-## Configurazione (Injection Token)
-
-DynamicForm supporta la configurazione globale tramite provider:
-
-- **Standalone**: `provideDynamicForm(config)`
-- **NgModule**: `...provideDynamicFormForModule(config)`
-
-Esempio:
-
-```ts
-import { provideDynamicFormForModule } from 'dynamicform';
-
-@NgModule({
-   imports: [DynamicFormModule],
-   providers: [
-      ...provideDynamicFormForModule({
-         theme: { name: 'modern-light' },
-         events: { onFieldChange: ctx => ... },
-         actions: { onSave: ctx => ... },
-      }),
-   ],
-})
-export class AppModule {}
-```
-
----
-
-## Come si crea un form (TS/JSON)
-
-### 1. Configurazione TypeScript (`ConfigForm`)
-
-```ts
-import { TYPE_CONTROL_FORM, ConfigForm } from 'dynamicform';
-
-const myForm: ConfigForm = [
-   {
-      title: 'Dati Anagrafici',
-      formGroup: [
-         { formAction: { formName: 'nome', label: 'Nome', type: TYPE_CONTROL_FORM.TEXT, required: true } },
-         { formAction: { formName: 'cognome', label: 'Cognome', type: TYPE_CONTROL_FORM.TEXT } },
-         { formAction: { formName: 'sesso', label: 'Sesso', type: TYPE_CONTROL_FORM.COMBO, options: [ { id: 'M', description: 'Maschio' }, { id: 'F', description: 'Femmina' } ] } },
-      ],
-      actions: [
-         { label: 'Salva', action: (questions, idForm, formGroup) => { ... } }
-      ]
-   }
-];
-```
-
-### 2. Configurazione JSON
-
-```json
-{
-  "groups": [
-    {
-      "title": "Dati Anagrafici",
-      "formGroup": [
-        { "formAction": { "formName": "nome", "label": "Nome", "type": "TEXT", "required": true } },
-        { "formAction": { "formName": "cognome", "label": "Cognome", "type": "TEXT" } },
-        {
-          "formAction": {
-            "formName": "sesso",
-            "label": "Sesso",
-            "type": "COMBO",
-            "options": [
-              { "id": "M", "description": "Maschio" },
-              { "id": "F", "description": "Femmina" }
-            ]
-          }
-        }
-      ],
-      "actions": [{ "label": "Salva" }]
-    }
-  ]
+  // Aggiorna un campo di testo con la percentuale
+  utility.getFormByName('campo_info', fa => {
+    fa.formControl?.setValue(`Completato al ${s.percentage}%`, { emitEvent: false });
+  });
 }
 ```
+
+### Rating reattivo come progress indicator
+
+```ts
+.addForm(ctx => ({
+  formName: 'progress_indicator',
+  title: 'Completamento',
+  type: TYPE_CONTROL_FORM.RATING,
+  formControl: new FormControl({ value: 0, disabled: true }),
+  optionRating: { max: 10 },
+  onInitialize: (_ig, _if, fc, _fn, _fg, _t, _all, _p, _o, utility) => {
+    effect(
+      () => {
+        const stats = utility?.formCompletion?.();
+        fc.setValue(Math.round((stats?.percentage ?? 0) / 10));
+      },
+      { injector: ctx['injector'], allowSignalWrites: true }
+    );
+  },
+}))
+```
+
+---
+
+## Combo statiche con tag e initialOptions
+
+### Struttura TypeComboOption
+
+```ts
+type TypeComboOption = Array<{
+  id: any;
+  description: string;
+  img?: string;           // URL immagine (mostrata accanto alla descrizione)
+  extra?: any;            // dati extra non visualizzati
+  disabled?: boolean;     // opzione non selezionabile
+  default?: boolean;      // preselezione automatica
+  hide?: boolean;         // nascosta dalla lista
+  selected?: boolean;     // selezionata correntemente
+  tag?: {
+    bgTag: string;        // classe CSS fill del rettangolo SVG
+    bgText: string;       // classe CSS fill del testo SVG
+    name: string;         // testo del badge
+  };
+}>;
+```
+
+### Tag colorati
+
+I tag sono badge SVG affiancati alla descrizione. Le classi CSS devono essere definite globalmente in `styles.scss`:
+
+```scss
+// styles.scss
+.tag-gray   { fill: #6b7280; }
+.tag-blue   { fill: #3b82f6; }
+.tag-green  { fill: #16a34a; }
+.tag-red    { fill: #dc2626; }
+.tag-orange { fill: #ea580c; }
+.tag-indigo { fill: #4f46e5; }
+.tag-purple { fill: #9333ea; }
+.tag-yellow { fill: #ca8a04; }
+
+.tag-text-gray, .tag-text-blue, .tag-text-green, .tag-text-red,
+.tag-text-orange, .tag-text-indigo, .tag-text-purple, .tag-text-yellow {
+  fill: #ffffff;
+}
+```
+
+### initialOptions
+
+Opzioni **sempre visibili in cima alla lista**, indipendentemente da ricerca o paginazione. Ideali per "Nessuna selezione", "Tutti", "Default".
+
+```ts
+{
+  formName: 'stato',
+  type: TYPE_CONTROL_FORM.COMBO,
+  options: statiOptions,
+  formControl: new FormControl(null),
+  initialOptions: [
+    {
+      id: null,
+      description: 'Qualsiasi stato',
+      tag: { bgTag: 'tag-gray', bgText: 'tag-text-gray', name: 'Tutti' },
+    },
+    {
+      id: 'urgente',
+      description: 'Urgente',
+      tag: { bgTag: 'tag-red', bgText: 'tag-text-red', name: 'HOT' },
+    },
+    {
+      id: 'prioritario',
+      description: 'Prioritario',
+      tag: { bgTag: 'tag-orange', bgText: 'tag-text-orange', name: 'TOP' },
+    },
+  ],
+}
+```
+
+---
+
+## Combo paginata remota — guida completa
+
+### Pattern con classe di stato
+
+Per form complessi con più combo paginate è consigliabile incapsulare lo stato:
+
+```ts
+// combo-state.ts
+export class ComboPaginatedState<T extends { id: any }> {
+  private _options = signal<T[]>([]);
+  private _total = 0;
+  private _page = 1;
+  private _search = '';
+
+  readonly options = this._options.asReadonly();
+  get total() { return this._total; }
+  get page() { return this._page; }
+
+  load(
+    items: T[],
+    total: number,
+    page: number,
+    search: string,
+    append: boolean
+  ) {
+    this._total = total;
+    this._page = page;
+    this._search = search;
+    if (append) {
+      const ids = new Set(this._options().map(o => o.id));
+      this._options.set([...this._options(), ...items.filter(o => !ids.has(o.id))]);
+    } else {
+      this._options.set(items);
+    }
+  }
+
+  canLoadMore() {
+    return this._options().length < this._total;
+  }
+}
+
+// Nel builder:
+const utentiState = new ComboPaginatedState<UserDto>();
+const api = inject(UserApiService);
+
+function fetchUtenti(page: number, search: string, append: boolean) {
+  api.getUsers({ page, pageSize: 10, search }).subscribe(r =>
+    utentiState.load(r.items, r.totalCount, page, search, append)
+  );
+}
+
+{
+  formName: 'utente_assegnato',
+  type: TYPE_CONTROL_FORM.COMBOPAGINATE,
+  formControl: new FormControl(null),
+  options: utentiState.options,
+  totalCount: () => utentiState.total,
+  enableInfiniteScroll: true,
+  autocomplete: true,
+  keyCombo: { keyId: 'id', keyDescription: 'fullName', keySearch: 'q' },
+  pageSize: 10,
+  paging: { page: 1, count: 10, totalCount: 0 },
+  remoteData: ({ param, append }) =>
+    new Promise(resolve => {
+      fetchUtenti(param.page, param.search ?? '', append);
+      setTimeout(() => resolve({ items: utentiState.options(), totalCount: utentiState.total }), 80);
+    }),
+  onInitialize: () => fetchUtenti(1, '', false),
+  onSearch: (_ig, _if, _fc, _fn, _fg, search) => fetchUtenti(1, search, false),
+  onScrollEnd: () => {
+    if (utentiState.canLoadMore()) fetchUtenti(utentiState.page + 1, '', true);
+  },
+}
+```
+
+---
+
+## Rating — guida completa
+
+### Modalità
+
+| Modalità | FormControl | Descrizione |
+|---|---|---|
+| Editabile | `new FormControl(null)` | L'utente può cliccare e cambiare il valore |
+| Sola lettura visiva | `new FormControl({ value: 3, disabled: true })` | No hover, no click — solo visualizzazione |
+| Progress indicator | `disabled: true` + `effect()` | Aggiornato da un effect reattivo |
+
+### Comportamento click
+
+| Situazione | Risultato |
+|---|---|
+| Click su stella non selezionata | Seleziona quella stella (valore = N) |
+| Click sulla stella già selezionata | Deseleziona → valore 0 (nessuna stella illuminata) |
+| `resetButton: true` + click X | Imposta valore a `null` |
+| `disabled: true` (FormControl) | Nessun hover, nessun click possibile |
+
+### Valori del FormControl
+
+| Valore | Stelle visualizzate |
+|---|---|
+| `null` | Nessuna stella (tutte spente) — campo non compilato |
+| `0` | Nessuna stella (tutte spente) — campo considerato compilato |
+| `N` (1–max) | N stelle illuminate |
+
+### Esempio completo
+
+```ts
+// Rating base — 5 stelle
+{
+  formName: 'soddisfazione',
+  title: 'Soddisfazione',
+  type: TYPE_CONTROL_FORM.RATING,
+  formControl: new FormControl(null, Validators.required),
+  optionRating: { max: 5 },
+  resetButton: true,
+  hint: 'Da 1 (pessimo) a 5 (ottimo)',
+  onChange: (_ig, _if, fc, _fn, _fg, _t, prev, _all, utility) => {
+    const s = utility.formCompletion();
+    console.log(`Rating: ${prev} -> ${fc.value} | Form: ${s.percentage}%`);
+  },
+}
+
+// Rating 10 stelle — sola lettura con valore dinamico
+.addForm(ctx => ({
+  formName: 'completamento_visivo',
+  title: 'Completamento form',
+  type: TYPE_CONTROL_FORM.RATING,
+  formControl: new FormControl({ value: 0, disabled: true }),
+  optionRating: { max: 10 },
+  onInitialize: (_ig, _if, fc, _fn, _fg, _t, _all, _p, _o, utility) => {
+    effect(
+      () => {
+        const pct = utility?.formCompletion?.()?.percentage ?? 0;
+        fc.setValue(Math.round(pct / 10));   // 0–100% → 0–10 stelle
+      },
+      { injector: ctx['injector'], allowSignalWrites: true }
+    );
+  },
+}))
+```
+
+---
+
+## Azioni (DynamicFormActionButton)
+
+Bottoni visualizzati nel piede di ogni gruppo. L'handler riceve l'intero stato del form.
+
+```ts
+.addActions([
+  {
+    label: 'Salva',
+    name: 'salva',                          // identificatore per getActionByName
+    visible: true,
+    icon: 'save',                           // icona Material
+    cssClassButton: ['btn', 'btn-primary'],
+    disabled: false,
+    action: (questions, idForm, formGroup, group, idGroup, allGroup, utility) => {
+      const stats = utility?.formCompletion?.();
+
+      if ((stats?.required.percentage ?? 0) < 100) {
+        alert(`Completa i campi obbligatori!\n${stats?.required.filled}/${stats?.required.total} compilati`);
+        return;
+      }
+
+      if (formGroup instanceof FormGroup && formGroup.valid) {
+        const dati = formGroup.getRawValue();
+        console.log('Dati da salvare:', dati);
+        // myService.save(dati)
+      }
+    },
+  },
+  {
+    label: 'Annulla',
+    name: 'annulla',
+    visible: true,
+    cssClassButton: ['btn', 'btn-outline-secondary'],
+    action: (_q, _id, formGroup) => {
+      if (formGroup instanceof FormGroup) formGroup.reset();
+    },
+  },
+])
+```
+
+Con factory per accedere al contesto:
+
+```ts
+.addActions(ctx => [
+  {
+    label: 'Salva',
+    name: 'salva',
+    visible: true,
+    action: (_q, _id, formGroup, _g, _ig, _all, utility) => {
+      const stats = utility?.formCompletion?.();
+      if ((stats?.required.percentage ?? 0) === 100) {
+        ctx.submitForm(formGroup.getRawValue());   // metodo del componente
+      }
+    },
+  },
+])
+```
+
+### Parametri
+
+| Proprietà | Tipo | Descrizione |
+|---|---|---|
+| `label` | `string` | Testo del bottone |
+| `name` | `string` | Identificatore per `getActionByName` |
+| `icon` | `string` | Nome icona Material Icons |
+| `cssClassButton` | `string[]` | Classi CSS del bottone |
+| `cssClassIcon` | `string[]` | Classi CSS dell'icona |
+| `disabled` | `boolean` | Disabilita il bottone |
+| `visible` | `boolean` | Mostra/nasconde il bottone |
+| `action` | `function` | Callback al click |
 
 ---
 
 ## Utilizzo nel template
 
 ```html
-<!-- Con configurazione TypeScript -->
-<app-dynamic-form [config]="myForm" (onFormCreate)="onForm($event)"></app-dynamic-form>
+<app-dynamic-form
+  [config]="myConfig"
+  (onFormCreate)="onFormCreated($event)"
+  (onQuestionsCreate)="onQuestionsCreated($event)">
+</app-dynamic-form>
+```
 
-<!-- Con schema JSON -->
-<app-dynamic-form [json]="myJsonSchema" (onFormCreate)="onForm($event)"></app-dynamic-form>
+### Input
+
+| Input | Tipo | Descrizione |
+|---|---|---|
+| `[config]` o `[questions]` | `ConfigForm` | Configurazione completa del form |
+| `[json]` | `DynamicFormJsonSchema` | Schema JSON alternativo |
+
+### Output
+
+| Output | Tipo | Descrizione |
+|---|---|---|
+| `(onFormCreate)` | `FormGroup / FormArray` | FormGroup generato dopo l'inizializzazione |
+| `(onQuestionsCreate)` | `ConfigForm` | ConfigForm risolto dopo l'inizializzazione |
+
+```ts
+@Component({ ... })
+export class MyPageComponent {
+  config = buildMyForm(this);
+  formGroup!: FormGroup;
+
+  onFormCreated(fg: FormGroup) {
+    this.formGroup = fg;
+    // ora si può usare formGroup.valueChanges, formGroup.get('campo'), ecc.
+  }
+
+  onQuestionsCreated(config: ConfigForm) {
+    // ConfigForm risolto — utile per manipolazioni post-init
+  }
+
+  submit() {
+    if (this.formGroup?.valid) {
+      console.log(this.formGroup.getRawValue());
+    }
+  }
+}
 ```
 
 ---
 
-## Componenti supportati e parametri
+## Esempio completo reale
 
-### Tipi di campo (`TYPE_CONTROL_FORM`)
+```ts
+// registration-form.builder.ts
+import { inject, signal, effect } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
+import { DynamicFormBuilder, TYPE_CONTROL_FORM, ConfigForm } from 'dynamicform';
+import { UserApiService } from './user-api.service';
 
-- `TEXT`, `TEXTAREA`, `NUMBER`, `CHECKBOX`, `COMBO`, `COMBOPAGINATE`, `ARRAYSTRING`, `DATE`, `DATETIME`, `DATARANGE`, `YEAR`, `CURRENCY`, `FILE`, `RADIOGROUP`, `LABEL`, `LINK`, `SEPARATOR`, `SORTACTION`, ...
+export function buildRegistrationForm<T extends RegistrationComponent>(context: T): ConfigForm {
 
-### Parametri comuni (`FormActionBase`)
+  // ── Opzioni statiche ───────────────────────────────────────────────────────
+  const genereOptions = signal([
+    { id: 'M', description: 'Maschio' },
+    { id: 'F', description: 'Femmina' },
+    { id: 'A', description: 'Preferisco non specificare' },
+  ]);
 
-- `formName`: nome univoco del campo
-- `label`: etichetta visualizzata
-- `type`: tipo di campo (vedi sopra)
-- `formControl`: FormControl associato (opzionale)
-- `options`: per combo/radio, array di opzioni `{ id, description }`
-- `multiple`: multi-selezione (combo)
-- `remoteData`: funzione per caricamento asincrono (combo paginate)
-- `onChange`, `onSearch`, `onScrollEnd`, `onInitialize`: handler eventi
-- `disabled`, `readonly`, `hidden`, `placeholder`, `hint`, `info`, `css`, ...
+  // ── Stato combo paginate ───────────────────────────────────────────────────
+  const cittaOptions = signal<any[]>([]);
+  let cittaTotal = 0;
+  let cittaPage = 1;
+  let cittaSearch = '';
 
-### Combo, Multi-combo, Paginazione
+  const api = inject(UserApiService);
 
-- **Combo**: usa `options` statiche o caricate da API
-- **Multi-combo**: aggiungi `multiple: true`
-- **Combo paginata**: usa `type: COMBOPAGINATE`, `remoteData`, `paging`, `onScrollEnd`
+  function loadCitta({ page = 1, search = '' } = {}, append = false) {
+    api.getCitta({ page, pageSize: 10, search }).subscribe(r => {
+      cittaTotal = r.totalCount;
+      cittaPage = page;
+      cittaSearch = search;
+      if (append) {
+        const ids = new Set(cittaOptions().map(o => o.id));
+        cittaOptions.set([...cittaOptions(), ...r.items.filter(o => !ids.has(o.id))]);
+      } else {
+        cittaOptions.set(r.items);
+      }
+    });
+  }
 
-Esempio combo paginata:
+  // ── Helper log ─────────────────────────────────────────────────────────────
+  function log(event: string, field: string, utility?: any, extra?: any) {
+    const s = utility?.formCompletion?.();
+    const pct = s ? `[${s.percentage}% | Req:${s.required.percentage}%]` : '';
+    console.log(`%c[${event}] ${field} ${pct}`, 'color:#6366f1;font-weight:600', extra ?? '');
+  }
 
-````ts
-{
-   formAction: {
-      formName: 'prodotti',
-      label: 'Prodotti',
+  return DynamicFormBuilder.create(context)
+
+    // ── Dati personali ─────────────────────────────────────────────────────
+    .addGroup('Dati Personali', ['col-6 px-3'])
+
+    .addForm({
+      formName: 'nome',
+      title: 'Nome *',
+      type: TYPE_CONTROL_FORM.TEXT,
+      formControl: new FormControl('', Validators.required),
+      placeholder: 'Es. Mario',
+      resetButton: true,
+      onInitialize: (_ig, _if, _fc, _fn, _fg, _t, _all, _p, _o, utility) =>
+        log('onInitialize', 'nome', utility),
+      onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) =>
+        log('onChange', fn, utility, { prev, curr: fc?.value }),
+      onFocus: (_ig, _if, _fc, fn) => console.log(`Focus: ${fn}`),
+      onBlur: (_ig, _if, fc, fn) => console.log(`Blur: ${fn} =`, fc?.value),
+    })
+
+    .addForm({
+      formName: 'cognome',
+      title: 'Cognome *',
+      type: TYPE_CONTROL_FORM.TEXT,
+      formControl: new FormControl('', Validators.required),
+      onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) =>
+        log('onChange', fn, utility, { prev, curr: fc?.value }),
+    })
+
+    .addForm({
+      formName: 'data_nascita',
+      title: 'Data di nascita',
+      type: TYPE_CONTROL_FORM.DATA,
+      formControl: new FormControl(null),
+      optionDate: { min: '1920-01-01', max: new Date().toISOString().slice(0, 10) },
+      onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) =>
+        log('onChange', fn, utility, { prev, curr: fc?.value }),
+    })
+
+    .addForm({
+      formName: 'genere',
+      title: 'Genere',
+      type: TYPE_CONTROL_FORM.RADIOGROUP,
+      formControl: new FormControl(null, Validators.required),
+      options: genereOptions,
+      onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) =>
+        log('onChange', fn, utility, { prev, curr: fc?.value }),
+    })
+
+    // Rating disabilitato come progress indicator
+    .addForm(ctx => ({
+      formName: 'progresso',
+      title: 'Completamento form',
+      type: TYPE_CONTROL_FORM.RATING,
+      formControl: new FormControl({ value: 0, disabled: true }),
+      optionRating: { max: 10 },
+      onInitialize: (_ig, _if, fc, _fn, _fg, _t, _all, _p, _o, utility) => {
+        effect(
+          () => {
+            const pct = utility?.formCompletion?.()?.percentage ?? 0;
+            fc.setValue(Math.round(pct / 10));
+          },
+          { injector: ctx['injector'], allowSignalWrites: true }
+        );
+      },
+    }))
+
+    // ── Contatti ────────────────────────────────────────────────────────────
+    .addGroup('Contatti', ['col-6 px-3'])
+
+    .addForm({
+      formName: 'email',
+      title: 'Email *',
+      type: TYPE_CONTROL_FORM.TEXT,
+      formControl: new FormControl('', [Validators.required, Validators.email]),
+      hint: 'Riceverai la conferma su questa email',
+      onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) =>
+        log('onChange', fn, utility, { prev, curr: fc?.value }),
+    })
+
+    .addForm({
+      formName: 'telefono',
+      title: 'Telefono',
+      type: TYPE_CONTROL_FORM.TEXT,
+      formControl: new FormControl(''),
+      optionInputText: { maxlength: 15 },
+      onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) =>
+        log('onChange', fn, utility, { prev, curr: fc?.value }),
+    })
+
+    .addForm({
+      formName: 'citta',
+      title: 'Città',
       type: TYPE_CONTROL_FORM.COMBOPAGINATE,
-      remoteData: (input, config) => { ... },
-      paging: { count: 20, page: 1, totalCount: 100 },
+      formControl: new FormControl(null),
+      options: cittaOptions,
+      totalCount: () => cittaTotal,
+      enableInfiniteScroll: true,
+      autocomplete: true,
+      keyCombo: { keyId: 'id', keyDescription: 'nome', keySearch: 'q' },
+      pageSize: 10,
+      paging: { page: 1, count: 10, totalCount: 0 },
+      initialOptions: [
+        { id: null, description: 'Nessuna città', tag: { bgTag: 'tag-gray', bgText: 'tag-text-gray', name: 'Default' } },
+      ],
+      remoteData: ({ param, append }) =>
+        new Promise(resolve => {
+          loadCitta({ page: param.page, search: param.search ?? '' }, append);
+          setTimeout(() => resolve({ items: cittaOptions(), totalCount: cittaTotal }), 80);
+        }),
+      onInitialize: () => loadCitta({ page: 1 }),
+      onSearch: (_ig, _if, _fc, _fn, _fg, search) => loadCitta({ page: 1, search }),
+      onScrollEnd: () => {
+        if (cittaOptions().length < cittaTotal)
+          loadCitta({ page: cittaPage + 1, search: cittaSearch }, true);
+      },
+      onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) =>
+        log('onChange', fn, utility, { prev, curr: fc?.value }),
+    })
 
-      # DynamicForm
+    .addForm({
+      formName: 'note',
+      title: 'Note aggiuntive',
+      type: TYPE_CONTROL_FORM.TEXTAREA,
+      formControl: new FormControl(''),
+      rows: 3,
+      hint: 'Massimo 500 caratteri',
+      optionInputText: { maxlength: 500 },
+      onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) =>
+        log('onChange', fn, utility, { prev, curr: fc?.value }),
+    })
 
-      DynamicForm è una libreria open source per Angular che permette di generare form dinamici e complessi tramite configurazione TypeScript o JSON, senza scrivere template HTML manuali.
-
-      ---
-
-      ## Caratteristiche principali
-
-      - Generazione automatica di form da oggetti di configurazione
-      - Supporto a tutti i tipi di campo: text, combo, multi-combo, paginati, date, file, textarea, checkbox, radio, array di stringhe, gruppi annidati, ecc.
-      - Eventi e azioni custom: onChange, onSearch, onScrollEnd, onInitialize, click su pulsanti custom
-      - Paginazione e ricerca remota su combo e multi-combo
-      - Injection token/config provider per configurazione centralizzata
-      - Estendibile: puoi aggiungere nuovi tipi di campo o comportamenti
-
-      ---
-
-      ## Installazione
-
-      ```bash
-      npm install dynamicform
-      ```
-
-      ---
-
-      ## Import e configurazione
-
-      ### Modulo classico (NgModule)
-      ```ts
-      import { DynamicFormModule } from 'dynamicform';
-
-      @NgModule({
-         imports: [DynamicFormModule],
-      })
-      export class AppModule {}
-      ```
-
-      ### Standalone (Angular 16+)
-      ```ts
-      import { provideDynamicForm } from 'dynamicform';
-      bootstrapApplication(AppComponent, {
-         providers: [
-            provideDynamicForm({
-               // puoi aggiungere qui handler eventi globali
-               events: { onFieldChange: ctx => ... },
-               actions: { onSave: ctx => ... },
-            }),
-         ],
-      });
-      ```
-
-      ---
-
-      ## Utilizzo base
-
-
-      ### Esempio base: form anagrafica semplice
-      ```ts
-      import { TYPE_CONTROL_FORM, ConfigForm } from 'dynamicform';
-
-      export const anagraficaForm: ConfigForm = [
-         {
-            title: 'Dati Anagrafici',
-            formGroup: [
-               { formAction: { formName: 'nome', label: 'Nome', type: TYPE_CONTROL_FORM.TEXT, required: true } },
-               { formAction: { formName: 'cognome', label: 'Cognome', type: TYPE_CONTROL_FORM.TEXT } },
-               { formAction: { formName: 'sesso', label: 'Sesso', type: TYPE_CONTROL_FORM.COMBO, options: [
-                  { id: 'M', description: 'Maschio' },
-                  { id: 'F', description: 'Femmina' },
-                  { id: 'N', description: 'Non specificato' }
-               ] } },
-            ],
-            actions: [
-               {
-                  label: 'Salva',
-                  action: (_questions, _idForm, formGroup) => {
-                     alert('Valore del form: ' + JSON.stringify(formGroup.value));
-                  }
-               }
-            ]
-         }
-      ];
-      ```
-
-      ### Esempio: combo multi-selezione
-      ```ts
+    // ── Azioni ──────────────────────────────────────────────────────────────
+    .addActions(ctx => [
       {
-         formAction: {
-            formName: 'ruoli',
-            label: 'Ruoli',
-            type: TYPE_CONTROL_FORM.COMBO,
-            options: [
-               { id: 'admin', description: 'Amministratore' },
-               { id: 'user', description: 'Utente' },
-               { id: 'guest', description: 'Ospite' }
-            ],
-            multiple: true
-         }
-      }
-      ```
-
-      ### Esempio: combo paginata e caricamento remoto
-      ```ts
+        label: 'Registra',
+        name: 'salva',
+        visible: true,
+        icon: 'person_add',
+        cssClassButton: ['btn', 'btn-primary', 'px-4'],
+        action: (_q, _id, formGroup, _g, _ig, _all, utility) => {
+          const stats = utility?.formCompletion?.();
+          if ((stats?.required.percentage ?? 0) < 100) {
+            alert(`Compila i campi obbligatori (${stats?.required.filled}/${stats?.required.total})`);
+            return;
+          }
+          if (formGroup instanceof FormGroup) {
+            ctx.onRegistra(formGroup.getRawValue());
+          }
+        },
+      },
       {
-         formAction: {
-            formName: 'prodotti',
-            label: 'Prodotti',
-            type: TYPE_CONTROL_FORM.COMBOPAGINATE,
-            remoteData: (input, config) => {
-               // Simula chiamata API asincrona
-               config?.injector?.get(HttpClient).get('/api/prodotti', { params: { search: input } });
-            },
-            paging: { count: 20, page: 1, totalCount: 100 },
-            onScrollEnd: (idGroup, idForm, formControl, formName, formGroup, paging, utility) => {
-               // Carica altre pagine
-            }
-         }
-      }
-      ```
+        label: 'Svuota',
+        visible: true,
+        cssClassButton: ['btn', 'btn-outline-secondary'],
+        action: (_q, _id, formGroup) => formGroup?.reset?.(),
+      },
+    ])
 
-      ### Esempio: action che aggiunge dinamicamente un gruppo indirizzo
-      ```ts
-      actions: [
-         {
-            label: 'Aggiungi indirizzo',
-            action: (questions, idForm, formGroup) => {
-               const indirizzi = formGroup.get('addresses') as FormArray;
-               indirizzi.push(new FormGroup({
-                  street: new FormControl(''),
-                  city: new FormControl(''),
-               }));
-            }
-         }
-      ]
-      ```
+    .build();
+}
 
-      ### Esempio JSON equivalente
-      ```json
-      {
-         "groups": [
-            {
-               "title": "Dati Anagrafici",
-               "formGroup": [
-                  { "formAction": { "formName": "nome", "label": "Nome", "type": "TEXT", "required": true } },
-                  { "formAction": { "formName": "cognome", "label": "Cognome", "type": "TEXT" } },
-                  { "formAction": { "formName": "sesso", "label": "Sesso", "type": "COMBO", "options": [
-                     { "id": "M", "description": "Maschio" },
-                     { "id": "F", "description": "Femmina" },
-                     { "id": "N", "description": "Non specificato" }
-                  ] } }
-               ],
-               "actions": [
-                  { "label": "Salva" }
-               ]
-            }
-         ]
-      }
-      ```
+// ── Componente ────────────────────────────────────────────────────────────────
+@Component({ ... })
+export class RegistrationComponent {
+  api = inject(UserApiService);
+  config = buildRegistrationForm(this);
+  formGroup!: FormGroup;
 
+  onFormCreated(fg: FormGroup) {
+    this.formGroup = fg;
+  }
 
-      ### Utilizzo nel template Angular
-      ```html
-      <!-- Con configurazione TypeScript -->
-      <app-dynamic-form [config]="anagraficaForm" (onFormCreate)="onForm($event)"></app-dynamic-form>
+  onRegistra(data: any) {
+    this.api.register(data).subscribe(() => {
+      alert('Registrazione completata!');
+      this.formGroup.reset();
+    });
+  }
+}
+```
 
-      <!-- Con schema JSON -->
-      <app-dynamic-form [json]="myJsonSchema" (onFormCreate)="onForm($event)"></app-dynamic-form>
-      ```
+---
 
-      ---
+## Riferimento tipi TypeScript
 
-      ## Tipi di campo supportati
+```
+ConfigForm = Array<Group>
+│
+├── Group
+│   ├── id?: string
+│   ├── title?: string
+│   ├── class?: string[]
+│   ├── formGroup?: Array<Form>
+│   │     └── Form { formAction: FormAction }
+│   └── actions?: Array<DynamicFormActionButton>
+│
+├── DynamicFormActionButton
+│   ├── label?, name?, icon?, translateId?
+│   ├── cssClassButton?, cssClassIcon?
+│   ├── disabled?, visible?
+│   └── action(questions, idForm, formGroup, group?, idGroup?, allGroup?, utility?)
+│
+├── FormActionBase  (base di tutti i campi)
+│   ├── Identità:   formName, title, label, type, id
+│   ├── Control:    formControl
+│   ├── Stato:      disabled*, readonly, hidden
+│   ├── UI:         placeholder, hint, info, tipContent, css, resetButton
+│   ├── Input:      autocomplete, multiple, rows, accept, size, currency
+│   ├── Opzioni:    options, initialOptions, optionsDisabled, disabledOption
+│   ├── Paginate:   keyCombo, paging, pageSize, remoteData, totalCount, enableInfiniteScroll
+│   ├── Validazione: optionInputText, optionNumber, optionDate, optionsTime, optionRating
+│   ├── Annidato:   formGroup (ConfigForm)
+│   └── Eventi:     onChange, onInitialize, onFocus, onBlur, opened, closed,
+│                   onSearch, onScrollEnd, action, onClose, onError
+│
+│   * disabled sulla FormAction è solo visivo. Per bloccare interazioni usare:
+│     new FormControl({ value: ..., disabled: true })
+│
+├── Utility
+│   ├── getFormByName(formName, parse)      → legge/modifica un campo per nome
+│   ├── getActionByName(name, parse)         → legge/modifica un bottone per nome
+│   ├── setDefaultOptions(formName, parse)   → imposta opzioni di una combo
+│   ├── getSelectedOptions(formName, parse)  → oggetti completi opzioni selezionate
+│   ├── onSettedOptions(formName, parse)     → sottoscrive al settaggio opzioni
+│   └── formCompletion: Signal<FormCompletionStats>
+│
+├── FormCompletionStats
+│   ├── total, filled, percentage
+│   ├── required: { total, filled, percentage }
+│   └── groups: Array<{
+│         id: string           UUID del gruppo
+│         title: string        titolo del gruppo
+│         total, filled, percentage
+│         required: { total, filled, percentage }
+│       }>
+│
+└── DynamicFormBuilder<TCtx>
+    ├── static create()                     → DynamicFormBuilder<unknown>
+    ├── static create<T>(ctx: T)            → DynamicFormBuilder<T>  (tipo inferito)
+    ├── addGroup(title | (ctx)=>string, classList?, id?)  → this
+    ├── addForm(FormAction | (ctx)=>FormAction)           → this
+    ├── addActions(actions[] | (ctx)=>actions[])          → this
+    └── build()                             → ConfigForm
+```
 
-      `TYPE_CONTROL_FORM`:
+---
 
-      - TEXT, TEXTAREA, NUMBER, CHECKBOX, COMBO, COMBOPAGINATE, ARRAYSTRING, DATE, DATETIME, DATARANGE, YEAR, CURRENCY, FILE, RADIOGROUP, LABEL, LINK, SEPARATOR, SORTACTION, ...
+## Build e sviluppo
 
-      ---
+```bash
+# Build libreria (genera dist/dynamicform)
+ng build dynamicform
 
-      ## Parametri principali dei campi
+# Avvio app di sviluppo con hot reload
+ng serve
 
-      - `formName`: nome univoco del campo
-      - `label`: etichetta visualizzata
-      - `type`: tipo di campo (vedi sopra)
-      - `formControl`: FormControl associato (opzionale)
-      - `options`: per combo/radio, array di opzioni `{ id, description }`
-      - `multiple`: multi-selezione (combo)
-      - `remoteData`: funzione per caricamento asincrono (combo paginate)
-      - `onChange`, `onSearch`, `onScrollEnd`, `onInitialize`: handler eventi
-      - `disabled`, `readonly`, `hidden`, `placeholder`, `hint`, `info`, `css`, ...
-
-      ---
-
-      ## Action, eventi e manipolazione dinamica
-
-      ### Action sui pulsanti
-      Ogni gruppo può avere un array di `actions` che genera pulsanti custom. Ogni action riceve:
-      - `questions`: la configurazione del form (ConfigForm)
-      - `idForm`: indice del gruppo
-      - `formGroup`: il FormGroup/FormArray associato
-
-      Esempio:
-      ```ts
-      actions: [
-         {
-            label: 'Valida',
-            action: (questions, idForm, formGroup) => {
-               formGroup.markAllAsTouched();
-               console.log('Valido:', formGroup.valid);
-            }
-         },
-         {
-            label: 'Aggiungi indirizzo',
-            action: (questions, idForm, formGroup) => {
-               const addresses = formGroup.get('addresses') as FormArray;
-               addresses.push(new FormGroup({
-                  street: new FormControl(''),
-                  city: new FormControl(''),
-               }));
-            }
-         }
-      ]
-      ```
-
-      ### Utility helpers
-      Per manipolare facilmente la struttura del form puoi usare funzioni helper come:
-      - `groupAt(formGroup, 'mainAddress')`: ottieni un gruppo annidato
-      - `controlAt(formGroup, 'mainAddress.city')`: ottieni un controllo annidato
-      - `collectFormErrors(formGroup)`: raccogli tutti gli errori
-      Queste funzioni sono disponibili in `nested-actions-form.builder.ts`.
-
-      ### Esempio avanzato: aggiungere/rimuovere gruppi dinamicamente
-      ```ts
-      actions: [
-         {
-            label: 'Aggiungi indirizzo',
-            action: (questions, idForm, formGroup) => {
-               const indirizzi = formGroup.get('addresses') as FormArray;
-               indirizzi.push(new FormGroup({
-                  street: new FormControl(''),
-                  city: new FormControl(''),
-               }));
-            }
-         },
-         {
-            label: 'Rimuovi ultimo indirizzo',
-            action: (questions, idForm, formGroup) => {
-               const indirizzi = formGroup.get('addresses') as FormArray;
-               if (indirizzi.length > 0) indirizzi.removeAt(indirizzi.length - 1);
-            }
-         }
-      ]
-      ```
-
-      ### Modifica della configurazione (questions)
-      Puoi anche modificare la configurazione `questions` per aggiungere/rimuovere campi a runtime (ad esempio per mostrare/nascondere campi in base a scelte dell'utente). Dopo la modifica, puoi forzare la ricompilazione del form aggiornando l'input `[config]`.
-
-      ---
-
-
-      ## Esempi pratici avanzati
-
-      - Consulta il file `nested-actions-form.builder.ts` per esempi di:
-         - Form annidati (gruppi dentro gruppi)
-         - Action avanzate (validazione, patch dinamico dei dati, calcoli automatici, copia di sezioni)
-         - Manipolazione runtime della struttura del form
-
-      ---
-
-      ## Best practice
-
-      - Usa `formName` univoci per ogni campo
-      - Gestisci eventi con funzioni pure o servizi
-      - Per combo remote, gestisci cache e paginazione lato API
-      - Usa `onFormCreate` per accedere al FormGroup e integrarlo nella tua logica
-
-      ---
-
-      ## Estensione e personalizzazione
-
-      - Puoi aggiungere nuovi tipi di campo estendendo `BaseComponent`
-      - Puoi fornire nuovi handler eventi tramite provider
-      - Puoi customizzare i CSS
-
-      ---
-
-      ## Supporto
-
-      Per domande o supporto: lucapiciollo@gmail.com
-````
+# Test unitari
+ng test dynamicform
+```

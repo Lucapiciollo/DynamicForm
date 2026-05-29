@@ -49,24 +49,59 @@
  * // - .addActions() aggiunge bottoni/azioni al gruppo (footer del gruppo)
  * // - .action, .onChange, .onInitialize ecc. sono proprietà del singolo campo (FormAction)
  */
-import { ConfigForm, FormAction, Group } from './dynamic-form.interface';
+import { ConfigForm, DynamicFormActionButton, FormAction, Group } from './dynamic-form.interface';
 import { uuidv4 } from './uuid.util';
 
-export class DynamicFormBuilder {
+/**
+ * Builder fluente per la creazione di ConfigForm tipizzati.
+ *
+ * Il parametro generico `TCtx` rappresenta il tipo del contesto (tipicamente la classe
+ * Component) passato a `create(context)`. Quando presente, `addGroup`, `addForm` e
+ * `addActions` accettano anche una factory function `(ctx: TCtx) => <valore>`, che riceve
+ * il contesto tipizzato e consente di accedere a proprietà e metodi del componente con
+ * pieno supporto TypeScript.
+ *
+ * @example
+ * ```ts
+ * // Nel componente:
+ * this.config = DynamicFormBuilder.create(this)
+ *   .addGroup('Sezione')
+ *   .addForm(ctx => ({
+ *     formName: 'nome',
+ *     type: TYPE_CONTROL_FORM.TEXT,
+ *     formControl: new FormControl(''),
+ *     onChange: () => ctx.onNomeChange(),   // ctx è tipizzato come il tuo Component
+ *   }))
+ *   .build();
+ * ```
+ */
+export class DynamicFormBuilder<TCtx = unknown> {
+    private _context!: TCtx;
     private groups: Group[] = [];
     private currentGroupIndex: number = -1;
 
-    static create(): DynamicFormBuilder {
-        return new DynamicFormBuilder();
+    private constructor() { }
+
+    /** Crea un builder senza contesto (i callback factory non riceveranno un ctx tipizzato). */
+    static create(): DynamicFormBuilder<unknown>;
+    /** Crea un builder con contesto tipizzato. Il tipo viene inferito automaticamente. */
+    static create<T>(context: T): DynamicFormBuilder<T>;
+    static create<T>(context?: T): DynamicFormBuilder<T | unknown> {
+        const b = new DynamicFormBuilder<any>();
+        if (context !== undefined) {
+            b._context = context;
+        }
+        return b;
     }
 
     /**
      * Crea un nuovo gruppo e lo rende attivo per le addForm successive.
-     * Se chiamato più volte, chiude il gruppo precedente.
+     * `title` può essere una stringa o una factory `(ctx) => string`.
      */
-    addGroup(title: string, classList?: string[], id?: string): this {
+    addGroup(title: string | ((ctx: TCtx) => string), classList?: string[], id?: string): this {
+        const resolvedTitle = typeof title === 'function' ? title(this._context) : title;
         const group: any = {
-            title,
+            title: resolvedTitle,
             class: classList,
             formGroup: [],
         };
@@ -83,28 +118,30 @@ export class DynamicFormBuilder {
 
     /**
      * Aggiunge un campo al gruppo attivo.
-     * Se non esiste un gruppo, lancia un errore guidato.
+     * `formAction` può essere un oggetto `FormAction` o una factory `(ctx) => FormAction`.
      */
-    addForm(formAction: FormAction): this {
+    addForm(formAction: FormAction | ((ctx: TCtx) => FormAction)): this {
         if (this.currentGroupIndex === -1) {
             throw new Error('Devi prima chiamare addGroup(title) prima di addForm!');
         }
-        if (!formAction.id) {
-            formAction.id = uuidv4();
+        const resolved: FormAction = typeof formAction === 'function' ? formAction(this._context) : formAction;
+        if (!resolved.id) {
+            resolved.id = uuidv4();
         }
-        this.groups[this.currentGroupIndex].formGroup.push({ formAction });
+        this.groups[this.currentGroupIndex].formGroup.push({ formAction: resolved });
         return this;
     }
 
     /**
      * Aggiunge azioni (bottoni) al gruppo attivo.
-     * Se non esiste un gruppo, lancia un errore guidato.
+     * `actions` può essere un array o una factory `(ctx) => Array<DynamicFormActionButton>`.
      */
-    addActions(actions: Array<import('./dynamic-form.interface').DynamicFormActionButton>): this {
+    addActions(actions: Array<DynamicFormActionButton> | ((ctx: TCtx) => Array<DynamicFormActionButton>)): this {
         if (this.currentGroupIndex === -1) {
             throw new Error('Devi prima chiamare addGroup(title) prima di addActions!');
         }
-        this.groups[this.currentGroupIndex].actions = actions;
+        const resolved = typeof actions === 'function' ? actions(this._context) : actions;
+        this.groups[this.currentGroupIndex].actions = resolved;
         return this;
     }
 

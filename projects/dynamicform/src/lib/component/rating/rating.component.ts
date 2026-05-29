@@ -53,8 +53,8 @@ export class RatingComponent extends BaseComponent {
         if (!fc || fc.disabled) return;
 
         const prevValue = fc.value;
-        // click sulla stessa stella → deseleziona
-        const newValue = prevValue === star ? null : star;
+        // click sulla stessa stella → porta a 0 (nessuna stella illuminata)
+        const newValue = prevValue === star ? 0 : star;
         fc.setValue(newValue);
         fc.markAsDirty();
         fc.updateValueAndValidity();

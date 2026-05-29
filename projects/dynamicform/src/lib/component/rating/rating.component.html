@@ -1,64 +1,48 @@
 <!-- @format -->
 
 @if (!control.formAction?.css?.hide) {
-   <ng-container>
-      <div class="rating-wrapper customMY">
+<ng-container>
+    <div class="rating-wrapper customMY">
 
-         <label
-            class="rating-label"
-            [class.disabled]="control.formAction.formControl.disabled">
+        <label class="rating-label" [class.disabled]="control.formAction.formControl.disabled">
             {{ control.formAction.title }}
 
             @if (control.formAction?.info) {
-               <mat-icon
-                  [matTooltip]="control.formAction?.info.msg"
-                  [style.color]="control.formAction?.info.color"
-                  class="rating-info-icon">
-                  info_outline
-               </mat-icon>
+            <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color"
+                class="rating-info-icon">
+                info_outline
+            </mat-icon>
             }
-         </label>
+        </label>
 
-         <div
-            class="stars-row"
-            [matTooltip]="control.formAction?.tipContent || null"
-            (mouseleave)="clearHover()">
+        <div class="stars-row" [class.disabled]="control.formAction.formControl.disabled"
+            [matTooltip]="control.formAction?.tipContent || null" (mouseleave)="clearHover()">
 
             @for (star of stars; track star) {
-               <button
-                  type="button"
-                  mat-icon-button
-                  class="star-btn"
-                  [class.active]="isActive(star)"
-                  [disabled]="control.formAction.formControl.disabled"
-                  (mouseenter)="setHover(star)"
-                  (click)="$event.stopPropagation(); selectStar(star)"
-                  (focus)="emitFocus()"
-                  (blur)="emitBlur()">
-                  <mat-icon>{{ isActive(star) ? 'star' : 'star_border' }}</mat-icon>
-               </button>
+            <button type="button" mat-icon-button class="star-btn" [class.active]="isActive(star)"
+                [disabled]="control.formAction.formControl.disabled" (mouseenter)="setHover(star)"
+                (click)="$event.stopPropagation(); selectStar(star)" (focus)="emitFocus()" (blur)="emitBlur()">
+                <mat-icon>{{ isActive(star) ? 'star' : 'star_border' }}</mat-icon>
+            </button>
             }
 
             @if (control.formAction?.resetButton && control.formAction.formControl.value != null) {
-               <button
-                  mat-icon-button
-                  type="button"
-                  class="reset-btn"
-                  (click)="$event.stopPropagation(); control.formAction.formControl.reset()">
-                  <mat-icon>close</mat-icon>
-               </button>
+            <button mat-icon-button type="button" class="reset-btn"
+                (click)="$event.stopPropagation(); control.formAction.formControl.reset()">
+                <mat-icon>close</mat-icon>
+            </button>
             }
-         </div>
+        </div>
 
-         @for (error of getErrorFormControl($any(control.formAction?.formControl)); track error) {
-            <mat-error class="rating-error">{{ error }}</mat-error>
-         }
+        @for (error of getErrorFormControl($any(control.formAction?.formControl)); track error) {
+        <mat-error class="rating-error">{{ error }}</mat-error>
+        }
 
-         @if (control?.formAction?.hint) {
-            <mat-hint>{{ control.formAction.hint }}</mat-hint>
-         }
-      </div>
+        @if (control?.formAction?.hint) {
+        <mat-hint>{{ control.formAction.hint }}</mat-hint>
+        }
+    </div>
 
-      <div #dynamicContainer class=""></div>
-   </ng-container>
+    <div #dynamicContainer class=""></div>
+</ng-container>
 }

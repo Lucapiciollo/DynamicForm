@@ -244,6 +244,24 @@ export type ConfigForm = Array<Group>;
  ***********************************************************************************************************************************/
 
 /**
+ * Statistiche di completamento di un singolo gruppo.
+ */
+export type FormGroupCompletionStats = {
+   /** UUID del gruppo (assegnato dal builder) */
+   id: string;
+   /** Titolo del gruppo */
+   title: string;
+   total: number;
+   filled: number;
+   percentage: number;
+   required: {
+      total: number;
+      filled: number;
+      percentage: number;
+   };
+};
+
+/**
  * Statistiche di completamento del form.
  * Aggiornate reattivamente ad ogni valueChange di qualsiasi campo.
  */
@@ -262,6 +280,8 @@ export type FormCompletionStats = {
       /** Percentuale campi required compilati (0-100, intera) */
       percentage: number;
    };
+   /** Statistiche suddivise per gruppo */
+   groups: Array<FormGroupCompletionStats>;
 };
 
 /**
