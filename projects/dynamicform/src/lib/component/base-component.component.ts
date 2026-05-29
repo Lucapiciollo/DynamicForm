@@ -22,7 +22,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
-import { combineLatest, pairwise, ReplaySubject, startWith, Subscriber, Subscription } from 'rxjs';
+import { combineLatest, merge, pairwise, ReplaySubject, startWith, Subscriber, Subscription } from 'rxjs';
 
 import { IBaseComponent } from './base-component-interface';
 import { FormComponentTemplate } from './FormComponentTemplate';
@@ -694,7 +694,13 @@ export class BaseComponent implements IBaseComponent {
       for (const group of this._allGroup) {
          for (const form of group.formGroup ?? []) {
             const fa = form?.formAction;
-            if (fa?.formControl && !this._SKIP_COMPLETION.has(fa.type as unknown as TYPE_CONTROL_FORM)) {
+            // Escludi: tipi non tracciabili, campi senza formControl, campi disabled
+            // (i disabled sono indicatori visivi, non input utente)
+            if (
+               fa?.formControl &&
+               !this._SKIP_COMPLETION.has(fa.type as unknown as TYPE_CONTROL_FORM) &&
+               !fa.formControl.disabled
+            ) {
                result.push(fa);
             }
          }
@@ -704,13 +710,17 @@ export class BaseComponent implements IBaseComponent {
 
    private _isFieldFilled(fa: FormAction): boolean {
       const value = fa.formControl?.value;
-      if (value === null || value === undefined || value === '') return false;
+      // false = checkbox non spuntata → non compilato
+      // null / undefined / '' → non compilato
+      if (value === null || value === undefined || value === '' || value === false) return false;
       if (Array.isArray(value)) return value.length > 0;
       return true;
    }
 
    private _computeGroupStats(groupFas: FormAction[]): FormCompletionStats['required'] {
-      const reqFas = groupFas.filter(fa => {
+      // Solo campi non disabled (coerente con _getTrackableFormActions)
+      const trackable = groupFas.filter(fa => !fa.formControl?.disabled);
+      const reqFas = trackable.filter(fa => {
          try { return fa.formControl?.hasValidator?.(Validators.required) ?? false; }
          catch { return false; }
       });
@@ -730,7 +740,7 @@ export class BaseComponent implements IBaseComponent {
       const groups = (this._allGroup ?? []).map(group => {
          const groupFas = (group.formGroup ?? [])
             .map(f => f?.formAction)
-            .filter(fa => fa?.formControl && !this._SKIP_COMPLETION.has(fa.type as unknown as TYPE_CONTROL_FORM)) as FormAction[];
+            .filter(fa => fa?.formControl && !fa.formControl.disabled && !this._SKIP_COMPLETION.has(fa.type as unknown as TYPE_CONTROL_FORM)) as FormAction[];
          const gTotal = groupFas.length;
          const gFilled = groupFas.filter(fa => this._isFieldFilled(fa)).length;
          return {
@@ -756,10 +766,16 @@ export class BaseComponent implements IBaseComponent {
          return;
       }
 
+      // Calcolo iniziale sincrono
       this._completionSignal.set(this._computeCompletion());
 
-      this._completionSub = combineLatest(
-         fas.map(fa => fa.formControl!.valueChanges.pipe(startWith(fa.formControl!.value)))
+      // merge è più robusto di combineLatest:
+      // - non richiede che tutti abbiano emesso almeno una volta
+      // - qualsiasi campo che cambia valore scatta il ricalcolo
+      // - i campi disabled sono già esclusi da fas, quindi nessun problema
+      //   con FormControl.disabled che non emette sempre su reset()
+      this._completionSub = merge(
+         ...fas.map(fa => fa.formControl!.valueChanges)
       ).pipe(
          takeUntilDestroyed(this.destroyRef)
       ).subscribe(() => {

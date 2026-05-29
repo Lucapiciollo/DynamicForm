@@ -29,9 +29,6 @@
    - [YEAR](#year)
    - [RATING](#rating)
    - [FILE](#file)
-   - [LABEL](#label)
-   - [LINK](#link)
-   - [SEPARATOR](#separator)
    - [BUTTON](#button)
    - [GROUP](#group)
 7. [Parametri comuni (FormActionBase)](#parametri-comuni-formactionbase)
@@ -54,17 +51,17 @@ DynamicForm elimina la duplicazione nella scrittura di form Angular. Invece di u
 
 **Funzionalità principali:**
 
-| Funzionalità             | Descrizione                                                                                                                                                                           |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 21 tipi di campo         | TEXT, NUMBER, CURRENCY, COMBO, COMBOPAGINATE, DATA, DATARANGE, DATETIME, TIME, YEAR, RATING, CHECKBOX, RADIOGROUP, TEXTAREA, FILE, LABEL, LINK, SEPARATOR, ARRAYSTRING, BUTTON, GROUP |
-| Builder fluente generico | `DynamicFormBuilder.create(this)` inferisce il tipo del componente                                                                                                                    |
-| Contesto tipizzato       | factory `(ctx: TCtx) => FormAction` con autocompletamento pieno                                                                                                                       |
-| Tutti gli eventi         | `onChange`, `onInitialize`, `onFocus`, `onBlur`, `opened`, `closed`, `onSearch`, `onScrollEnd`                                                                                        |
-| Utility globale          | `getFormByName`, `getActionByName`, `setDefaultOptions`, `getSelectedOptions`, `formCompletion`                                                                                       |
-| Combo remote paginate    | infinite scroll, Signal-based, ricerca debounced                                                                                                                                      |
-| initialOptions + tag     | opzioni fisse in cima alla lista con badge SVG colorati                                                                                                                               |
-| formCompletion Signal    | percentuale di completamento reattiva (totale + required)                                                                                                                             |
-| Stato disabled corretto  | `new FormControl({ value, disabled: true })` per bloccare interazioni                                                                                                                 |
+| Funzionalità             | Descrizione                                                                                                                                                   |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 18 tipi di campo         | TEXT, NUMBER, CURRENCY, COMBO, COMBOPAGINATE, DATA, DATARANGE, DATETIME, TIME, YEAR, RATING, CHECKBOX, RADIOGROUP, TEXTAREA, FILE, ARRAYSTRING, BUTTON, GROUP |
+| Builder fluente generico | `DynamicFormBuilder.create(this)` inferisce il tipo del componente                                                                                            |
+| Contesto tipizzato       | factory `(ctx: TCtx) => FormAction` con autocompletamento pieno                                                                                               |
+| Tutti gli eventi         | `onChange`, `onInitialize`, `onFocus`, `onBlur`, `opened`, `closed`, `onSearch`, `onScrollEnd`                                                                |
+| Utility globale          | `getFormByName`, `getActionByName`, `setDefaultOptions`, `getSelectedOptions`, `formCompletion`                                                               |
+| Combo remote paginate    | infinite scroll, Signal-based, ricerca debounced                                                                                                              |
+| initialOptions + tag     | opzioni fisse in cima alla lista con badge SVG colorati                                                                                                       |
+| formCompletion Signal    | percentuale di completamento reattiva (totale + required)                                                                                                     |
+| Stato disabled corretto  | `new FormControl({ value, disabled: true })` per bloccare interazioni                                                                                         |
 
 ---
 
@@ -704,53 +701,28 @@ Upload file con validazione tipo e dimensione.
 }
 ```
 
----
-
-### LABEL
-
-Testo statico di sola lettura. Non ha interazione utente.
+**Upload multiplo:**
 
 ```ts
 {
-  formName: 'info_legale',
-  title: 'Nota legale',
-  type: TYPE_CONTROL_FORM.LABEL,
-  formControl: new FormControl('Il trattamento dei dati avviene secondo il GDPR.'),
-  css: { font: { color: '#6b7280' } },
+  formName: 'allegati',
+  title: 'Allegati',
+  type: TYPE_CONTROL_FORM.FILE,
+  formControl: new FormControl([]),
+  multiple: true,
+  accept: '.pdf,.png,.jpg,.jpeg',
+  onChange: (_ig, _if, fc) => {
+    const files: File[] = fc.value;
+    console.log('File selezionati:', files.map(f => f.name));
+  },
 }
 ```
 
----
-
-### LINK
-
-Collegamento ipertestuale. Il FormControl contiene l'URL, `href` sovrascrive l'URL.
-
-```ts
-{
-  formName: 'privacy_link',
-  title: 'Privacy Policy',
-  type: TYPE_CONTROL_FORM.LINK,
-  formControl: new FormControl('https://example.com/privacy'),
-  href: 'https://example.com/privacy',  // opzionale, sovrascrive il valore del FC
-  target: '_blank',
-}
-```
-
----
-
-### SEPARATOR
-
-Separatore visivo orizzontale. Non ha valore né interazione.
-
-```ts
-{
-  formName: 'sep1',
-  title: '',           // titolo opzionale come label sopra la riga
-  type: TYPE_CONTROL_FORM.SEPARATOR,
-  formControl: new FormControl(null),
-}
-```
+> **Comportamento reset:**  
+> Dopo aver chiamato `formGroup.reset()` o `formControl.reset()` il campo si svuota
+> correttamente e il file browser può essere riaperto selezionando lo stesso file
+> precedentemente scelto — il componente gestisce automaticamente il reset del DOM
+> nativo per evitare il bug del browser che ignora la riselezione dello stesso file.
 
 ---
 
@@ -1020,7 +992,7 @@ type FormCompletionStats = {
 
 ### Campi esclusi dal conteggio
 
-`SEPARATOR`, `LABEL`, `LINK`, `GROUP`
+`GROUP` (i sotto-form annidati vengono conteggiati al loro interno)
 
 ### Un campo è "compilato" quando
 
@@ -1335,74 +1307,142 @@ function fetchUtenti(page: number, search: string, append: boolean) {
 
 ## Azioni (DynamicFormActionButton)
 
-Bottoni visualizzati nel piede di ogni gruppo. L'handler riceve l'intero stato del form.
+I bottoni delle azioni vengono visualizzati nel **piede del gruppo** a cui appartengono, definiti con `.addActions()` dopo `.addGroup()`.
+
+### Parametri `action` — firma completa
+
+```ts
+action: (
+  questions: Array<Form>,           // campi del gruppo corrente
+  idForm: string | number,          // id del gruppo (UUID o indice)
+  groupForm: FormGroup | FormArray, // reactive form del solo gruppo — usare per reset, validazione locale
+  group?: Group,                    // oggetto Group corrente
+  idGroup?: number,                 // indice del gruppo nel ConfigForm
+  allGroup?: ConfigForm,            // intera struttura ConfigForm
+  totalForm?: FormGroup | FormArray,// reactive form di TUTTO il form (tutti i gruppi) — usare per submit
+  utility?: Utility                 // helper — formCompletion, getFormByName, ecc.
+) => void
+```
+
+> **`groupForm` vs `totalForm`:**
+>
+> - `groupForm` è il `FormGroup` del **solo gruppo** che contiene il bottone. Usalo per `reset()` o `getRawValue()` scoped al gruppo.
+> - `totalForm` è il `FormGroup` o `FormArray` dell'**intero form** (tutti i gruppi). Usalo per submit, validazione globale o `getRawValue()` completo.
+
+### Esempi
+
+#### Salva con validazione globale + reset locale
 
 ```ts
 .addActions([
   {
     label: 'Salva',
-    name: 'salva',                          // identificatore per getActionByName
+    name: 'salva',
     visible: true,
-    icon: 'save',                           // icona Material
+    icon: 'save',
     cssClassButton: ['btn', 'btn-primary'],
-    disabled: false,
-    action: (questions, idForm, formGroup, group, idGroup, allGroup, utility) => {
+    action: (_questions, _id, groupForm, _group, _idGroup, _allGroup, totalForm, utility) => {
       const stats = utility?.formCompletion?.();
 
       if ((stats?.required.percentage ?? 0) < 100) {
-        alert(`Completa i campi obbligatori!\n${stats?.required.filled}/${stats?.required.total} compilati`);
+        alert(`Completa i campi obbligatori! (${stats?.required.filled}/${stats?.required.total})`);
         return;
       }
 
-      if (formGroup instanceof FormGroup && formGroup.valid) {
-        const dati = formGroup.getRawValue();
-        console.log('Dati da salvare:', dati);
-        // myService.save(dati)
+      // totalForm contiene tutti i gruppi → getRawValue() restituisce i dati completi
+      if (totalForm instanceof FormGroup) {
+        console.log('Tutti i dati:', totalForm.getRawValue());
+        // myService.save(totalForm.getRawValue());
       }
+
+      // groupForm è solo questo gruppo
+      console.log('Dati del gruppo corrente:', groupForm?.value);
     },
   },
   {
-    label: 'Annulla',
-    name: 'annulla',
+    label: 'Reset gruppo',
     visible: true,
     cssClassButton: ['btn', 'btn-outline-secondary'],
-    action: (_q, _id, formGroup) => {
-      if (formGroup instanceof FormGroup) formGroup.reset();
+    // groupForm resetta SOLO i campi di questo gruppo, non l'intero form
+    action: (_questions, _id, groupForm) => {
+      groupForm?.reset?.();
     },
   },
 ])
 ```
 
-Con factory per accedere al contesto:
+#### Con factory per accedere al componente
 
 ```ts
 .addActions(ctx => [
   {
-    label: 'Salva',
+    label: 'Registra',
     name: 'salva',
     visible: true,
-    action: (_q, _id, formGroup, _g, _ig, _all, utility) => {
+    icon: 'person_add',
+    cssClassButton: ['btn', 'btn-primary', 'px-4'],
+    action: (_questions, _id, _groupForm, _group, _idGroup, _allGroup, totalForm, utility) => {
       const stats = utility?.formCompletion?.();
-      if ((stats?.required.percentage ?? 0) === 100) {
-        ctx.submitForm(formGroup.getRawValue());   // metodo del componente
+      if ((stats?.required.percentage ?? 0) < 100) return;
+
+      if (totalForm instanceof FormGroup) {
+        ctx.onRegistra(totalForm.getRawValue());  // metodo del componente
       }
+    },
+  },
+  {
+    label: 'Svuota tutto',
+    visible: true,
+    cssClassButton: ['btn', 'btn-outline-secondary'],
+    // totalForm per resettare tutti i gruppi contemporaneamente
+    action: (_questions, _id, _groupForm, _group, _idGroup, _allGroup, totalForm) => {
+      totalForm?.reset?.();
     },
   },
 ])
 ```
 
-### Parametri
+#### Disabilita il bottone Salva dinamicamente
 
-| Proprietà        | Tipo       | Descrizione                          |
-| ---------------- | ---------- | ------------------------------------ |
-| `label`          | `string`   | Testo del bottone                    |
-| `name`           | `string`   | Identificatore per `getActionByName` |
-| `icon`           | `string`   | Nome icona Material Icons            |
-| `cssClassButton` | `string[]` | Classi CSS del bottone               |
-| `cssClassIcon`   | `string[]` | Classi CSS dell'icona                |
-| `disabled`       | `boolean`  | Disabilita il bottone                |
-| `visible`        | `boolean`  | Mostra/nasconde il bottone           |
-| `action`         | `function` | Callback al click                    |
+```ts
+// In un onChange di un qualunque campo:
+onChange: (_ig, _if, _fc, _fn, _fg, _t, _prev, _all, utility) => {
+  const stats = utility.formCompletion();
+  utility.getActionByName('salva', action => {
+    action.disabled = stats.required.percentage < 100;
+  });
+},
+```
+
+#### Azioni per gruppo diverso — statistiche per gruppo
+
+```ts
+action: (_questions, _id, groupForm, group, idGroup, allGroup, totalForm, utility) => {
+  const stats = utility?.formCompletion?.();
+
+  // Trovare le statistiche del gruppo corrente
+  const gruppoStats = stats?.groups.find(g => g.id === group?.id);
+  console.log(`Gruppo "${gruppoStats?.title}": ${gruppoStats?.percentage}%`);
+
+  // Confrontare tutti i gruppi
+  stats?.groups.forEach(g => {
+    console.log(`  [${g.title}] ${g.percentage}% | Req: ${g.required.percentage}%`);
+  });
+},
+```
+
+### Proprietà `DynamicFormActionButton`
+
+| Proprietà        | Tipo       | Descrizione                                              |
+| ---------------- | ---------- | -------------------------------------------------------- |
+| `label`          | `string`   | Testo del bottone                                        |
+| `name`           | `string`   | Identificatore per `getActionByName`                     |
+| `icon`           | `string`   | Nome icona Material Icons (visualizzata prima del testo) |
+| `cssClassButton` | `string[]` | Classi CSS del bottone                                   |
+| `cssClassIcon`   | `string[]` | Classi CSS dell'icona                                    |
+| `disabled`       | `boolean`  | Disabilita il bottone (modificabile runtime)             |
+| `visible`        | `boolean`  | Mostra/nasconde il bottone                               |
+| `action`         | `function` | Callback al click — vedi firma completa sopra            |
 
 ---
 
@@ -1643,14 +1683,14 @@ export function buildRegistrationForm<T extends RegistrationComponent>(context: 
         visible: true,
         icon: 'person_add',
         cssClassButton: ['btn', 'btn-primary', 'px-4'],
-        action: (_q, _id, formGroup, _g, _ig, _all, utility) => {
+        action: (_q, _id, _groupForm, _g, _ig, _all, totalForm, utility) => {
           const stats = utility?.formCompletion?.();
           if ((stats?.required.percentage ?? 0) < 100) {
             alert(`Compila i campi obbligatori (${stats?.required.filled}/${stats?.required.total})`);
             return;
           }
-          if (formGroup instanceof FormGroup) {
-            ctx.onRegistra(formGroup.getRawValue());
+          if (totalForm instanceof FormGroup) {
+            ctx.onRegistra(totalForm.getRawValue());
           }
         },
       },
@@ -1658,7 +1698,7 @@ export function buildRegistrationForm<T extends RegistrationComponent>(context: 
         label: 'Svuota',
         visible: true,
         cssClassButton: ['btn', 'btn-outline-secondary'],
-        action: (_q, _id, formGroup) => formGroup?.reset?.(),
+        action: (_q, _id, _groupForm, _g, _ig, _all, totalForm) => totalForm?.reset?.(),
       },
     ])
 
@@ -1704,7 +1744,16 @@ ConfigForm = Array<Group>
 │   ├── label?, name?, icon?, translateId?
 │   ├── cssClassButton?, cssClassIcon?
 │   ├── disabled?, visible?
-│   └── action(questions, idForm, formGroup, group?, idGroup?, allGroup?, utility?)
+│   └── action(
+│         questions,    // Array<Form> — campi del gruppo
+│         idForm,       // string | number — id del gruppo
+│         groupForm,    // FormGroup | FormArray — form del solo gruppo
+│         group?,       // Group — oggetto gruppo corrente
+│         idGroup?,     // number — indice del gruppo
+│         allGroup?,    // ConfigForm — struttura completa
+│         totalForm?,   // FormGroup | FormArray — form di TUTTO il form ← usa per submit/reset globale
+│         utility?      // Utility
+│       )
 │
 ├── FormActionBase  (base di tutti i campi)
 │   ├── Identità:   formName, title, label, type, id

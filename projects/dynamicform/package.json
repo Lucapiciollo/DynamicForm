@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "tslib": "^2.3.0",
-    "pl-core-utils-library": "^2.1.3"
+    "pl-core-utils-library": "latest",
+    "pl-decorator": "latest"
   },
   "sideEffects": false,
   "assets": [

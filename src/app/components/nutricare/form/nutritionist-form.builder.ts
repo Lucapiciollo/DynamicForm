@@ -334,25 +334,8 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
             onBlur: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onBlur', 'campo_arraystring', utility),
         })
 
-        .addGroup('File e Display', ['col-4', 'px-3', 'mb-4']).addActions([
-            {
-                label: 'Salva',
-                visible: true,
-                cssClassButton: ['btn-primary', "col-6"],
-                action: (_questions, _id, groupForm, _group, _idx, _allGroup, totalForm) => {
-                    alert('Salva!');
-                    console.log('[Azione Salva] gruppo:', groupForm?.value, '| totale:', totalForm?.value);
-                },
-            },
-            {
-                label: 'Reset',
-                visible: true,
-                cssClassButton: ['btn-secondary', "col-6"],
-                action: (_questions, _id, groupForm) => {
-                    if (groupForm?.reset) groupForm.reset();
-                },
-            },
-        ]).addForm((context) => ({
+        .addGroup('File e Display', ['col-4', 'px-3', 'mb-4'])
+        .addForm((context) => ({
             formName: 'campo_rating',
             title: 'Rating — completamento form',
             type: TYPE_CONTROL_FORM.RATING,
@@ -380,10 +363,11 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
             onBlur: (_ig, _if, fc, fn, _fg, _all, utility) => logEvent('onBlur', 'campo_file', utility),
         })
 
-        .addGroup('Completamento', ['col-4', 'px-3', 'mb-4'])
+        .addGroup('Completamento', ['col-12', 'px-3', 'mb-4'])
         .addForm((context) => ({
             formName: 'campo_rating',
             title: 'Rating — completamento form',
+            css: { class: ['col-1'] },
             type: TYPE_CONTROL_FORM.RATING,
             formControl: new FormControl({ value: null, disabled: true }),
             optionRating: { max: 10 },
@@ -396,7 +380,26 @@ export function buildComboTestForm<T>(context: T): ConfigForm {
                 }, { injector: context["injector"], allowSignalWrites: true });
             },
             onChange: (_ig, _if, fc, fn, _fg, _t, prev, _all, utility) => logEvent('onChange', 'campo_rating', utility, { field: fn, prev, curr: fc?.value }),
-        }))
+        })).addActions([
+            {
+                label: 'Salva',
+                visible: true,
+                cssClassButton: ['btn-primary', "col-6"],
+                action: (_questions, _id, groupForm, _group, _idx, _allGroup, totalForm) => {
+                    alert('Salva!');
+                    console.log('[Azione Salva] gruppo:', groupForm?.value, '| totale:', totalForm?.value);
+                },
+            },
+            {
+                label: 'Reset',
+                visible: true,
+                cssClassButton: ['btn-secondary', "col-6"],
+                action: (_questions, _id, _groupForm, _group, _idx, _allGroup, totalForm) => {
+                    if (totalForm?.reset) totalForm.reset();
+                }
+            },
+        ])
+
 
         .build();
 }
