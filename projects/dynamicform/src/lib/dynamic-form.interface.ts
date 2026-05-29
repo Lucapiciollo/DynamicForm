@@ -244,6 +244,27 @@ export type ConfigForm = Array<Group>;
  ***********************************************************************************************************************************/
 
 /**
+ * Statistiche di completamento del form.
+ * Aggiornate reattivamente ad ogni valueChange di qualsiasi campo.
+ */
+export type FormCompletionStats = {
+   /** Numero totale di campi tracciati (esclusi SEPARATOR, LABEL, LINK) */
+   total: number;
+   /** Numero di campi con un valore non vuoto */
+   filled: number;
+   /** Percentuale campi compilati su totale (0-100, intera) */
+   percentage: number;
+   required: {
+      /** Numero di campi required tracciati */
+      total: number;
+      /** Numero di campi required con valore non vuoto */
+      filled: number;
+      /** Percentuale campi required compilati (0-100, intera) */
+      percentage: number;
+   };
+};
+
+/**
  * Oggetto di utilità iniettato in tutti gli handler di eventi.
  * Fornisce metodi helper per accedere e modificare i campi del form
  * senza dover navigare manualmente la struttura `ConfigForm`.
@@ -275,6 +296,12 @@ export type Utility = {
       formName: string,
       parse: (event: Signal<TypeComboOption>) => any,
    ) => TypeComboOption;
+
+   /**
+    * Signal reattivo con le statistiche di completamento dell'intero form.
+    * Si aggiorna automaticamente ad ogni valueChange di qualsiasi campo.
+    */
+   formCompletion?: Signal<FormCompletionStats>;
 };
 
 /***********************************************************************************************************************************

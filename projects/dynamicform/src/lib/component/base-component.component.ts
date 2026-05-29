@@ -20,7 +20,7 @@ import {
    untracked,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { combineLatest, pairwise, ReplaySubject, startWith, Subscriber, Subscription } from 'rxjs';
 
@@ -35,6 +35,7 @@ import {
    DynamicFormActionButton,
    Form,
    FormAction,
+   FormCompletionStats,
    TYPE_CONTROL_FORM,
    TypeComboOption,
    Utility,
@@ -81,6 +82,12 @@ export class BaseComponent implements IBaseComponent {
    public internalValue: any;
    public utils: Utility;
 
+   private readonly _completionSignal: WritableSignal<FormCompletionStats> = signal<FormCompletionStats>({
+      total: 0, filled: 0, percentage: 0,
+      required: { total: 0, filled: 0, percentage: 0 },
+   });
+   private _completionSub: import('rxjs').Subscription | null = null;
+
    public signalStoreBase: any;
 
    @Input() formActionIndex: number = 0;
@@ -94,6 +101,7 @@ export class BaseComponent implements IBaseComponent {
    @Input() set allGroup(allGroup: ConfigForm) {
       this._allGroup = allGroup;
       this.obsAllGroup.next(this._allGroup);
+      this._subscribeToCompletion();
    }
 
    /**
@@ -112,6 +120,7 @@ export class BaseComponent implements IBaseComponent {
          getSelectedOptions: this.getSelectedOptions,
          onSettedOptions: this.onSettedOptions,
          getActionByName: this.getActionByName,
+         formCompletion: this._completionSignal.asReadonly(),
       };
 
       const normalizedControl = this.normalizeQuestion(config);
@@ -669,4 +678,74 @@ export class BaseComponent implements IBaseComponent {
             : parsedForm?.instance?.signalStoreBase?.getSelectedOptionsFromTotal || null,
       );
    };
+
+   /***********************************************************************************************************************************
+    * FORM COMPLETION
+    ***********************************************************************************************************************************/
+
+   private _SKIP_COMPLETION = new Set<TYPE_CONTROL_FORM>([
+      TYPE_CONTROL_FORM.SEPARATOR,
+      TYPE_CONTROL_FORM.LABEL,
+      TYPE_CONTROL_FORM.LINK,
+      TYPE_CONTROL_FORM.GROUP,
+   ]);
+
+   private _getTrackableFormActions(): FormAction[] {
+      if (!this._allGroup) return [];
+      const result: FormAction[] = [];
+      for (const group of this._allGroup) {
+         for (const form of group.formGroup ?? []) {
+            const fa = form?.formAction;
+            if (fa?.formControl && !this._SKIP_COMPLETION.has(fa.type as unknown as TYPE_CONTROL_FORM)) {
+               result.push(fa);
+            }
+         }
+      }
+      return result;
+   }
+
+   private _isFieldFilled(fa: FormAction): boolean {
+      const value = fa.formControl?.value;
+      if (value === null || value === undefined || value === '') return false;
+      if (Array.isArray(value)) return value.length > 0;
+      return true;
+   }
+
+   private _computeCompletion(): FormCompletionStats {
+      const fas = this._getTrackableFormActions();
+      const total = fas.length;
+      const filled = fas.filter(fa => this._isFieldFilled(fa)).length;
+      const percentage = total > 0 ? Math.round((filled / total) * 100) : 0;
+
+      const requiredFas = fas.filter(fa => {
+         try { return fa.formControl?.hasValidator?.(Validators.required) ?? false; }
+         catch { return false; }
+      });
+      const requiredTotal = requiredFas.length;
+      const requiredFilled = requiredFas.filter(fa => this._isFieldFilled(fa)).length;
+      const requiredPercentage = requiredTotal > 0 ? Math.round((requiredFilled / requiredTotal) * 100) : 0;
+
+      return { total, filled, percentage, required: { total: requiredTotal, filled: requiredFilled, percentage: requiredPercentage } };
+   }
+
+   private _subscribeToCompletion(): void {
+      this._completionSub?.unsubscribe();
+      this._completionSub = null;
+
+      const fas = this._getTrackableFormActions();
+      if (!fas.length) {
+         this._completionSignal.set({ total: 0, filled: 0, percentage: 0, required: { total: 0, filled: 0, percentage: 0 } });
+         return;
+      }
+
+      this._completionSignal.set(this._computeCompletion());
+
+      this._completionSub = combineLatest(
+         fas.map(fa => fa.formControl!.valueChanges.pipe(startWith(fa.formControl!.value)))
+      ).pipe(
+         takeUntilDestroyed(this.destroyRef)
+      ).subscribe(() => {
+         this._completionSignal.set(this._computeCompletion());
+      });
+   }
 }
