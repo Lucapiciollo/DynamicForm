@@ -2,7 +2,8 @@
  * @format
  */
 
-import { Component, ElementRef, Injector } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Injector, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { BaseComponent } from '../base-component.component';
 
@@ -12,12 +13,28 @@ import { BaseComponent } from '../base-component.component';
    styleUrls: ['../../dynamic-form.component.scss'],
    standalone: false,
 })
-export class FileComponent extends BaseComponent {
+export class FileComponent extends BaseComponent implements AfterViewInit {
+   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
    constructor(
       protected override injector: Injector,
       protected override element: ElementRef,
    ) {
       super(injector, element);
+   }
+
+   ngAfterViewInit(): void {
+      const fc = this.control?.formAction?.formControl;
+      if (!fc) return;
+
+      // Quando il FormControl viene resettato (valore null/undefined/empty)
+      // ripulisce anche il DOM dell'input nativo, altrimenti il browser ignora
+      // la selezione dello stesso file e non triggera il change event.
+      fc.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(value => {
+         if (!value && this.fileInput?.nativeElement) {
+            this.fileInput.nativeElement.value = '';
+         }
+      });
    }
 
    getFileLabel(): string {
@@ -64,6 +81,11 @@ export class FileComponent extends BaseComponent {
       formControl.markAsDirty();
       formControl.markAsTouched();
       formControl.updateValueAndValidity();
+
+      // Resetta il valore nativo dell'input dopo la selezione: il browser non
+      // triggera "change" se si sceglie lo stesso file due volte di fila a meno
+      // che l'input non venga prima ripulito.
+      input.value = '';
 
       this.control?.formAction?.action?.(formControl);
    }
