@@ -54,17 +54,17 @@ DynamicForm elimina la duplicazione nella scrittura di form Angular. Invece di u
 
 **Funzionalità principali:**
 
-| Funzionalità | Descrizione |
-|---|---|
-| 21 tipi di campo | TEXT, NUMBER, CURRENCY, COMBO, COMBOPAGINATE, DATA, DATARANGE, DATETIME, TIME, YEAR, RATING, CHECKBOX, RADIOGROUP, TEXTAREA, FILE, LABEL, LINK, SEPARATOR, ARRAYSTRING, BUTTON, GROUP |
-| Builder fluente generico | `DynamicFormBuilder.create(this)` inferisce il tipo del componente |
-| Contesto tipizzato | factory `(ctx: TCtx) => FormAction` con autocompletamento pieno |
-| Tutti gli eventi | `onChange`, `onInitialize`, `onFocus`, `onBlur`, `opened`, `closed`, `onSearch`, `onScrollEnd` |
-| Utility globale | `getFormByName`, `getActionByName`, `setDefaultOptions`, `getSelectedOptions`, `formCompletion` |
-| Combo remote paginate | infinite scroll, Signal-based, ricerca debounced |
-| initialOptions + tag | opzioni fisse in cima alla lista con badge SVG colorati |
-| formCompletion Signal | percentuale di completamento reattiva (totale + required) |
-| Stato disabled corretto | `new FormControl({ value, disabled: true })` per bloccare interazioni |
+| Funzionalità             | Descrizione                                                                                                                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 21 tipi di campo         | TEXT, NUMBER, CURRENCY, COMBO, COMBOPAGINATE, DATA, DATARANGE, DATETIME, TIME, YEAR, RATING, CHECKBOX, RADIOGROUP, TEXTAREA, FILE, LABEL, LINK, SEPARATOR, ARRAYSTRING, BUTTON, GROUP |
+| Builder fluente generico | `DynamicFormBuilder.create(this)` inferisce il tipo del componente                                                                                                                    |
+| Contesto tipizzato       | factory `(ctx: TCtx) => FormAction` con autocompletamento pieno                                                                                                                       |
+| Tutti gli eventi         | `onChange`, `onInitialize`, `onFocus`, `onBlur`, `opened`, `closed`, `onSearch`, `onScrollEnd`                                                                                        |
+| Utility globale          | `getFormByName`, `getActionByName`, `setDefaultOptions`, `getSelectedOptions`, `formCompletion`                                                                                       |
+| Combo remote paginate    | infinite scroll, Signal-based, ricerca debounced                                                                                                                                      |
+| initialOptions + tag     | opzioni fisse in cima alla lista con badge SVG colorati                                                                                                                               |
+| formCompletion Signal    | percentuale di completamento reattiva (totale + required)                                                                                                                             |
+| Stato disabled corretto  | `new FormControl({ value, disabled: true })` per bloccare interazioni                                                                                                                 |
 
 ---
 
@@ -115,14 +115,14 @@ ConfigForm = Array<Group>
 
 ### Metodi
 
-| Metodo | Firma | Descrizione |
-|--------|-------|-------------|
-| `create()` | `DynamicFormBuilder.create()` | Builder senza contesto |
-| `create(ctx)` | `DynamicFormBuilder.create(this)` | Builder con contesto tipizzato (tipo inferito) |
-| `addGroup` | `(title, classList?, id?) => this` | Apre un nuovo gruppo |
-| `addForm` | `(formAction \| (ctx) => formAction) => this` | Aggiunge un campo al gruppo corrente |
-| `addActions` | `(actions[] \| (ctx) => actions[]) => this` | Aggiunge bottoni al gruppo corrente |
-| `build` | `() => ConfigForm` | Restituisce la configurazione finale |
+| Metodo        | Firma                                         | Descrizione                                    |
+| ------------- | --------------------------------------------- | ---------------------------------------------- |
+| `create()`    | `DynamicFormBuilder.create()`                 | Builder senza contesto                         |
+| `create(ctx)` | `DynamicFormBuilder.create(this)`             | Builder con contesto tipizzato (tipo inferito) |
+| `addGroup`    | `(title, classList?, id?) => this`            | Apre un nuovo gruppo                           |
+| `addForm`     | `(formAction \| (ctx) => formAction) => this` | Aggiunge un campo al gruppo corrente           |
+| `addActions`  | `(actions[] \| (ctx) => actions[]) => this`   | Aggiunge bottoni al gruppo corrente            |
+| `build`       | `() => ConfigForm`                            | Restituisce la configurazione finale           |
 
 ### Regola base
 
@@ -185,7 +185,7 @@ export function buildMyForm<T extends MyComponent>(context: T): ConfigForm {
       formName: 'nome',
       type: TYPE_CONTROL_FORM.TEXT,
       formControl: new FormControl(''),
-      onChange: () => ctx.onNomeChange(),   // ctx tipizzato come MyComponent
+      onChange: () => ctx.onNomeChange(), // ctx tipizzato come MyComponent
     }))
     .build();
 }
@@ -193,7 +193,9 @@ export function buildMyForm<T extends MyComponent>(context: T): ConfigForm {
 // my.component.ts
 export class MyComponent {
   config = buildMyForm(this);
-  onNomeChange() { /* ... */ }
+  onNomeChange() {
+    /* ... */
+  }
 }
 ```
 
@@ -387,7 +389,7 @@ onChange: (_ig, _if, fc, _fn, _fg, _t, _prev, _all, utility) => {
     { id: 1, description: `Sotto A di ${fc.value}` },
     { id: 2, description: `Sotto B di ${fc.value}` },
   ]);
-}
+};
 ```
 
 ---
@@ -504,16 +506,16 @@ function loadItems(
 
 #### Parametri specifici di COMBOPAGINATE
 
-| Proprietà | Tipo | Obbligatorio | Descrizione |
-|---|---|---|---|
-| `options` | `Signal<any[]>` | Sì | Signal con le opzioni correnti |
-| `remoteData` | `function` | Sì | Funzione di caricamento dati |
-| `paging` | `{ page, count, totalCount }` | Sì | Stato iniziale della paginazione |
-| `pageSize` | `number` | Raccomandato | Elementi per pagina |
-| `totalCount` | `() => number` | Raccomandato | Totale elementi disponibili |
-| `enableInfiniteScroll` | `boolean` | No | Caricamento auto allo scroll |
-| `autocomplete` | `boolean` | No | Mostra input di ricerca |
-| `keyCombo.keySearch` | `string` | No | Nome parametro ricerca per l'API |
+| Proprietà              | Tipo                          | Obbligatorio | Descrizione                      |
+| ---------------------- | ----------------------------- | ------------ | -------------------------------- |
+| `options`              | `Signal<any[]>`               | Sì           | Signal con le opzioni correnti   |
+| `remoteData`           | `function`                    | Sì           | Funzione di caricamento dati     |
+| `paging`               | `{ page, count, totalCount }` | Sì           | Stato iniziale della paginazione |
+| `pageSize`             | `number`                      | Raccomandato | Elementi per pagina              |
+| `totalCount`           | `() => number`                | Raccomandato | Totale elementi disponibili      |
+| `enableInfiniteScroll` | `boolean`                     | No           | Caricamento auto allo scroll     |
+| `autocomplete`         | `boolean`                     | No           | Mostra input di ricerca          |
+| `keyCombo.keySearch`   | `string`                      | No           | Nome parametro ricerca per l'API |
 
 ---
 
@@ -675,6 +677,7 @@ Valutazione a stelle. Il FormControl contiene un numero da `0` a `max` (0 = ness
 > La proprietà `disabled` del FormAction è solo visiva e non blocca le interazioni.
 
 **Comportamento click:**
+
 - Click su stella non selezionata → seleziona quella stella
 - Click sulla stessa stella già selezionata → porta il valore a `0` (nessuna stella)
 - `resetButton: true` → mostra X che imposta il valore a `null`
@@ -796,35 +799,35 @@ Campo che contiene un sotto-form annidato (espandibile o sempre visibile).
 
 Tutte le `FormAction` ereditano questi parametri:
 
-| Proprietà | Tipo | Descrizione |
-|---|---|---|
-| `formName` | `string` | **Identificatore univoco** del campo — usato da `getFormByName` |
-| `title` | `string` | Label visualizzata sopra il campo |
-| `type` | `TYPE_CONTROL_FORM` | Tipo del campo |
-| `formControl` | `FormControl / FormArray / FormGroup` | Control Angular Reactive Forms |
-| `disabled` | `boolean` | Visivo — non blocca le interazioni; per bloccare usare `new FormControl({ value, disabled: true })` |
-| `readonly` | `boolean` | Campo visibile ma non modificabile |
-| `hidden` | `boolean` | Nasconde il campo; il valore esiste comunque nel FormGroup |
-| `placeholder` | `string` | Testo segnaposto |
-| `hint` | `string` | Testo di suggerimento sotto il campo |
-| `info` | `{ msg: string; color: string }` | Icona info con tooltip |
-| `tipContent` | `string` | Tooltip sull'intero campo |
-| `resetButton` | `boolean` | Mostra bottone X per azzerare il valore |
-| `autocomplete` | `boolean` | Abilita autocomplete browser / ricerca inline combo |
-| `multiple` | `boolean` | Selezione multipla (COMBO / COMBOPAGINATE) |
-| `css` | `TypeCss` | Classi CSS custom, colore font, icone, ecc. |
-| `formGroup` | `ConfigForm` | Sotto-form annidato |
-| `rows` | `number` | Righe (TEXTAREA) |
-| `options` | `Signal / Array` | Opzioni per COMBO, COMBOPAGINATE, RADIOGROUP |
-| `initialOptions` | `TypeComboOption` | Opzioni fisse sempre in cima alla lista |
-| `onChange` | `DynamicFormOnChange` | Callback al cambio valore |
-| `onInitialize` | `DynamicFormOnInitialize` | Callback all'init del campo |
-| `onFocus` | `DynamicFormFocusBlur` | Callback al focus |
-| `onBlur` | `DynamicFormFocusBlur` | Callback alla perdita del focus |
-| `opened` | `DynamicFormOpenClose` | Callback apertura pannello |
-| `closed` | `DynamicFormOpenClose` | Callback chiusura pannello |
-| `onSearch` | `DynamicFormSearch` | Callback digitazione nella ricerca |
-| `onScrollEnd` | `DynamicFormScrollEnd` | Callback fondo lista paginata |
+| Proprietà        | Tipo                                  | Descrizione                                                                                         |
+| ---------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `formName`       | `string`                              | **Identificatore univoco** del campo — usato da `getFormByName`                                     |
+| `title`          | `string`                              | Label visualizzata sopra il campo                                                                   |
+| `type`           | `TYPE_CONTROL_FORM`                   | Tipo del campo                                                                                      |
+| `formControl`    | `FormControl / FormArray / FormGroup` | Control Angular Reactive Forms                                                                      |
+| `disabled`       | `boolean`                             | Visivo — non blocca le interazioni; per bloccare usare `new FormControl({ value, disabled: true })` |
+| `readonly`       | `boolean`                             | Campo visibile ma non modificabile                                                                  |
+| `hidden`         | `boolean`                             | Nasconde il campo; il valore esiste comunque nel FormGroup                                          |
+| `placeholder`    | `string`                              | Testo segnaposto                                                                                    |
+| `hint`           | `string`                              | Testo di suggerimento sotto il campo                                                                |
+| `info`           | `{ msg: string; color: string }`      | Icona info con tooltip                                                                              |
+| `tipContent`     | `string`                              | Tooltip sull'intero campo                                                                           |
+| `resetButton`    | `boolean`                             | Mostra bottone X per azzerare il valore                                                             |
+| `autocomplete`   | `boolean`                             | Abilita autocomplete browser / ricerca inline combo                                                 |
+| `multiple`       | `boolean`                             | Selezione multipla (COMBO / COMBOPAGINATE)                                                          |
+| `css`            | `TypeCss`                             | Classi CSS custom, colore font, icone, ecc.                                                         |
+| `formGroup`      | `ConfigForm`                          | Sotto-form annidato                                                                                 |
+| `rows`           | `number`                              | Righe (TEXTAREA)                                                                                    |
+| `options`        | `Signal / Array`                      | Opzioni per COMBO, COMBOPAGINATE, RADIOGROUP                                                        |
+| `initialOptions` | `TypeComboOption`                     | Opzioni fisse sempre in cima alla lista                                                             |
+| `onChange`       | `DynamicFormOnChange`                 | Callback al cambio valore                                                                           |
+| `onInitialize`   | `DynamicFormOnInitialize`             | Callback all'init del campo                                                                         |
+| `onFocus`        | `DynamicFormFocusBlur`                | Callback al focus                                                                                   |
+| `onBlur`         | `DynamicFormFocusBlur`                | Callback alla perdita del focus                                                                     |
+| `opened`         | `DynamicFormOpenClose`                | Callback apertura pannello                                                                          |
+| `closed`         | `DynamicFormOpenClose`                | Callback chiusura pannello                                                                          |
+| `onSearch`       | `DynamicFormSearch`                   | Callback digitazione nella ricerca                                                                  |
+| `onScrollEnd`    | `DynamicFormScrollEnd`                | Callback fondo lista paginata                                                                       |
 
 ---
 
@@ -904,7 +907,7 @@ onScrollEnd: (
 // Usare il prefisso _ per i parametri non usati — chiarisce l'intenzione
 onChange: (_ig, _if, fc, formName, _fg, _t, prevValue, _all, utility) => {
   console.log(`${formName}: ${prevValue} → ${fc.value}`);
-}
+};
 ```
 
 ---
@@ -920,7 +923,7 @@ Legge o modifica un altro campo del form per nome.
 ```ts
 // Disabilitare un campo in base al valore di un altro
 onChange: (_ig, _if, fc, _fn, _fg, _t, _prev, _all, utility) => {
-  utility.getFormByName('campo_dipendente', (fa) => {
+  utility.getFormByName('campo_dipendente', fa => {
     if (fc.value === 'speciale') {
       fa.hidden = false;
       fa.formControl?.setValidators(Validators.required);
@@ -931,7 +934,7 @@ onChange: (_ig, _if, fc, _fn, _fg, _t, _prev, _all, utility) => {
       fa.formControl?.updateValueAndValidity();
     }
   });
-}
+};
 ```
 
 ### `setDefaultOptions(formName, parse)`
@@ -944,7 +947,7 @@ onChange: (_ig, _if, fc, _fn, _fg, _t, _prev, _all, utility) => {
   myApi.getProvince(regioneId).subscribe(province => {
     utility.setDefaultOptions('provincia', () => province);
   });
-}
+};
 ```
 
 ### `getSelectedOptions(formName, parse)`
@@ -952,8 +955,8 @@ onChange: (_ig, _if, fc, _fn, _fg, _t, _prev, _all, utility) => {
 Recupera gli oggetti completi delle opzioni selezionate (non solo l'id).
 
 ```ts
-utility.getSelectedOptions('categorie', (opts) => {
-  const selezionati = opts();   // Signal — chiamare come funzione
+utility.getSelectedOptions('categorie', opts => {
+  const selezionati = opts(); // Signal — chiamare come funzione
   console.log('Selezionati completi:', selezionati);
   const nomi = selezionati.map(o => o.description).join(', ');
 });
@@ -971,10 +974,10 @@ Recupera un bottone del form per nome e ne modifica lo stato.
 // Disabilita il bottone Salva dinamicamente
 onChange: (_ig, _if, _fc, _fn, _fg, _t, _prev, _all, utility) => {
   const stats = utility.formCompletion();
-  utility.getActionByName('salva', (action) => {
+  utility.getActionByName('salva', action => {
     action.disabled = stats.required.percentage < 100;
   });
-}
+};
 ```
 
 ### `formCompletion`
@@ -991,9 +994,9 @@ Vedi [sezione dedicata](#formcompletion--statistiche-di-completamento).
 
 ```ts
 type FormCompletionStats = {
-  total: number;       // campi tracciati (globale)
-  filled: number;      // campi con valore non vuoto (globale)
-  percentage: number;  // percentuale (0–100, intera) (globale)
+  total: number; // campi tracciati (globale)
+  filled: number; // campi con valore non vuoto (globale)
+  percentage: number; // percentuale (0–100, intera) (globale)
   required: {
     total: number;
     filled: number;
@@ -1001,8 +1004,8 @@ type FormCompletionStats = {
   };
   /** Statistiche suddivise per gruppo */
   groups: Array<{
-    id: string;        // UUID del gruppo (assegnato dal builder)
-    title: string;     // titolo del gruppo
+    id: string; // UUID del gruppo (assegnato dal builder)
+    title: string; // titolo del gruppo
     total: number;
     filled: number;
     percentage: number;
@@ -1035,17 +1038,17 @@ Il suo `FormControl` ha `Validators.required` tra i validatori.
 ```ts
 onChange: (_ig, _if, _fc, _fn, _fg, _t, _prev, _all, utility) => {
   const s = utility.formCompletion();
-  
+
   // ── Statistiche globali ───────────────────────────────────────────────────
   console.log(`Completamento: ${s.percentage}% (${s.filled}/${s.total} campi)`);
   console.log(`Obbligatori: ${s.required.percentage}% (${s.required.filled}/${s.required.total})`);
 
-  // ── Statistiche per gruppo ─────────────────────────────────────────────── 
+  // ── Statistiche per gruppo ───────────────────────────────────────────────
   s.groups.forEach(g => {
     console.log(
       `Gruppo [${g.id}] "${g.title}":`,
       `${g.percentage}% (${g.filled}/${g.total})`,
-      `| req: ${g.required.percentage}%`
+      `| req: ${g.required.percentage}%`,
     );
   });
 
@@ -1064,7 +1067,7 @@ onChange: (_ig, _if, _fc, _fn, _fg, _t, _prev, _all, utility) => {
   utility.getFormByName('campo_info', fa => {
     fa.formControl?.setValue(`Completato al ${s.percentage}%`, { emitEvent: false });
   });
-}
+};
 ```
 
 ### Rating reattivo come progress indicator
@@ -1098,16 +1101,16 @@ onChange: (_ig, _if, _fc, _fn, _fg, _t, _prev, _all, utility) => {
 type TypeComboOption = Array<{
   id: any;
   description: string;
-  img?: string;           // URL immagine (mostrata accanto alla descrizione)
-  extra?: any;            // dati extra non visualizzati
-  disabled?: boolean;     // opzione non selezionabile
-  default?: boolean;      // preselezione automatica
-  hide?: boolean;         // nascosta dalla lista
-  selected?: boolean;     // selezionata correntemente
+  img?: string; // URL immagine (mostrata accanto alla descrizione)
+  extra?: any; // dati extra non visualizzati
+  disabled?: boolean; // opzione non selezionabile
+  default?: boolean; // preselezione automatica
+  hide?: boolean; // nascosta dalla lista
+  selected?: boolean; // selezionata correntemente
   tag?: {
-    bgTag: string;        // classe CSS fill del rettangolo SVG
-    bgText: string;       // classe CSS fill del testo SVG
-    name: string;         // testo del badge
+    bgTag: string; // classe CSS fill del rettangolo SVG
+    bgText: string; // classe CSS fill del testo SVG
+    name: string; // testo del badge
   };
 }>;
 ```
@@ -1118,17 +1121,39 @@ I tag sono badge SVG affiancati alla descrizione. Le classi CSS devono essere de
 
 ```scss
 // styles.scss
-.tag-gray   { fill: #6b7280; }
-.tag-blue   { fill: #3b82f6; }
-.tag-green  { fill: #16a34a; }
-.tag-red    { fill: #dc2626; }
-.tag-orange { fill: #ea580c; }
-.tag-indigo { fill: #4f46e5; }
-.tag-purple { fill: #9333ea; }
-.tag-yellow { fill: #ca8a04; }
+.tag-gray {
+  fill: #6b7280;
+}
+.tag-blue {
+  fill: #3b82f6;
+}
+.tag-green {
+  fill: #16a34a;
+}
+.tag-red {
+  fill: #dc2626;
+}
+.tag-orange {
+  fill: #ea580c;
+}
+.tag-indigo {
+  fill: #4f46e5;
+}
+.tag-purple {
+  fill: #9333ea;
+}
+.tag-yellow {
+  fill: #ca8a04;
+}
 
-.tag-text-gray, .tag-text-blue, .tag-text-green, .tag-text-red,
-.tag-text-orange, .tag-text-indigo, .tag-text-purple, .tag-text-yellow {
+.tag-text-gray,
+.tag-text-blue,
+.tag-text-green,
+.tag-text-red,
+.tag-text-orange,
+.tag-text-indigo,
+.tag-text-purple,
+.tag-text-yellow {
   fill: #ffffff;
 }
 ```
@@ -1246,28 +1271,28 @@ function fetchUtenti(page: number, search: string, append: boolean) {
 
 ### Modalità
 
-| Modalità | FormControl | Descrizione |
-|---|---|---|
-| Editabile | `new FormControl(null)` | L'utente può cliccare e cambiare il valore |
-| Sola lettura visiva | `new FormControl({ value: 3, disabled: true })` | No hover, no click — solo visualizzazione |
-| Progress indicator | `disabled: true` + `effect()` | Aggiornato da un effect reattivo |
+| Modalità            | FormControl                                     | Descrizione                                |
+| ------------------- | ----------------------------------------------- | ------------------------------------------ |
+| Editabile           | `new FormControl(null)`                         | L'utente può cliccare e cambiare il valore |
+| Sola lettura visiva | `new FormControl({ value: 3, disabled: true })` | No hover, no click — solo visualizzazione  |
+| Progress indicator  | `disabled: true` + `effect()`                   | Aggiornato da un effect reattivo           |
 
 ### Comportamento click
 
-| Situazione | Risultato |
-|---|---|
-| Click su stella non selezionata | Seleziona quella stella (valore = N) |
+| Situazione                         | Risultato                                          |
+| ---------------------------------- | -------------------------------------------------- |
+| Click su stella non selezionata    | Seleziona quella stella (valore = N)               |
 | Click sulla stella già selezionata | Deseleziona → valore 0 (nessuna stella illuminata) |
-| `resetButton: true` + click X | Imposta valore a `null` |
-| `disabled: true` (FormControl) | Nessun hover, nessun click possibile |
+| `resetButton: true` + click X      | Imposta valore a `null`                            |
+| `disabled: true` (FormControl)     | Nessun hover, nessun click possibile               |
 
 ### Valori del FormControl
 
-| Valore | Stelle visualizzate |
-|---|---|
-| `null` | Nessuna stella (tutte spente) — campo non compilato |
-| `0` | Nessuna stella (tutte spente) — campo considerato compilato |
-| `N` (1–max) | N stelle illuminate |
+| Valore      | Stelle visualizzate                                         |
+| ----------- | ----------------------------------------------------------- |
+| `null`      | Nessuna stella (tutte spente) — campo non compilato         |
+| `0`         | Nessuna stella (tutte spente) — campo considerato compilato |
+| `N` (1–max) | N stelle illuminate                                         |
 
 ### Esempio completo
 
@@ -1368,16 +1393,16 @@ Con factory per accedere al contesto:
 
 ### Parametri
 
-| Proprietà | Tipo | Descrizione |
-|---|---|---|
-| `label` | `string` | Testo del bottone |
-| `name` | `string` | Identificatore per `getActionByName` |
-| `icon` | `string` | Nome icona Material Icons |
-| `cssClassButton` | `string[]` | Classi CSS del bottone |
-| `cssClassIcon` | `string[]` | Classi CSS dell'icona |
-| `disabled` | `boolean` | Disabilita il bottone |
-| `visible` | `boolean` | Mostra/nasconde il bottone |
-| `action` | `function` | Callback al click |
+| Proprietà        | Tipo       | Descrizione                          |
+| ---------------- | ---------- | ------------------------------------ |
+| `label`          | `string`   | Testo del bottone                    |
+| `name`           | `string`   | Identificatore per `getActionByName` |
+| `icon`           | `string`   | Nome icona Material Icons            |
+| `cssClassButton` | `string[]` | Classi CSS del bottone               |
+| `cssClassIcon`   | `string[]` | Classi CSS dell'icona                |
+| `disabled`       | `boolean`  | Disabilita il bottone                |
+| `visible`        | `boolean`  | Mostra/nasconde il bottone           |
+| `action`         | `function` | Callback al click                    |
 
 ---
 
@@ -1387,23 +1412,24 @@ Con factory per accedere al contesto:
 <app-dynamic-form
   [config]="myConfig"
   (onFormCreate)="onFormCreated($event)"
-  (onQuestionsCreate)="onQuestionsCreated($event)">
+  (onQuestionsCreate)="onQuestionsCreated($event)"
+>
 </app-dynamic-form>
 ```
 
 ### Input
 
-| Input | Tipo | Descrizione |
-|---|---|---|
-| `[config]` o `[questions]` | `ConfigForm` | Configurazione completa del form |
-| `[json]` | `DynamicFormJsonSchema` | Schema JSON alternativo |
+| Input                      | Tipo                    | Descrizione                      |
+| -------------------------- | ----------------------- | -------------------------------- |
+| `[config]` o `[questions]` | `ConfigForm`            | Configurazione completa del form |
+| `[json]`                   | `DynamicFormJsonSchema` | Schema JSON alternativo          |
 
 ### Output
 
-| Output | Tipo | Descrizione |
-|---|---|---|
-| `(onFormCreate)` | `FormGroup / FormArray` | FormGroup generato dopo l'inizializzazione |
-| `(onQuestionsCreate)` | `ConfigForm` | ConfigForm risolto dopo l'inizializzazione |
+| Output                | Tipo                    | Descrizione                                |
+| --------------------- | ----------------------- | ------------------------------------------ |
+| `(onFormCreate)`      | `FormGroup / FormArray` | FormGroup generato dopo l'inizializzazione |
+| `(onQuestionsCreate)` | `ConfigForm`            | ConfigForm risolto dopo l'inizializzazione |
 
 ```ts
 @Component({ ... })
