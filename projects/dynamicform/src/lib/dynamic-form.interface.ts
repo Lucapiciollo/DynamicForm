@@ -404,6 +404,11 @@ export type FormActionBase = {
    options?: WritableSignal<TypeComboOption> | Signal<TypeComboOption> | TypeComboOption | any;
    optionsDisabled?: WritableSignal<TypeComboOption> | Signal<TypeComboOption> | TypeComboOption | any;
    disabledOption?: TypeComboOption;
+   /**
+    * Opzioni fisse mostrate in cima alla lista (es. voci predefinite con tag).
+    * Vengono sempre visibili indipendentemente dalla ricerca/paginazione.
+    */
+   initialOptions?: TypeComboOption;
 
    paramsForRemoteData?: WritableSignal<{ [key: string]: any }> | Signal<{ [key: string]: any }> | any;
 

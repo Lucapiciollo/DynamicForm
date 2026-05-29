@@ -537,3 +537,23 @@
      background: #818cf8;
    }
  }
+
+ // ─────────────────────────────────────────────────────────────────────────────
+ // Combo option tags — classi usate negli SVG con [ngClass]
+ // bgTag  → fill del rettangolo arrotondato
+ // bgText → fill del testo (sempre bianco)
+ // ─────────────────────────────────────────────────────────────────────────────
+
+ .tag-gray   { fill: #6b7280; }
+ .tag-blue   { fill: #3b82f6; }
+ .tag-green  { fill: #16a34a; }
+ .tag-red    { fill: #dc2626; }
+ .tag-orange { fill: #ea580c; }
+ .tag-indigo { fill: #4f46e5; }
+
+ .tag-text-gray,
+ .tag-text-blue,
+ .tag-text-green,
+ .tag-text-red,
+ .tag-text-orange,
+ .tag-text-indigo { fill: #ffffff; }

@@ -705,6 +705,13 @@ export function buildComboTestForm(): ConfigForm {
             type: TYPE_CONTROL_FORM.COMBO,
             options,
             formControl: new FormControl(null, Validators.required),
+            initialOptions: [
+                {
+                    id: null,
+                    description: 'Nessuna selezione',
+                    tag: { bgTag: 'tag-gray', bgText: 'tag-text-gray', name: 'Default' },
+                },
+            ],
             onInitialize: (...args) => console.log('[onInitialize] combo_normale', ...args),
             onChange: (...args) => console.log('[onChange] combo_normale', ...args),
         })
@@ -715,6 +722,18 @@ export function buildComboTestForm(): ConfigForm {
             options,
             formControl: new FormControl([]),
             multiple: true,
+            initialOptions: [
+                {
+                    id: 'all',
+                    description: 'Tutte le opzioni',
+                    tag: { bgTag: 'tag-blue', bgText: 'tag-text-blue', name: 'Tutti' },
+                },
+                {
+                    id: 'recommended',
+                    description: 'Consigliato',
+                    tag: { bgTag: 'tag-green', bgText: 'tag-text-green', name: 'Top' },
+                },
+            ],
             onInitialize: (...args) => console.log('[onInitialize] combo_multipla', ...args),
             onChange: (...args) => console.log('[onChange] combo_multipla', ...args),
         })
@@ -725,6 +744,13 @@ export function buildComboTestForm(): ConfigForm {
             options: remoteOptionsLivello,
             formControl: new FormControl(null),
             totalCount: () => totalLivello,
+            initialOptions: [
+                {
+                    id: 'sedentario',
+                    description: 'Sedentario (nessuna attività)',
+                    tag: { bgTag: 'tag-gray', bgText: 'tag-text-gray', name: 'Default' },
+                },
+            ],
             enableInfiniteScroll: true,
             keyCombo: { keySearch: 'search', keyId: 'id', keyDescription: 'description' },
             pageSize: 10,
