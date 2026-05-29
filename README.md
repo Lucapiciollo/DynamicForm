@@ -48,7 +48,7 @@
 
 **Caratteristiche principali:**
 
-- 🧩 **22 tipi di campo** — testo, numero, valuta, data, data-range, datetime, anno, orario, checkbox, radio, select, select paginata, file, textarea, label, link, separatore, array di stringhe, e altri
+- 🧩 **19 tipi di campo** — testo, numero, valuta, data, data-range, datetime, anno, orario, checkbox, radio, select, select paginata, file, textarea, array di stringhe, rating, sort, e altri
 - 📋 **Doppia API** — `ConfigForm` (oggetti Angular) o `DynamicFormJsonSchema` (JSON puro, serializzabile)
 - 🎣 **Sistema eventi** — `onChange`, `onInitialize`, `opened`, `closed`, `action`, `remoteData` risolti per nome da un registro centralizzato
 - 📡 **Dati remoti paginati** — infinite scroll con Signal-based state management
@@ -96,7 +96,7 @@ import { provideDynamicFormForModule } from 'dynamicform';
     ...provideDynamicFormForModule({
       theme: { name: 'modern-light' },
       events: {
-        onNomeChange: (ctx) => console.log('nome cambiato:', ctx.formControl.value),
+        onNomeChange: ctx => console.log('nome cambiato:', ctx.formControl.value),
       },
       actions: {
         onSalva: ({ formGroup }) => console.log('salva:', formGroup.value),
@@ -118,8 +118,12 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideDynamicForm({
       theme: { name: 'modern-dark' },
-      events: { /* ... */ },
-      actions: { /* ... */ },
+      events: {
+        /* ... */
+      },
+      actions: {
+        /* ... */
+      },
     }),
   ],
 });
@@ -140,12 +144,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { signal } from '@angular/core';
 
 @Component({
-  template: `
-    <app-dynamic-form
-      [config]="formConfig"
-      (onFormCreate)="onFormReady($event)">
-    </app-dynamic-form>
-  `
+  template: ` <app-dynamic-form [config]="formConfig" (onFormCreate)="onFormReady($event)"> </app-dynamic-form> `,
 })
 export class MyFormComponent {
   formConfig: ConfigForm = [
@@ -159,7 +158,7 @@ export class MyFormComponent {
             type: TYPE_CONTROL_FORM.TEXT,
             formControl: new FormControl('', Validators.required),
             css: { class: ['col-md-6'] },
-          }
+          },
         },
         {
           formAction: {
@@ -168,7 +167,7 @@ export class MyFormComponent {
             type: TYPE_CONTROL_FORM.TEXT,
             formControl: new FormControl('', Validators.required),
             css: { class: ['col-md-6'] },
-          }
+          },
         },
         {
           formAction: {
@@ -181,7 +180,7 @@ export class MyFormComponent {
               { id: 'F', description: 'Femmina' },
             ]),
             css: { class: ['col-md-4'] },
-          }
+          },
         },
       ],
       actions: [
@@ -211,12 +210,7 @@ Perfetta per form definiti lato server o serializzati su database.
 import { DynamicFormJsonSchema } from 'dynamicform';
 
 @Component({
-  template: `
-    <app-dynamic-form
-      [json]="schema"
-      (onFormCreate)="onFormReady($event)">
-    </app-dynamic-form>
-  `
+  template: ` <app-dynamic-form [json]="schema" (onFormCreate)="onFormReady($event)"> </app-dynamic-form> `,
 })
 export class MyFormComponent {
   schema: DynamicFormJsonSchema = {
@@ -255,28 +249,26 @@ export class MyFormComponent {
 
 ## Tipi di campo (TYPE_CONTROL_FORM)
 
-| Valore enum / stringa JSON | Componente | Descrizione |
-|---|---|---|
-| `TEXT` / `EMAIL` | `InputTextComponent` | Input testuale, supporta password e speech |
-| `TEXTAREA` | `TextareaComponent` | Area di testo multiriga |
-| `NUMBER` | `NumberComponent` | Input numerico con min/max/step |
-| `CURRENCY` | `CurrencyComponent` | Input valuta con formattazione |
-| `DATE` / `DATA` | `DateComponent` | Date picker (Angular Material) |
-| `DATARANGE` | `DateRangeComponent` | Selezione intervallo date (from/to) |
-| `DATETIME` | `DateTimeComponent` | Data + ora |
-| `YEAR` | `DateYearComponent` | Selezione anno |
-| `TIME` | `InputTimeComponent` | Selezione orario |
-| `CHECKBOX` | `CheckboxComponent` | Checkbox singolo |
-| `RADIOGROUP` | `QuestionRadioButtonComponent` | Gruppo di radio button |
-| `COMBO` | `ComboComponent` | Select con ricerca |
-| `COMBOPAGINATE` | `ComboComponent` | Select con ricerca e scroll infinito |
-| `FILE` | `FileComponent` | Upload file, supporta camera scan |
-| `ARRAYSTRING` | `ArrayStringComponent` | Input che accumula un array di stringhe (chips) |
-| `LABEL` | `LabelComponent` | Testo informativo cliccabile |
-| `LINK` | `LinkComponent` | Link ipertestuale |
-| `SEPARATOR` | `SeparatorComponent` | Divisore visivo tra sezioni |
-| `SORTACTION` | `SortActionComponent` | Pulsante di ordinamento toggle |
-| `GROUP` | — | Campo contenitore per form annidati |
+| Valore enum / stringa JSON | Componente                     | Descrizione                                     |
+| -------------------------- | ------------------------------ | ----------------------------------------------- |
+| `TEXT` / `EMAIL`           | `InputTextComponent`           | Input testuale, supporta password e speech      |
+| `TEXTAREA`                 | `TextareaComponent`            | Area di testo multiriga                         |
+| `NUMBER`                   | `NumberComponent`              | Input numerico con min/max/step                 |
+| `CURRENCY`                 | `CurrencyComponent`            | Input valuta con formattazione                  |
+| `DATE` / `DATA`            | `DateComponent`                | Date picker (Angular Material)                  |
+| `DATARANGE`                | `DateRangeComponent`           | Selezione intervallo date (from/to)             |
+| `DATETIME`                 | `DateTimeComponent`            | Data + ora                                      |
+| `YEAR`                     | `DateYearComponent`            | Selezione anno                                  |
+| `TIME`                     | `InputTimeComponent`           | Selezione orario                                |
+| `CHECKBOX`                 | `CheckboxComponent`            | Checkbox singolo                                |
+| `RADIOGROUP`               | `QuestionRadioButtonComponent` | Gruppo di radio button                          |
+| `COMBO`                    | `ComboComponent`               | Select con ricerca                              |
+| `COMBOPAGINATE`            | `ComboComponent`               | Select con ricerca e scroll infinito            |
+| `FILE`                     | `FileComponent`                | Upload file, supporta camera scan               |
+| `ARRAYSTRING`              | `ArrayStringComponent`         | Input che accumula un array di stringhe (chips) |
+| `RATING`                   | `RatingComponent`              | Valutazione a stelle (editabile o sola lettura) |
+| `SORTACTION`               | `SortActionComponent`          | Pulsante di ordinamento toggle                  |
+| `GROUP`                    | —                              | Campo contenitore per form annidati             |
 
 ---
 
@@ -286,11 +278,11 @@ export class MyFormComponent {
 
 ```typescript
 type Group = {
-  title?: string;                        // Titolo della sezione
-  class?: string[];                      // Classi CSS sul contenitore del gruppo
-  bottomLabel?: string;                  // Etichetta in fondo al gruppo
-  formGroup?: Form[];                    // Array di campi
-  actions?: DynamicFormActionButton[];   // Pulsanti di azione
+  title?: string; // Titolo della sezione
+  class?: string[]; // Classi CSS sul contenitore del gruppo
+  bottomLabel?: string; // Etichetta in fondo al gruppo
+  formGroup?: Form[]; // Array di campi
+  actions?: DynamicFormActionButton[]; // Pulsanti di azione
 };
 ```
 
@@ -344,13 +336,13 @@ type Group = {
 
 ```typescript
 type TypeComboOption = Array<{
-  id: any;           // Valore salvato nel FormControl
+  id: any; // Valore salvato nel FormControl
   description: string; // Testo visualizzato
-  img?: string;      // URL immagine affiancata alla voce
-  extra?: any;       // Dati extra disponibili negli handler
+  img?: string; // URL immagine affiancata alla voce
+  extra?: any; // Dati extra disponibili negli handler
   disabled?: boolean;
   default?: boolean; // Pre-selezionato di default
-  hide?: boolean;    // Nascosto ma ancora presente
+  hide?: boolean; // Nascosto ma ancora presente
   tag?: { bgTag: string; bgText: string; name: string }; // Badge colorato
 }>;
 ```
@@ -376,7 +368,7 @@ interface DynamicJsonGroup {
 
 interface DynamicJsonAction {
   label: string;
-  event: string;        // Nome dell'handler registrato in provideDynamicForm()
+  event: string; // Nome dell'handler registrato in provideDynamicForm()
   cssClassButton?: string[];
   cssClassIcon?: string[];
   disabled?: boolean;
@@ -388,33 +380,33 @@ interface DynamicJsonAction {
 
 ```typescript
 interface DynamicJsonField {
-  name: string;                          // formName
-  type: keyof typeof TYPE_CONTROL_FORM;  // es. 'TEXT', 'COMBO', 'DATE'
+  name: string; // formName
+  type: keyof typeof TYPE_CONTROL_FORM; // es. 'TEXT', 'COMBO', 'DATE'
   label?: string;
-  value?: any;                           // Valore iniziale
+  value?: any; // Valore iniziale
   disabled?: boolean;
   readonly?: boolean;
   hint?: string;
   tipContent?: string;
-  class?: string[];                      // Scorciatoia per css.class
+  class?: string[]; // Scorciatoia per css.class
   css?: TypeCss;
   validators?: DynamicJsonValidator[];
-  options?: TypeComboOption;             // Opzioni statiche
-  datasource?: DynamicJsonDatasource;    // Opzioni da registro
-  remoteData?: string;                   // Nome handler dati remoti
+  options?: TypeComboOption; // Opzioni statiche
+  datasource?: DynamicJsonDatasource; // Opzioni da registro
+  remoteData?: string; // Nome handler dati remoti
   paging?: { count?: number; page?: number; totalCount?: number };
   paramsForRemoteData?: Record<string, any>;
   multiple?: boolean;
   autocomplete?: boolean;
-  keyCombo?: { keyId: string|string[]; keyDescription: string|string[]; keySearch?: string };
+  keyCombo?: { keyId: string | string[]; keyDescription: string | string[]; keySearch?: string };
   optionNumber?: TypeOptionNumber;
   optionDate?: TypeOptionDate;
   optionTime?: TypeOptionTime;
-  visibleWhen?: DynamicJsonCondition[];  // Visibile solo se...
+  visibleWhen?: DynamicJsonCondition[]; // Visibile solo se...
   disabledWhen?: DynamicJsonCondition[]; // Disabilitato solo se...
-  events?: DynamicJsonFieldEvents;       // Nomi handler dal registro
-  props?: Record<string, any>;           // Proprietà custom extra
-  children?: DynamicJsonGroup[];         // Form annidati (tipo GROUP)
+  events?: DynamicJsonFieldEvents; // Nomi handler dal registro
+  props?: Record<string, any>; // Proprietà custom extra
+  children?: DynamicJsonGroup[]; // Form annidati (tipo GROUP)
 }
 ```
 
@@ -464,23 +456,21 @@ Nello schema JSON (o nella `ConfigForm`) si referenzia il nome come stringa.
 provideDynamicForm({
   events: {
     // onChange
-    onPaeseChange: (ctx) => {
+    onPaeseChange: ctx => {
       // Quando 'paese' cambia, aggiorna le opzioni di 'città'
-      ctx.utility.getFormByName('citta', (formAction) => {
-        (formAction.options as WritableSignal<TypeComboOption>).set(
-          getCittaByPaese(ctx.formControl.value)
-        );
+      ctx.utility.getFormByName('citta', formAction => {
+        (formAction.options as WritableSignal<TypeComboOption>).set(getCittaByPaese(ctx.formControl.value));
       });
     },
 
     // onInitialize — carica dati all'avvio del campo
-    onCategorieInit: async (ctx) => {
+    onCategorieInit: async ctx => {
       const categorie = await fetchCategorie();
       (ctx.formAction?.options as WritableSignal<TypeComboOption>)?.set(categorie);
     },
 
     // remoteData — infinite scroll
-    onProdottiRemote: (ctx) => {
+    onProdottiRemote: ctx => {
       fetchProdotti(ctx.param?.search, ctx.paging).then(res => {
         ctx.externalStore?.set({ items: res.data, totalCount: res.total });
       });
@@ -491,7 +481,7 @@ provideDynamicForm({
       console.log('Dati:', formGroup.value);
     },
   },
-})
+});
 ```
 
 ### DynamicFieldEventContext
@@ -500,18 +490,18 @@ Tutti gli handler ricevono questo contesto:
 
 ```typescript
 interface DynamicFieldEventContext {
-  idGroup: number;          // Indice del gruppo corrente
-  idForm: number;           // Indice del campo nel gruppo
+  idGroup: number; // Indice del gruppo corrente
+  idForm: number; // Indice del campo nel gruppo
   formControl: FormControl | FormArray | FormGroup;
-  formName: string;         // Nome del campo
-  formGroup: Form[];        // Tutti i campi del gruppo corrente
-  type: TYPE_CONTROL_FORM;  // Tipo del campo
-  prevValue?: any;          // Valore precedente (solo onChange)
-  allGroup: ConfigForm;     // Intera struttura del form
+  formName: string; // Nome del campo
+  formGroup: Form[]; // Tutti i campi del gruppo corrente
+  type: TYPE_CONTROL_FORM; // Tipo del campo
+  prevValue?: any; // Valore precedente (solo onChange)
+  allGroup: ConfigForm; // Intera struttura del form
   paging?: { count: number; page: number; totalCount?: number }; // Solo COMBOPAGINATE
   onOptionSetted?: Signal<any>; // Signal aggiornato quando le opzioni vengono impostate
-  utility: Utility;         // Helper functions
-  param?: any;              // Parametri di ricerca (solo remoteData)
+  utility: Utility; // Helper functions
+  param?: any; // Parametri di ricerca (solo remoteData)
   externalStore?: WritableSignal<any>; // Store Signal per remoteData
 }
 ```
@@ -520,19 +510,17 @@ interface DynamicFieldEventContext {
 
 ```typescript
 // Disponibile come ctx.utility in tutti gli handler
-utility.getFormByName('nomecampo', (formAction) => {
+utility.getFormByName('nomecampo', formAction => {
   // accede al FormAction del campo per nome
 });
 
-utility.getActionByName('nomeazione', (action) => {
+utility.getActionByName('nomeazione', action => {
   // accede a un DynamicFormActionButton per nome
 });
 
-utility.setDefaultOptions('nomecombo', () => [
-  { id: 1, description: 'Opzione 1' }
-]);
+utility.setDefaultOptions('nomecombo', () => [{ id: 1, description: 'Opzione 1' }]);
 
-utility.getSelectedOptions('nomecombo', (signal) => {
+utility.getSelectedOptions('nomecombo', signal => {
   // legge le opzioni attualmente selezionate
 });
 ```
@@ -585,22 +573,22 @@ Il tipo `COMBOPAGINATE` supporta il caricamento lazy con infinite scroll.
 
 ### Temi built-in
 
-| Nome | Descrizione |
-|---|---|
-| `modern-light` | Tema chiaro moderno (default) |
-| `modern-dark` | Tema scuro moderno |
-| `ivory-elegance` | Tema chiaro elegante caldo |
-| `silk-compact` | Tema compatto con superfici seta |
+| Nome             | Descrizione                      |
+| ---------------- | -------------------------------- |
+| `modern-light`   | Tema chiaro moderno (default)    |
+| `modern-dark`    | Tema scuro moderno               |
+| `ivory-elegance` | Tema chiaro elegante caldo       |
+| `silk-compact`   | Tema compatto con superfici seta |
 
 ```typescript
 provideDynamicForm({
   theme: {
     name: 'modern-dark',
     mode: 'dark',
-    applyToBody: true,     // true = applica su <body>, false = <html>
-    rootSelector: null,    // es. '.my-shell' per scope limitato
-  }
-})
+    applyToBody: true, // true = applica su <body>, false = <html>
+    rootSelector: null, // es. '.my-shell' per scope limitato
+  },
+});
 ```
 
 ### Custom tokens CSS
@@ -621,7 +609,7 @@ provideDynamicForm({
       shadowSm: '0 2px 8px rgba(0,0,0,0.08)',
     },
   },
-})
+});
 ```
 
 Tutti i token sono CSS custom properties `--df-*` applicabili anche direttamente in SCSS:
@@ -835,41 +823,43 @@ provideDynamicForm({
 
 ```json
 {
-  "groups": [{
-    "title": "Pagamento",
-    "fields": [
-      {
-        "name": "metodoPagamento",
-        "type": "RADIOGROUP",
-        "label": "Metodo di pagamento",
-        "options": [
-          { "id": "carta", "description": "Carta di credito" },
-          { "id": "bonifico", "description": "Bonifico bancario" },
-          { "id": "contanti", "description": "Contanti" }
-        ]
-      },
-      {
-        "name": "numeroCarta",
-        "type": "TEXT",
-        "label": "Numero carta",
-        "visibleWhen": [{ "field": "metodoPagamento", "operator": "eq", "value": "carta" }],
-        "validators": [{ "type": "required" }, { "type": "minLength", "value": 16 }]
-      },
-      {
-        "name": "iban",
-        "type": "TEXT",
-        "label": "IBAN",
-        "visibleWhen": [{ "field": "metodoPagamento", "operator": "eq", "value": "bonifico" }],
-        "validators": [{ "type": "required" }]
-      },
-      {
-        "name": "importoMassimo",
-        "type": "CURRENCY",
-        "label": "Importo massimo",
-        "disabledWhen": [{ "field": "metodoPagamento", "operator": "eq", "value": "contanti" }]
-      }
-    ]
-  }]
+  "groups": [
+    {
+      "title": "Pagamento",
+      "fields": [
+        {
+          "name": "metodoPagamento",
+          "type": "RADIOGROUP",
+          "label": "Metodo di pagamento",
+          "options": [
+            { "id": "carta", "description": "Carta di credito" },
+            { "id": "bonifico", "description": "Bonifico bancario" },
+            { "id": "contanti", "description": "Contanti" }
+          ]
+        },
+        {
+          "name": "numeroCarta",
+          "type": "TEXT",
+          "label": "Numero carta",
+          "visibleWhen": [{ "field": "metodoPagamento", "operator": "eq", "value": "carta" }],
+          "validators": [{ "type": "required" }, { "type": "minLength", "value": 16 }]
+        },
+        {
+          "name": "iban",
+          "type": "TEXT",
+          "label": "IBAN",
+          "visibleWhen": [{ "field": "metodoPagamento", "operator": "eq", "value": "bonifico" }],
+          "validators": [{ "type": "required" }]
+        },
+        {
+          "name": "importoMassimo",
+          "type": "CURRENCY",
+          "label": "Importo massimo",
+          "disabledWhen": [{ "field": "metodoPagamento", "operator": "eq", "value": "contanti" }]
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -879,34 +869,34 @@ provideDynamicForm({
 
 ### DynamicFormComponent
 
-| Input | Tipo | Descrizione |
-|---|---|---|
-| `[config]` | `ConfigForm` | Configurazione Angular runtime |
-| `[questions]` | `ConfigForm` | Alias di `[config]` (retrocompatibilità) |
-| `[json]` | `DynamicFormJsonSchema` | Schema JSON puro |
+| Input         | Tipo                    | Descrizione                              |
+| ------------- | ----------------------- | ---------------------------------------- |
+| `[config]`    | `ConfigForm`            | Configurazione Angular runtime           |
+| `[questions]` | `ConfigForm`            | Alias di `[config]` (retrocompatibilità) |
+| `[json]`      | `DynamicFormJsonSchema` | Schema JSON puro                         |
 
-| Output | Tipo | Descrizione |
-|---|---|---|
-| `(onFormCreate)` | `EventEmitter<FormGroup\|FormArray>` | Emesso dopo la costruzione del form |
-| `(onQuestionsCreate)` | `EventEmitter<ConfigForm>` | Emesso dopo la costruzione del form |
+| Output                | Tipo                                 | Descrizione                         |
+| --------------------- | ------------------------------------ | ----------------------------------- |
+| `(onFormCreate)`      | `EventEmitter<FormGroup\|FormArray>` | Emesso dopo la costruzione del form |
+| `(onQuestionsCreate)` | `EventEmitter<ConfigForm>`           | Emesso dopo la costruzione del form |
 
 ### DynamicFormEventRegistryService
 
-| Metodo | Firma | Descrizione |
-|---|---|---|
-| `registerEvents` | `(events: Record<string, DynamicFieldEventHandler>) => void` | Aggiunge handler di campo |
+| Metodo            | Firma                                                          | Descrizione                |
+| ----------------- | -------------------------------------------------------------- | -------------------------- |
+| `registerEvents`  | `(events: Record<string, DynamicFieldEventHandler>) => void`   | Aggiunge handler di campo  |
 | `registerActions` | `(actions: Record<string, DynamicActionEventHandler>) => void` | Aggiunge handler di azione |
-| `getEvent` | `(name?: string) => DynamicFieldEventHandler \| undefined` | Recupera handler per nome |
-| `getAction` | `(name?: string) => DynamicActionEventHandler \| undefined` | Recupera azione per nome |
+| `getEvent`        | `(name?: string) => DynamicFieldEventHandler \| undefined`     | Recupera handler per nome  |
+| `getAction`       | `(name?: string) => DynamicActionEventHandler \| undefined`    | Recupera azione per nome   |
 
 ### DynamicFormThemeService
 
-| Metodo | Descrizione |
-|---|---|
-| `init()` | Inizializza tema e token dalla configurazione |
-| `applyTheme(name)` | Applica classe `df-theme-{name}` |
-| `applyCustomTokens(tokens)` | Inietta CSS custom properties |
-| `getThemeRoot()` | Restituisce l'elemento DOM root del tema |
+| Metodo                      | Descrizione                                   |
+| --------------------------- | --------------------------------------------- |
+| `init()`                    | Inizializza tema e token dalla configurazione |
+| `applyTheme(name)`          | Applica classe `df-theme-{name}`              |
+| `applyCustomTokens(tokens)` | Inietta CSS custom properties                 |
+| `getThemeRoot()`            | Restituisce l'elemento DOM root del tema      |
 
 ---
 
@@ -934,5 +924,4 @@ npm install /percorso/assoluto/dist/dynamicform
 
 ---
 
-*Libreria sviluppata da [Luca Piciollo](mailto:lucapiciollo@gmail.com)*
-
+_Libreria sviluppata da [Luca Piciollo](mailto:lucapiciollo@gmail.com)_
