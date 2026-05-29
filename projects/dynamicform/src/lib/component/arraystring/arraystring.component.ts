@@ -86,23 +86,29 @@ export class ArrayStringComponent extends BaseComponent {
       this.errorsInchipValue.set(this.validateWithExtractedValidators(nextValue));
 
       if (Object.keys(this.errorsInchipValue() || {}).length < 1) {
+         const prevValue = this.getCurrentValue();
          this.getList.set(nextValue);
          event.chipInput?.clear();
 
          this.control?.formAction?.action?.(
             this.control.formAction.formControl as FormControl | FormArray | FormGroup,
          );
+
+         this.callOnChange(prevValue, nextValue);
       }
    }
 
    remove(value: string): void {
-      const nextValue = this.getCurrentValue().filter(item => item !== value);
+      const prevValue = this.getCurrentValue();
+      const nextValue = prevValue.filter(item => item !== value);
 
       this.getList.set(nextValue);
 
       this.control?.formAction?.action?.(
          this.control.formAction.formControl as FormControl | FormArray | FormGroup,
       );
+
+      this.callOnChange(prevValue, nextValue);
    }
 
    getCurrentValue(): string[] {

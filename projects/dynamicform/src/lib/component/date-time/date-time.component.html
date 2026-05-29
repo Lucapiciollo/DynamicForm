@@ -1,61 +1,65 @@
 <!-- @format -->
 
 @if (!control.formAction?.css?.hide) {
-   <ng-container>
-      <div class="d-flex w-100">
-         <mat-form-field class="w-100 customMY">
-            <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">
-               {{ control.formAction.title }}
+<ng-container>
+   <div class="d-flex w-100 gap-2 df-datetime-row">
+      <!-- Date picker -->
+      <mat-form-field class="customMY flex-grow-1">
+         <mat-label class="form-label" [class.disabled]="control.formAction.formControl.disabled">
+            {{ control.formAction.title }}
 
-               @if (control.formAction?.info) {
-                  <mat-icon
-                     [matTooltip]="control.formAction?.info.msg"
-                     [style.color]="control.formAction?.info.color"
-                     class="mx-1">
-                     info_outline
-                  </mat-icon>
-               }
-            </mat-label>
-
-            <mat-select
-               [matTooltip]="control.formAction?.tipContent || null"
-               [formControl]="$any(control.formAction?.formControl)"
-               [placeholder]="control.formAction.placeholder || ''"
-               (openedChange)="onOpenedChange($event)"
-               (focus)="emitFocus()"
-               (blur)="emitBlur()">
-
-               @for (secondElement of $any(control.formAction.options || []); track secondElement.id) {
-                  <mat-option [value]="secondElement.id">
-                     <span [class.disabled]="control.formAction.formControl.disabled">
-                        {{ secondElement.description }}
-                     </span>
-                  </mat-option>
-               }
-
-            </mat-select>
-
-            @if (control.formAction?.resetButton && control.formAction.formControl.value != null) {
-               <button
-                  matSuffix
-                  mat-icon-button
-                  aria-label="Clear"
-                  type="button"
-                  (click)="$event.stopPropagation(); control.formAction.formControl.reset()">
-                  <mat-icon>close</mat-icon>
-               </button>
+            @if (control.formAction?.info) {
+            <mat-icon [matTooltip]="control.formAction?.info.msg" [style.color]="control.formAction?.info.color"
+               class="mx-1">
+               info_outline
+            </mat-icon>
             }
-         </mat-form-field>
+         </mat-label>
 
-         <div #dynamicContainer class=""></div>
-      </div>
+         <input matInput [matDatepicker]="datepicker" [formControl]="dateCtrl" [readonly]="control.formAction.readonly"
+            [min]="control.formAction?.optionDate?.min" [max]="control.formAction?.optionDate?.max"
+            [placeholder]="control.formAction.placeholder || 'GG/MM/AAAA'" (focus)="emitFocus()" (blur)="emitBlur()"
+            (dateChange)="onDateChange()" />
 
-      @for (error of getErrorFormControl($any(control.formAction?.formControl)); track error) {
-         <mat-error>{{ error }}</mat-error>
-      }
+         <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
 
-      @if (control?.formAction?.hint) {
-         <mat-hint>{{ control.formAction.hint }}</mat-hint>
-      }
-   </ng-container>
+         <mat-datepicker #datepicker (opened)="onOpenedChange(true)" (closed)="onOpenedChange(false)">
+            <mat-datepicker-actions>
+               <button mat-button matDatepickerCancel type="button">Chiudi</button>
+               <button mat-raised-button color="primary" matDatepickerApply type="button">OK</button>
+            </mat-datepicker-actions>
+         </mat-datepicker>
+      </mat-form-field>
+
+      <!-- Time select -->
+      <mat-form-field class="customMY" style="max-width: 130px">
+         <mat-label>Ora</mat-label>
+         <mat-icon matPrefix class="df-time-prefix-icon">access_time</mat-icon>
+
+         <mat-select [disabled]="control.formAction.formControl.disabled" [value]="selectedTime" [placeholder]="'HH:MM'"
+            (selectionChange)="onTimeChange($event.value)">
+            @for (opt of timeOptions(); track opt.id) {
+            <mat-option [value]="opt.id">{{ opt.description }}</mat-option>
+            }
+         </mat-select>
+
+         @if (selectedTime) {
+         <button matSuffix mat-icon-button aria-label="Clear time" type="button"
+            (click)="$event.stopPropagation(); onTimeChange('')">
+            <mat-icon>close</mat-icon>
+         </button>
+         }
+      </mat-form-field>
+
+      <div #dynamicContainer class=""></div>
+   </div>
+
+   @for (error of getErrorFormControl($any(control.formAction?.formControl)); track error) {
+   <mat-error>{{ error }}</mat-error>
+   }
+
+   @if (control?.formAction?.hint) {
+   <mat-hint>{{ control.formAction.hint }}</mat-hint>
+   }
+</ng-container>
 }

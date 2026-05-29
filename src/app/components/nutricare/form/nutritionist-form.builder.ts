@@ -40,7 +40,7 @@
 //     }
 
 //     return DynamicFormBuilder.create()
-//         .addGroup('ComboBox Test', ['col-12'])
+//         .addGroup('ComboBox Test', ['col-6 px-3'])
 //         .addForm({
 //             formName: 'combo_normale',
 //             title: 'Combo normale',
@@ -198,7 +198,7 @@
 // };
 // // Usa il builder guidato
 // const cc = DynamicFormBuilder.create()
-//     .addGroup('Dati Anagrafici', ['col-12'])
+//     .addGroup('Dati Anagrafici', ['col-6 px-3'])
 //     .addForm(nome)
 //     .addForm(email)
 //     .addActions([salvaAction])
@@ -231,7 +231,7 @@
 //     //     // ───────────────────────────────────────────────────────────────────
 //     //     {
 //     //         title: '👤 Dati Personali',
-//     //         class: ['col-12', 'nutri-section', 'mb-3'],
+//     //         class: ['col-6 px-3', 'nutri-section', 'mb-3'],
 //     //         formGroup: [
 //     //             field({
 //     //                 formName: 'nome',
@@ -309,7 +309,7 @@
 //     //     // ───────────────────────────────────────────────────────────────────
 //     //     {
 //     //         title: '📊 Parametri Corporei',
-//     //         class: ['col-12', 'nutri-section', 'mb-3'],
+//     //         class: ['col-6 px-3', 'nutri-section', 'mb-3'],
 //     //         formGroup: [
 //     //             field({
 //     //                 formName: 'altezza',
@@ -387,7 +387,7 @@
 //     //     // ───────────────────────────────────────────────────────────────────
 //     //     {
 //     //         title: '🏥 Anamnesi Clinica',
-//     //         class: ['col-12', 'nutri-section', 'mb-3'],
+//     //         class: ['col-6 px-3', 'nutri-section', 'mb-3'],
 //     //         formGroup: [
 //     //             field({
 //     //                 formName: 'patologie',
@@ -424,7 +424,7 @@
 //     //                 title: 'Interventi chirurgici pregressi',
 //     //                 formControl: new FormControl(null),
 //     //                 rows: 2,
-//     //                 css: { class: ['col-12'] },
+//     //                 css: { class: ['col-6 px-3'] },
 //     //             }),
 //     //         ],
 //     //     },
@@ -434,7 +434,7 @@
 //     //     // ───────────────────────────────────────────────────────────────────
 //     //     {
 //     //         title: '🍽️ Abitudini Alimentari',
-//     //         class: ['col-12', 'nutri-section', 'mb-3'],
+//     //         class: ['col-6 px-3', 'nutri-section', 'mb-3'],
 //     //         formGroup: [
 //     //             field({
 //     //                 formName: 'numPasti',
@@ -506,7 +506,7 @@
 //     //     // ───────────────────────────────────────────────────────────────────
 //     //     {
 //     //         title: '💪 Stile di Vita',
-//     //         class: ['col-12', 'nutri-section', 'mb-3'],
+//     //         class: ['col-6 px-3', 'nutri-section', 'mb-3'],
 //     //         formGroup: [
 //     //             field({
 //     //                 formName: 'tipoAttivitaFisica',
@@ -575,7 +575,7 @@
 //     //     // ───────────────────────────────────────────────────────────────────
 //     //     {
 //     //         title: '🎯 Obiettivi Terapeutici',
-//     //         class: ['col-12', 'nutri-section', 'mb-3'],
+//     //         class: ['col-6 px-3', 'nutri-section', 'mb-3'],
 //     //         formGroup: [
 //     //             field({
 //     //                 formName: 'obiettivo',
@@ -583,7 +583,7 @@
 //     //                 title: 'Obiettivo principale',
 //     //                 formControl: new FormControl(null),
 //     //                 options: obiettivoOptions,
-//     //                 css: { class: ['col-12'] },
+//     //                 css: { class: ['col-6 px-3'] },
 //     //             }),
 //     //             field({
 //     //                 formName: 'motivazione',
@@ -698,7 +698,7 @@ export function buildComboTestForm(): ConfigForm {
     }
 
     return DynamicFormBuilder.create()
-        .addGroup('ComboBox Test', ['col-12'])
+        .addGroup('ComboBox Test', ['col-6 px-3'])
         .addForm({
             formName: 'combo_normale',
             title: 'Combo normale',
@@ -791,6 +791,175 @@ export function buildComboTestForm(): ConfigForm {
                 }
             },
         })
+        // --- GRUPPO: Testo e numeri ---
+        .addGroup('Testo e Numeri', ['col-6 px-3'])
+        .addForm({
+            formName: 'campo_text',
+            title: 'Input Text',
+            type: TYPE_CONTROL_FORM.TEXT,
+            formControl: new FormControl(''),
+            onInitialize: (...args) => console.log('[onInitialize] campo_text', ...args),
+            onChange: (...args) => console.log('[onChange] campo_text', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_text', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_text', ...args),
+        })
+        .addForm({
+            formName: 'campo_textarea',
+            title: 'Textarea',
+            type: TYPE_CONTROL_FORM.TEXTAREA,
+            formControl: new FormControl(''),
+            rows: 3,
+            onInitialize: (...args) => console.log('[onInitialize] campo_textarea', ...args),
+            onChange: (...args) => console.log('[onChange] campo_textarea', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_textarea', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_textarea', ...args),
+        })
+        .addForm({
+            formName: 'campo_number',
+            title: 'Number',
+            type: TYPE_CONTROL_FORM.NUMBER,
+            formControl: new FormControl(null),
+            optionNumber: { min: 0, max: 100, step: 1 },
+            onInitialize: (...args) => console.log('[onInitialize] campo_number', ...args),
+            onChange: (...args) => console.log('[onChange] campo_number', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_number', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_number', ...args),
+        })
+        .addForm({
+            formName: 'campo_currency',
+            title: 'Currency (€)',
+            type: TYPE_CONTROL_FORM.CURRENCY,
+            formControl: new FormControl(null),
+            onInitialize: (...args) => console.log('[onInitialize] campo_currency', ...args),
+            onChange: (...args) => console.log('[onChange] campo_currency', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_currency', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_currency', ...args),
+        })
+
+        // --- GRUPPO: Date e Tempo ---
+        .addGroup('Date e Tempo', ['col-6 px-3'])
+        .addForm({
+            formName: 'campo_data',
+            title: 'Data',
+            type: TYPE_CONTROL_FORM.DATA,
+            formControl: new FormControl(null),
+            onInitialize: (...args) => console.log('[onInitialize] campo_data', ...args),
+            onChange: (...args) => console.log('[onChange] campo_data', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_data', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_data', ...args),
+        })
+        .addForm({
+            formName: 'campo_datarange',
+            title: 'Date Range',
+            type: TYPE_CONTROL_FORM.DATARANGE,
+            formControl: new FormControl(null),
+            onInitialize: (...args) => console.log('[onInitialize] campo_datarange', ...args),
+            onChange: (...args) => console.log('[onChange] campo_datarange', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_datarange', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_datarange', ...args),
+        })
+        .addForm({
+            formName: 'campo_datetime',
+            title: 'DateTime',
+            type: TYPE_CONTROL_FORM.DATETIME,
+            formControl: new FormControl(null),
+            onInitialize: (...args) => console.log('[onInitialize] campo_datetime', ...args),
+            onChange: (...args) => console.log('[onChange] campo_datetime', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_datetime', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_datetime', ...args),
+        })
+        .addForm({
+            formName: 'campo_time',
+            title: 'Time',
+            type: TYPE_CONTROL_FORM.TIME,
+            formControl: new FormControl(null),
+            onInitialize: (...args) => console.log('[onInitialize] campo_time', ...args),
+            onChange: (...args) => console.log('[onChange] campo_time', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_time', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_time', ...args),
+        })
+        .addForm({
+            formName: 'campo_year',
+            title: 'Year',
+            type: TYPE_CONTROL_FORM.YEAR,
+            formControl: new FormControl(null),
+            onInitialize: (...args) => console.log('[onInitialize] campo_year', ...args),
+            onChange: (...args) => console.log('[onChange] campo_year', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_year', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_year', ...args),
+        })
+
+        // --- GRUPPO: Selezione e Toggle ---
+        .addGroup('Selezione e Toggle', ['col-6 px-3'])
+        .addForm({
+            formName: 'campo_checkbox',
+            title: 'Checkbox',
+            type: TYPE_CONTROL_FORM.CHECKBOX,
+            formControl: new FormControl(false),
+            onInitialize: (...args) => console.log('[onInitialize] campo_checkbox', ...args),
+            onChange: (...args) => console.log('[onChange] campo_checkbox', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_checkbox', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_checkbox', ...args),
+        })
+        .addForm({
+            formName: 'campo_radiogroup',
+            title: 'Radio Group',
+            type: TYPE_CONTROL_FORM.RADIOGROUP,
+            formControl: new FormControl(null),
+            options: signal([
+                { id: 'a', description: 'Opzione A' },
+                { id: 'b', description: 'Opzione B' },
+                { id: 'c', description: 'Opzione C' },
+            ]),
+            onInitialize: (...args) => console.log('[onInitialize] campo_radiogroup', ...args),
+            onChange: (...args) => console.log('[onChange] campo_radiogroup', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_radiogroup', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_radiogroup', ...args),
+        })
+        .addForm({
+            formName: 'campo_arraystring',
+            title: 'Array String (tag)',
+            type: TYPE_CONTROL_FORM.ARRAYSTRING,
+            formControl: new FormControl([]),
+            onInitialize: (...args) => console.log('[onInitialize] campo_arraystring', ...args),
+            onChange: (...args) => console.log('[onChange] campo_arraystring', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_arraystring', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_arraystring', ...args),
+        })
+
+        // --- GRUPPO: File e Display ---
+        .addGroup('File e Display', ['col-6 px-3'])
+        .addForm({
+            formName: 'campo_file',
+            title: 'File Upload',
+            type: TYPE_CONTROL_FORM.FILE,
+            formControl: new FormControl(null),
+            onInitialize: (...args) => console.log('[onInitialize] campo_file', ...args),
+            onChange: (...args) => console.log('[onChange] campo_file', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_file', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_file', ...args),
+        })
+        .addForm({
+            formName: 'campo_label',
+            title: 'Label',
+            type: TYPE_CONTROL_FORM.LABEL,
+            formControl: new FormControl('Questo è un campo label di sola lettura'),
+            onInitialize: (...args) => console.log('[onInitialize] campo_label', ...args),
+        })
+        .addForm({
+            formName: 'campo_link',
+            title: 'Link',
+            type: TYPE_CONTROL_FORM.LINK,
+            formControl: new FormControl('https://example.com'),
+            onInitialize: (...args) => console.log('[onInitialize] campo_link', ...args),
+        })
+        .addForm({
+            formName: 'campo_separator',
+            title: 'Separatore',
+            type: TYPE_CONTROL_FORM.SEPARATOR,
+            formControl: new FormControl(null),
+        })
+
         .addActions([
             {
                 label: 'Salva',
@@ -798,6 +967,13 @@ export function buildComboTestForm(): ConfigForm {
                 action: (...args) => {
                     alert('Salva!');
                     console.log('[Azione Salva]', ...args);
+                },
+            },
+            {
+                label: 'Reset',
+                visible: true,
+                action: (_q: any, _id: any, formGroup: any) => {
+                    if (formGroup?.reset) formGroup.reset();
                 },
             },
         ])
