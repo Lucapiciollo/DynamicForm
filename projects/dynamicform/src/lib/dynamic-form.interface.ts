@@ -89,11 +89,16 @@ export enum TYPE_CONTROL_FORM {
    GROUP,
    SORTACTION,
    YEAR,
+   RATING,
 }
 
 /***********************************************************************************************************************************
  * BASE TYPES
  ***********************************************************************************************************************************/
+
+export type TypeOptionRating = {
+   max?: number; // numero di stelle, default 5
+};
 
 export type TypeOptionDate = {
    max?: string;
@@ -386,6 +391,7 @@ export type FormActionBase = {
    optionDate?: TypeOptionDate;
    optionTime?: TypeOptionTime;
    optionsTime?: TypeOptionTime;
+   optionRating?: TypeOptionRating;
 
    rows?: number;
    accept?: string;
@@ -569,6 +575,11 @@ export type FormActionTextArea = FormActionBase & {
 
 export type FormActionGeneric = FormActionBase;
 
+export type FormActionRating = FormActionBase & {
+   type?: TYPE_CONTROL_FORM.RATING;
+   optionRating?: TypeOptionRating;
+};
+
 /**
  * Unione finale.
  *
@@ -590,4 +601,5 @@ export type FormAction =
    | FormActionYear
    | FormActionDateTime
    | FormActionFile
-   | FormActionTime;
+   | FormActionTime
+   | FormActionRating;

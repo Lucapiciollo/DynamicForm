@@ -144,6 +144,10 @@
                <app-year class="scaled" [question]="formAction" [formActionIndex]="formActionIndex"
                   [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-year>
                }
+               @case (TYPE_CONTROL_FORM.RATING) {
+               <app-rating class="scaled" [question]="formAction" [formActionIndex]="formActionIndex"
+                  [formGroupIndex]="formGroupIndex" [group]="group" [allGroup]="_questions"></app-rating>
+               }
                @case (TYPE_CONTROL_FORM.SEPARATOR) {
                <app-separator [question]="formAction"></app-separator>
                }

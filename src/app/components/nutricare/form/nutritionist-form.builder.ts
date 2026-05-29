@@ -889,6 +889,17 @@ export function buildComboTestForm(): ConfigForm {
             onFocus: (...args) => console.log('[onFocus] campo_year', ...args),
             onBlur: (...args) => console.log('[onBlur] campo_year', ...args),
         })
+        .addForm({
+            formName: 'campo_rating',
+            title: 'Rating (stelle)',
+            type: TYPE_CONTROL_FORM.RATING,
+            formControl: new FormControl(null),
+            optionRating: { max: 10 },
+            onInitialize: (...args) => console.log('[onInitialize] campo_rating', ...args),
+            onChange: (...args) => console.log('[onChange] campo_rating', ...args),
+            onFocus: (...args) => console.log('[onFocus] campo_rating', ...args),
+            onBlur: (...args) => console.log('[onBlur] campo_rating', ...args),
+        })
 
         // --- GRUPPO: Selezione e Toggle ---
         .addGroup('Selezione e Toggle', ['col-6 px-3'])

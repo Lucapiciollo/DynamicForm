@@ -28,6 +28,7 @@ import { MaterialModule } from './material.module';
 import { SeparatorComponent } from './component/separator/separator.component';
 import { FixSearchBox } from './directive/fixSearchBox.directive';
 import { DateYearComponent } from './component/date-year/date-year.component';
+import { RatingComponent } from './component/rating/rating.component';
 import moment from 'moment';
 import { DynamicFormRuntimeConfig, provideDynamicFormForModule } from './providers/dynamic-form.providers';
 import { DynamicFormAssetsService } from './services/dynamic-form-assets.service';
@@ -64,9 +65,9 @@ const minYearCalendar = () => {
       { provide: MIN_DATE_CALENDAR, useFactory: minYearCalendar },
    ],
 
-   declarations: [TimeToNumberPipe, ArrayStringComponent, SeparatorComponent, LanguagePipe, CamScanDirective, LoadChildDirective, InputTextComponent, ComboComponent, DynamicFormComponent, CheckboxComponent, CurrencyComponent, DateComponent, DateRangeComponent, DateTimeComponent, FileComponent, InputTimeComponent, LabelComponent, NumberComponent, QuestionRadioButtonComponent, TextareaComponent, LinkComponent, SpeechDirective, SortActionComponent, FixSearchBox, DateYearComponent],
+   declarations: [TimeToNumberPipe, ArrayStringComponent, SeparatorComponent, LanguagePipe, CamScanDirective, LoadChildDirective, InputTextComponent, ComboComponent, DynamicFormComponent, CheckboxComponent, CurrencyComponent, DateComponent, DateRangeComponent, DateTimeComponent, FileComponent, InputTimeComponent, LabelComponent, NumberComponent, QuestionRadioButtonComponent, TextareaComponent, LinkComponent, SpeechDirective, SortActionComponent, FixSearchBox, DateYearComponent, RatingComponent],
    imports: [CommonModule, ReactiveFormsModule, FormsModule, MaterialModule],
-   exports: [TimeToNumberPipe, DateYearComponent, ArrayStringComponent, SeparatorComponent, LanguagePipe, LoadChildDirective, CamScanDirective, SortActionComponent, ReactiveFormsModule, FormsModule, ComboComponent, CommonModule, DynamicFormComponent, InputTextComponent, CheckboxComponent, CurrencyComponent, DateComponent, DateRangeComponent, DateTimeComponent, FileComponent, InputTimeComponent, LabelComponent, NumberComponent, QuestionRadioButtonComponent, TextareaComponent, LinkComponent, MaterialModule, FixSearchBox],
+   exports: [TimeToNumberPipe, DateYearComponent, RatingComponent, ArrayStringComponent, SeparatorComponent, LanguagePipe, LoadChildDirective, CamScanDirective, SortActionComponent, ReactiveFormsModule, FormsModule, ComboComponent, CommonModule, DynamicFormComponent, InputTextComponent, CheckboxComponent, CurrencyComponent, DateComponent, DateRangeComponent, DateTimeComponent, FileComponent, InputTimeComponent, LabelComponent, NumberComponent, QuestionRadioButtonComponent, TextareaComponent, LinkComponent, MaterialModule, FixSearchBox],
 })
 export class DynamicFormModule {
    constructor(

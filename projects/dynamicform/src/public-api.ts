@@ -28,6 +28,7 @@ export * from './lib/component/checkbox/checkbox.component';
 export * from './lib/component/currency/currency.component';
 export * from './lib/component/date-range/date-range.component';
 export * from './lib/component/date-year/date-year.component';
+export * from './lib/component/rating/rating.component';
 export * from './lib/component/arraystring/arraystring.component';
 export * from './lib/component/date/date.component';
 export * from './lib/component/label/label.component';

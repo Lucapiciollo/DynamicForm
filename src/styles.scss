@@ -6,6 +6,15 @@
    opacity: 0.3;
  }
 
+ // Rating field: riduce padding interno per adattarsi all'altezza delle stelle
+ .rating-field {
+   .mat-mdc-form-field-infix {
+     min-height: 0 !important;
+     padding-top: 6px !important;
+     padding-bottom: 6px !important;
+   }
+ }
+
  // ─────────────────────────────────────────────────────────────────────────────
  // NutriCare Pro — Global styles
  // Font: Inter (loaded in index.html)

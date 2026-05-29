@@ -338,6 +338,7 @@ export class BaseComponent implements IBaseComponent {
             if (
                t === TYPE_CONTROL_FORM.GROUP ||
                t === TYPE_CONTROL_FORM.ARRAYSTRING ||
+               t === TYPE_CONTROL_FORM.RATING ||
                t === TYPE_CONTROL_FORM.COMBO ||
                t === TYPE_CONTROL_FORM.COMBOPAGINATE ||
                !control?.formAction?.onChange

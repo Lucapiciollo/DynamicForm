@@ -1,0 +1,90 @@
+/** @format */
+
+:host {
+    display: block;
+}
+
+.rating-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 4px 0 8px 0;
+}
+
+.rating-label {
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.6);
+    line-height: 1.2;
+    margin-bottom: 2px;
+
+    &.disabled {
+        opacity: 0.4;
+    }
+}
+
+.rating-info-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+.stars-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    margin-left: -4px;
+}
+
+.star-btn {
+    --mdc-icon-button-state-layer-size: 36px;
+    --mdc-icon-button-icon-size: 26px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    transition: transform 0.1s ease;
+
+    .mat-icon {
+        font-size: 26px;
+        width: 26px;
+        height: 26px;
+        line-height: 26px;
+        transition: color 0.12s ease;
+    }
+
+    &.active .mat-icon {
+        color: #f5a623;
+    }
+
+    &:not(.active) .mat-icon {
+        color: rgba(245, 166, 35, 0.3);
+    }
+
+    &:hover:not([disabled]) {
+        transform: scale(1.15);
+    }
+
+    &[disabled] {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+}
+
+.reset-btn {
+    color: rgba(0, 0, 0, 0.4);
+    width: 28px;
+    height: 28px;
+
+    .mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.rating-error {
+    font-size: 12px;
+}
